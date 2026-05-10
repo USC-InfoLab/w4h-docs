@@ -1,2 +1,3 @@
-# w4h-docs
-W4H documentation
+# W4H Docs
+
+W4H documentation.
