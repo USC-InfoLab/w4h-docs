@@ -1,5 +1,4 @@
 ---
-slug: home
 title: Welcome to W4H
 description: Welcome to the W4H Toolkit
 ---

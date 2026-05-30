@@ -15,4 +15,6 @@ See the Quick Start guide for step-by-step instructions.
 
 ## Where can I find more documentation?
 
-Browse the docs section for comprehensive guides and references.
+This documentation is available in the [W4H Toolkit Documentation repository](https://github.com/USC-InfoLab/w4h-documentation){target="_blank"}.
+
+## How can I contribute?

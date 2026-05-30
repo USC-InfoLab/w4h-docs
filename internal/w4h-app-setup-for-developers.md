@@ -1,9 +1,9 @@
 ---
-title: W4H-app Setup for Developers
-description: ''
+title: Developer Setup
+description: ""
 ---
 
-# W4H-app Setup for Developers
+# Developer Setup
 
 ## System architecture
 
