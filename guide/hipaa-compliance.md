@@ -84,10 +84,10 @@ HIPAA requires a mechanism to terminate an electronic session after a predetermi
 
 ## Break-Glass Procedure: Emergency Admin Password Reset
 
-In the event that the primary administrator account is locked out and the standard email-based password reset flow is unavailable, W4H provides a server-side break-glass script (`reset-admin-password.js`).
+In the event that the primary administrator account is locked out and the standard email-based password reset flow is unavailable, W4H provides a break-glass command via the W4H CLI.
 
 <div class="alert alert-warning">
-  <strong>HIPAA Notice:</strong> Use of this procedure must be documented in your organization's HIPAA incident log. Unauthorized use constitutes a HIPAA violation. This script is only to be executed by a designated system administrator with authorized SSH access to the server.
+  <strong>HIPAA Notice:</strong> Use of this procedure must be documented in your organization's HIPAA incident log. Unauthorized use constitutes a HIPAA violation. This command is only to be executed by a designated system administrator with authorized SSH access to the server.
 </div>
 
 ### When to use
@@ -98,10 +98,10 @@ Only when **all** of the following are true:
 - The email-based password reset flow is unavailable (e.g. SMTP not configured)
 - The person performing the reset is an authorized system administrator covered by your BAA
 
-### What the script does
+### What the command does
 
 - Prompts for the performing administrator's name and reason for reset (required for audit trail)
-- Accepts the new password via a hidden prompt — the password is **never passed as a command-line argument** and is never written to shell history
+- Accepts the new password via a hidden interactive prompt — the password is **never passed as a command-line argument** and is never written to shell history
 - Hashes the password with bcrypt at the configured `BCRYPT_ROUNDS` cost factor
 - Writes an audit log entry to `w4h.audit_log` with action `BREAK_GLASS_PASSWORD_RESET`
 - Falls back to a local `break-glass-audit.log` file if the audit log table is unavailable
@@ -110,16 +110,16 @@ Only when **all** of the following are true:
 
 ```bash
 cd w4h-api
-node reset-admin-password.js
+node cli/w4h.js reset-password
 ```
 
 <div class="alert alert-danger">
-  <strong>Never</strong> reset a password by passing it directly on the command line (e.g. <code>node reset-password.js admin@example.com MyPassword123</code>). Command-line arguments are visible in the process list (<code>ps aux</code>), recorded in shell history (<code>~/.bash_history</code>), and may appear in system logs — all of which are potential sources of unauthorized disclosure under HIPAA. The break-glass script accepts the new password via a hidden interactive prompt only.
+  <strong>Never</strong> reset a password by passing it directly on the command line (e.g. <code>node cli/w4h.js reset-password admin@example.com MyPassword123</code>). Command-line arguments are visible in the process list (<code>ps aux</code>), recorded in shell history (<code>~/.bash_history</code>), and may appear in system logs — all of which are potential sources of unauthorized disclosure under HIPAA. The break-glass command accepts the new password via a hidden interactive prompt only.
 </div>
 
 ### Required documentation
 
-Before running the script, record the following in your HIPAA incident log:
+Before running the command, record the following in your HIPAA incident log:
 
 - Date and time
 - Name of the administrator performing the reset
@@ -171,16 +171,16 @@ REVOKE DELETE ON w4h.audit_log FROM w4h_app;
 
 Use this checklist before processing real PHI:
 
-- Audit logging is active and rows are appearing in <code>w4h.audit_log</code>
+- Audit logging is active and rows are appearing in `w4h.audit_log`
 - Database backups are scheduled and tested
 - Audit log rows are retained for at least 6 years (backup/archive policy in place)
-- The database user does not have <code>DELETE</code> on <code>w4h.audit_log</code>
+- The database user does not have `DELETE` on `w4h.audit_log`
 - JWT token expiry is set to an appropriate session length
-- <code>BCRYPT_ROUNDS</code> is set to 12 or higher in <code>.env</code>
+- `BCRYPT_ROUNDS` is set to 12 or higher in `.env`
 - Transport is encrypted (HTTPS / TLS) — do not run W4H over plain HTTP in production
-- Database connection uses TLS (set <code>DB_SSL=true</code> in <code>.env</code>)
+- Database connection uses TLS (set `DB_SSL=true` in `.env`)
 - A Business Associate Agreement (BAA) is in place with any cloud infrastructure provider
 - A HIPAA Risk Analysis has been completed for your deployment
 - Break-glass password reset procedure is documented and access is restricted to authorized system administrators only
-- <code>reset-admin-password.js</code> is not web-accessible and server access is restricted
+- SSH access to the server is restricted to authorized administrators only
 - Passwords are never passed as command-line arguments — always use the interactive prompt
