@@ -15,8 +15,8 @@ description: Welcome to the W4H Toolkit
 
 <ul>
   <li>
-    <a href="{{APP_URL}}/docs/studies">Studies</a>
-    study data.
+    <a href="{{APP_URL}}/docs/projects">Projects</a>
+    project data.
   </li>
   <li>
     <a href="{{APP_URL}}/docs">Docs</a> 
