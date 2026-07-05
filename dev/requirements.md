@@ -355,8 +355,6 @@ The W4H Toolkit supports applying, retraining, and extending pre-built ML models
 | By January 2027 | Pilot evaluation | Usability and workflow feedback from researchers |
 | By March 2027 | Community launch | Open-source governance, docs, tutorials, public release |
 
-//make a mairmaid timeline for the above 
-
 ```mermaid
 timeline
     title W4H Toolkit — Delivery Timeline

@@ -90,6 +90,27 @@ Sharing is explicit, bilateral, and auditable. One trial's dataset can be shared
 4. The grant and approval are recorded in `w4h_app.audit_log`
 5. Trial C users can now query `w4h_global` views for the shared dataset
 
+### Sharing agreement table
+
+```sql
+CREATE TABLE IF NOT EXISTS w4h.dataset_shares (
+  id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  dataset_id        text NOT NULL REFERENCES w4h.datasets(id) ON DELETE CASCADE,
+  target_team_id    uuid NOT NULL REFERENCES w4h.teams(id) ON DELETE CASCADE,
+  target_project_id uuid REFERENCES w4h.projects(id) ON DELETE CASCADE,
+  access_type       text NOT NULL DEFAULT 'read' CHECK (access_type IN ('read', 'read_write')),
+  shared_by         integer REFERENCES w4h.users(id) ON DELETE SET NULL,
+  shared_at         timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT unique_dataset_team_project_share
+    UNIQUE (dataset_id, target_team_id, target_project_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_dataset_shares_lookup
+  ON w4h.dataset_shares (dataset_id, target_team_id);
+```
+
+A share can be team-wide (`target_project_id` is NULL — any project in the target team can link it) or project-specific (`target_project_id` set — only that project can link it). Default access is `read`; `read_write` must be explicitly granted.
+
 ### Revocation
 
 - Any approving admin can revoke sharing
@@ -211,23 +232,37 @@ df = w4h.query("SELECT subject_id, ts, bpm FROM ds42_heart_rate")
 
 IdP options: institutional LDAP/Active Directory (via OIDC bridge), university SAML (Shibboleth), or managed (Okta, Azure AD, Keycloak). The W4H application is IdP-agnostic — it only consumes JWTs.
 
-### Tier 2 — Service accounts (automated workloads)
+### Tier 2 — Personal API keys (programmatic data access)
+
+Researchers who need to query the data API from local scripts or notebooks outside the TRE use a personal API key generated from the W4H UI within an MFA-authenticated session. Controls:
+
+- Data API only — cannot access admin, user management, or sharing endpoints
+- Read-only — no write, ingest, or DDL operations
+- Project-scoped — access limited to the researcher's current project memberships
+- Configurable TTL — expiry set at creation; expired keys must be reissued
+- Immediately revoked when the user is discontinued — all keys invalidated alongside the JWT
+- Full audit log — every request logged with user identity, dataset, timestamp, row count
+
+### Tier 3 — Service accounts (unattended automated workloads)
 
 Spark jobs and pipelines use long-lived API keys with compensating controls in place of MFA:
 
 - Read-only — cannot write, share, admin, or trigger DDL
-- Dataset-scoped — access to named datasets only, not project-wide
+- Dataset-scoped — access to explicitly named datasets only
 - IP-restricted — only requests from the Spark cluster's IP range accepted
 - Mandatory expiry — 90 days maximum; automated rotation enforced
-- Human owner — named accountable person; disabled when owner leaves
+- Human owner — named accountable person; all keys disabled when owner is discontinued
 
 ### Credential summary
 
 | Principal | Credential | MFA | Expiry | Scope |
 |---|---|---|---|---|
-| Researcher | JWT from IdP | Yes — required | 1–8h, 15min idle | Assigned projects |
+| Researcher (interactive) | JWT from IdP | Yes — required | 1–8h, 15min idle | Assigned projects |
 | Super admin | JWT from IdP | Yes — always | 1h max | Platform-wide |
-| Spark / pipeline | Service account key | No — compensating controls | 90 days max | Named datasets only |
+| Researcher (programmatic) | Personal API key | No — compensating controls | Configurable TTL | Assigned project datasets, read-only |
+| Spark / pipeline | Service account key | No — compensating controls | 90 days max | Named datasets only, IP-restricted |
+
+See [ADR-011](adr/ADR-011-authentication-model-v2.md) for full rationale and the boundary between personal API keys and service account keys.
 
 ---
 
@@ -248,6 +283,16 @@ For full rationale on each, see the [ADR index](adr/README.md).
 
 ---
 
+## Frontend conventions
+
+These are architectural decisions for the Vue frontend, not just setup preferences.
+
+- **User store** (`src/stores/user.js`) — parse and persist `team_id` from the JWT login payload; it must be available on every request for team-scoped API calls
+- **Dataset selector** (e.g. `ProjectsEdit.vue`) — label datasets in selection lists to distinguish origin: **"Shared from [Team Name]"** vs **"Local"**; never show raw UUIDs
+- **Admin routes** — team management lives at `/admin/teams` (Super-Admin only); cross-team dataset sharing agreements are visible at `/admin/datasets/shares`
+
+---
+
 ## Open items
 
 - [ ] Define retention and archival policy per trial (schema dump + drop vs. soft archive flag)
@@ -260,3 +305,6 @@ For full rationale on each, see the [ADR index](adr/README.md).
 - [ ] Define controlled package mirror strategy for TRE (Artifactory, pip index proxy, or curated allowlist)
 - [ ] Define service account rotation tooling — CLI command or platform UI for pipeline owners
 - [ ] Clarify idle session timeout per deployment context (15 min for clinical, relaxed for HPC batch contexts?)
+- [ ] **GDPR / EU deployment:** soft-delete model conflicts with GDPR Article 17 (right to erasure) — requires legal review and a pseudonymisation strategy before any deployment enrolling EU-resident subjects or involving EU-based trial sites (see ADR-010)
+- [ ] **REDCap incremental sync dependency:** R-04 requires REDCap projects to have data access logging enabled or a `date_modified` field — import UI must detect and warn when this is absent (see ADR-009)
+- [ ] **Audit log cold storage:** define the archival path for audit log entries beyond the active query window (e.g. S3 Glacier with object lock) while preserving the HIPAA 6-year retrievability requirement (see ADR-010)

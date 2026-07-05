@@ -11,6 +11,9 @@ This directory contains ADRs for the W4H wearables toolkit. Each file captures t
 | [ADR-005](ADR-005-connection-pooling.md) | PgBouncer transaction-mode pooling | Accepted |
 | [ADR-006](ADR-006-trusted-research-environment.md) | Trusted Research Environment (TRE) model | Accepted |
 | [ADR-007](ADR-007-authentication-model.md) | Authentication model: human users and service accounts | Accepted |
+| [ADR-008](ADR-008-geomts-data-model.md) | GeoMTS as the unifying wearable data abstraction | Accepted |
+| [ADR-009](ADR-009-redcap-integration.md) | REDCap as the primary data integration target for MVP | Accepted |
+| [ADR-010](ADR-010-soft-delete-no-hard-deletion.md) | Soft-delete only: no hard deletion of users, teams, or datasets | Accepted |
 
 ## What is an ADR?
 
