@@ -2,8 +2,26 @@
 title: 🆕 What's New!
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-07-15T00:32:29.681Z
+updated_at: 2026-07-15T20:21:00.000Z
 ---
+## July 2026
+
+### Architecture & Requirements
+- Role vocabulary aligned across ADRs and MVP requirements: **Super admin** · **Team admin** · **Project user** (replaces Group Admin / legacy platform role names)
+- Project membership simplified to **owner** / **editor** / **viewer** (project-level `admin` retired to avoid colliding with Team admin)
+- [ADR-011]({{APP_URL}}/docs/ADR-011-hipaa-audit-logging) — HIPAA audit logging model (API/notebook access, super-admin paths, fail-closed PHI writes)
+- [ADR-012]({{APP_URL}}/docs/ADR-012-project-dataset-linking) — project–dataset linking and shared-dataset projects (multi-dataset modeling; push-share UX; share ≠ co-owned project)
+- ADR-002 / ADR-004 / architecture / MVP requirements updated for push-share defaults and project visibility rules
+- MVP requirements moved to `dev/mvp-requirements.md` (v0.4)
+
+### Documentation browser
+- Mobile docs navigation: new **Menu** (sidebar offcanvas) and (TOC) bar on small screens
+- Docs title comes from frontmatter / title field only — no duplicate leading H1 in the body
+- `sort_order` in frontmatter orders docs within a section; ADR files auto-order by number when omitted
+- ADR index and Developer docs reorganized under `dev/`
+
+---
+
 ## June–July 2026
 
 ### Projects & Multi-Tenancy
@@ -15,6 +33,7 @@ updated_at: 2026-07-15T00:32:29.681Z
 - HIPAA-compliant bcrypt rounds for password hashing
 - Break-glass password support with dedicated documentation and instructions
 - Per-user notebook API keys with JWT-or-key authentication on datasets and project endpoints
+- Optional email one-time-code login (SMTP) alongside password sign-in
 
 ### Notebooks
 - New single-user notebook workflow with JWT-authenticated server endpoints
@@ -39,7 +58,7 @@ updated_at: 2026-07-15T00:32:29.681Z
 - DB token list and purge support
 
 ### API
-^^- Consolidated PostgreSQL access in `db.js`
+- Consolidated PostgreSQL access in `db.js`
 - Audit support added
 - Docs export and refresh endpoints
 
