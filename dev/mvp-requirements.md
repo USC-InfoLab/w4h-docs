@@ -2,7 +2,7 @@
 title: MVP Requirements
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-07-05T01:23:50.000Z
+updated_at: 2026-07-15T21:28:00.000Z
 sort_order: 3
 ---
 **Protocol Version:** 1
@@ -369,30 +369,35 @@ The W4H Toolkit supports applying, retraining, and extending pre-built ML models
 
 ## 17. Delivery Timeline
 
-| Period | Milestone | Deliverable |
-|--------|-----------|-------------|
-| By May 2026 | Requirements and architecture | Finalized feature scope and deployment plan |
-| By July 2026 | Documentation system + data ingestion | WYSIWYG docs; CSV / JSON / REDCap ingestion |
-| By August 2026 | Analytics and visualization | Reusable analytics dashboards and plotting library |
-| By September 2026 | ML modeling + dashboard integration | Plug-and-play dashboard with model interface |
-| By October 2026 | Docker deployment (standalone) | Containerized release without Spark |
-| By November 2026 | Docker deployment (Spark-enabled) | Scalable deployment with Spark |
-| By December 2026 | Interoperability and compliance | REDCap integration; HIPAA audit checks |
-| By January 2027 | Pilot evaluation | Usability and workflow feedback from researchers |
-| By March 2027 | Community launch | Open-source governance, docs, tutorials, public release |
+| # | Milestone | Deliverable | Completion |
+|---|-----------|-------------|------------|
+| M1 | Requirements gathering and architecture refinement | Finalized feature scope and deployment plan | May 2026 |
+| M2 | Documentation system and data acquisition modules | WYSIWYG with CSV/JSON/database ingestion | July 2026 |
+| M3 | Analysis and visualization components | Reusable analytics and plotting library | August 2026 |
+| M4 | Modeling components and dashboard integration | Plug-and-play dashboard with model interface | September 2026 |
+| M5 | Docker deployment, standalone version | Containerized release without Spark support | October 2026 |
+| M6 | Docker deployment, Spark-enabled version | Scalable deployment with Spark support | November 2026 |
+| M7 | Interoperability and compliance testing | REDCap integration; HIPAA/FHIR checks | December 2026 |
+| M8 | Pilot evaluation with trial researchers | Usability and workflow feedback from users | January 2027 |
+| M9 | Community launch and dissemination | Open-source governance, documentation, tutorials, and public release | March 2027 |
+
+> **Note:** Full FHIR API endpoints remain out of scope for MVP (§16). M7 “HIPAA/FHIR checks” means compliance readiness checks toward interoperability; a FHIR API is post-MVP.
 
 ```mermaid
-timeline
-    title W4H Toolkit — Delivery Timeline
+gantt
+    title W4H Toolkit Delivery Timeline
+    dateFormat YYYY-MM
+    axisFormat %b %Y
+    tickInterval 1month
     section 2026
-        May : Requirements and architecture : Finalized feature scope and deployment plan
-        July : Documentation system + data ingestion : WYSIWYG docs, CSV / JSON / REDCap ingestion
-        August : Analytics and visualization : Reusable analytics dashboards and plotting library
-        September : ML modeling + dashboard integration : Plug-and-play dashboard with model interface
-        October : Docker deployment (standalone) : Containerized release without Spark
-        November : Docker deployment (Spark-enabled) : Scalable deployment with Spark
-        December : Interoperability and compliance : REDCap integration, HIPAA audit checks
+    M1 Requirements and architecture           :milestone, m1, 2026-05, 0d
+    M2 Docs system and data acquisition        :milestone, m2, 2026-07, 0d
+    M3 Analysis and visualization              :milestone, m3, 2026-08, 0d
+    M4 Modeling and dashboard                  :milestone, m4, 2026-09, 0d
+    M5 Docker standalone                       :milestone, m5, 2026-10, 0d
+    M6 Docker Spark-enabled                    :milestone, m6, 2026-11, 0d
+    M7 Interoperability and compliance         :milestone, m7, 2026-12, 0d
     section 2027
-        January : Pilot evaluation : Usability and workflow feedback from researchers
-        March : Community launch : Open-source governance, docs, tutorials, public release
+    M8 Pilot evaluation                        :milestone, m8, 2027-01, 0d
+    M9 Community launch                        :milestone, m9, 2027-03, 0d
 ```
