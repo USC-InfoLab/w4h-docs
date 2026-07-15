@@ -5,8 +5,6 @@ updated_by: nocera@usc.edu
 updated_at: 2026-05-30T13:31:26.000Z
 ---
 
-# Frequently Asked Questions
-
 ## What is W4H?
 
 W4H is a toolkit for managing data and creating insights from neighborhood and city-level data.

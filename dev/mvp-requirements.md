@@ -1,20 +1,21 @@
 ---
-title: W4H Toolkit — MVP Requirements
+title: MVP Requirements
 description: ""
 updated_by: nocera@usc.edu
 updated_at: 2026-07-05T01:23:50.000Z
+sort_order: 3
 ---
-# W4H Toolkit — MVP Requirements
-
 **Protocol Version:** 1
-**Date Updated:** June 21, 2026
+**Date Updated:** July 15, 2026
 **Title:** W4H Toolkit — Validating and Promoting the W4H Toolkit
 **Principal PI:** Cyrus Shahabi, PhD — shahabi@usc.edu
 **Co-Investigator:** Luciano Nocera, PhD — nocera@usc.edu
 **Funding:** SC CTSI Pilot Funding Program
-**Document Status:** Draft v0.3
+**Document Status:** Draft v0.4
 
-> **Changelog (v0.2 → v0.3):** Added user discontinue/resume lifecycle (replaces hard "remove"); added personal API key timeout and revocation-on-discontinuation; scoped audit log *viewing* access to Super-Admin / Group Admin; added grant-writing device & trial-design AI capabilities; moved basic email invitation (Google SMTP) into MVP scope and out of "Out of Scope."
+> **Changelog (v0.3 → v0.4):** Aligned role vocabulary with ADR-004 (**Super admin** · **Team admin** · **Project user**; “Group Admin” retired as an alias). Documented shared-dataset vs project visibility (ADR-012). Clarified push-share UX and multi-dataset project linking. Project membership simplified to `owner` / `editor` / `viewer` (dropped project `admin`).
+>
+> **Changelog (v0.2 → v0.3):** Added user discontinue/resume lifecycle (replaces hard "remove"); added personal API key timeout and revocation-on-discontinuation; scoped audit log *viewing* access to Super admin / Team admin; added grant-writing device & trial-design AI capabilities; moved basic email invitation (Google SMTP) into MVP scope and out of "Out of Scope."
 
 ---
 
@@ -24,25 +25,37 @@ The W4H Toolkit is a research-grade, open-source wearable health data platform f
 
 The MVP establishes the core platform architecture: multi-tenant team isolation, dataset sharing across teams, HIPAA-compliant data pipelines, REDCap data import, project-scoped analytics, AI-assisted research tools, and a comprehensive documentation system.
 
+Role and sharing semantics follow [ADR-004](ADR-004-acl-roles.md), [ADR-002](ADR-002-cross-trial-sharing.md), and [ADR-012](ADR-012-project-dataset-linking.md).
+
 ---
 
 ## 2. Roles & Access Model
 
-### 2.1 Role Hierarchy
+### 2.1 Role Hierarchy (canonical — ADR-004)
 
 | Role | Scope | Permissions |
 |------|-------|-------------|
-| **Super-Admin** | Platform-wide | Manages all teams, users, datasets, projects globally. No team assignment. |
-| **Group Admin** | Own team only | Full control within their research team: manage users, projects, datasets, shares. |
-| **Researcher (Editor)** | Assigned projects | Access to datasets linked to their projects. Can run analytics and notebooks. |
-| **Viewer** | Assigned projects | Read-only access to project data and dashboards. |
+| **Super admin** | Platform-wide | Manages all teams, users, datasets, projects globally. No required team assignment. |
+| **Team admin** | Own team only | Full control within their research team: manage users, projects, datasets, and dataset shares. (Former name: *Group Admin*.) |
+| **Project user** | Assigned projects | Access to datasets **linked** to their projects. Capabilities refined by membership role below. |
 
-### 2.2 Key Rules
+### 2.2 Project membership roles (Project user detail)
+
+| Membership | Permissions |
+|------|-------------|
+| **owner** | Manage the project (members, linked datasets, settings); at least one required. |
+| **editor** | Run analytics and notebooks; read linked datasets. |
+| **viewer** | Read-only access to project data and dashboards. |
+
+These membership roles are **not** a fourth platform tier. Platform role remains **Project user**. Project-level `admin` is retired (legacy schema may still store it — map to `owner` on read).
+
+### 2.3 Key Rules
 
 - A user **can belong to multiple teams** (e.g., a researcher collaborating with two research groups).
-- A user's primary team determines their default data scope and admin privileges.
-- **Group Admins** manage their team's users, projects, and datasets fully — including inviting, discontinuing, and resuming researchers.
-- **All projects belong to a team.** There are no platform-level "super-admin" projects.
+- A user's primary team determines their default data scope and Team admin privileges when applicable.
+- **Team admins** manage their team's users, projects, and datasets fully — including inviting, discontinuing, and resuming Project users.
+- **All projects belong to one owning team.** There are no dual-owned or platform-level "Super admin" projects.
+- **Sharing a dataset does not share a project.** A Team A project that links Team B’s shared dataset is visible to Team A only (ADR-012). Team B sees the share agreement, not Team A’s project.
 - New deployments **must** assign all users, projects, and datasets to a team at setup time. Unscoped records are not permitted.
 - Users are **never hard-deleted** from the platform. A user account has a `status` of `active` or `discontinued`; discontinuing a user is reversible (see §4).
 
@@ -54,22 +67,22 @@ The MVP establishes the core platform architecture: multi-tenant team isolation,
 
 | # | Requirement | Who |
 |---|-------------|-----|
-| T-01 | Create a new research team (name, slug). | Super-Admin |
-| T-02 | List all teams with member count and project count. | Super-Admin |
-| T-03 | Edit any team's name and metadata. | Super-Admin |
-| T-04 | Deactivate any team (soft-delete; preserves data). | Super-Admin |
-| T-05 | View, edit, and manage their own team's details, metadata, and membership. | Group Admin (scoped to own team) |
+| T-01 | Create a new research team (name, slug). | Super admin |
+| T-02 | List all teams with member count and project count. | Super admin |
+| T-03 | Edit any team's name and metadata. | Super admin |
+| T-04 | Deactivate any team (soft-delete; preserves data). | Super admin |
+| T-05 | View, edit, and manage their own team's details, metadata, and membership. | Team admin (scoped to own team) |
 | T-06 | Each team has a unique URL-friendly `slug`. | System |
 
 ### 3.2 User–Team Association
 
 | # | Requirement | Who |
 |---|-------------|-----|
-| T-07 | Assign a user to one or more teams at creation. | Super-Admin / Group Admin (own team only) |
-| T-08 | Remove a user from a team (membership link only — does **not** discontinue the user's account or their membership in other teams). | Super-Admin / Group Admin (own team only) |
-| T-09 | Users with no team assignment are Super-Admins. | System |
-| T-10 | Group Admin can view, invite, edit, discontinue, and resume all users in their team. | Group Admin |
-| T-11 | Users can see teammates across all their teams; Super-Admin sees all users globally. | System |
+| T-07 | Assign a user to one or more teams at creation. | Super admin / Team admin (own team only) |
+| T-08 | Remove a user from a team (membership link only — does **not** discontinue the user's account or their membership in other teams). | Super admin / Team admin (own team only) |
+| T-09 | Users with no team assignment are Super admins. | System |
+| T-10 | Team admin can view, invite, edit, discontinue, and resume all users in their team. | Team admin |
+| T-11 | Users can see teammates across all their teams; Super admin sees all users globally. | System |
 | T-12 | Discontinuing a user does not remove their team or project memberships; resuming restores their prior access immediately. | System |
 
 ---
@@ -81,23 +94,23 @@ The MVP establishes the core platform architecture: multi-tenant team isolation,
 | # | Requirement | Status |
 |---|-------------|--------|
 | U-01 | Create, edit, discontinue, and resume users. Users are never hard-deleted. | 🔲 New (was: "deactivate") |
-| U-02 | Assign user roles: `admin`, `researcher`, `clinician`. | ✅ Exists |
+| U-02 | Assign platform roles: `super_admin`, `team_admin`, `project_user` (maps to ADR-004; migrate off legacy `admin` / `researcher` / `clinician`). | 🔲 Align |
 | U-03 | Users have a `team_id` (multi-valued) linking them to their teams. | 🔲 New |
-| U-04 | Group Admin can invite/add researchers to their team. | 🔲 New |
-| U-05 | Group Admin can discontinue and resume researchers in their team. | 🔲 New (was: "remove") |
+| U-04 | Team admin can invite/add Project users to their team. | 🔲 New |
+| U-05 | Team admin can discontinue and resume Project users in their team. | 🔲 New (was: "remove") |
 | U-06 | `team_id` (primary) embedded in JWT at login for request scoping. | 🔲 New |
 | U-07 | User profile displays their team(s) and project memberships. | 🔲 New |
 | U-08 | Users have a `status` field: `active` or `discontinued`. Use case: a student/trainee who steps away (e.g., for an internship) and later returns to the project. | 🔲 New |
 | U-09 | Discontinuing a user preserves their full historical record (audit trail, prior contributions, team/project links) — only their ability to authenticate and access data is suspended. | 🔲 New |
 | U-10 | Discontinuing a user immediately invalidates all of that user's active web-app sessions/JWTs and all of their personal API keys (see D-20). | 🔲 New |
 | U-11 | Resuming a discontinued user restores web-app login ability; the user must issue new API key(s) post-resume (old keys remain revoked). | 🔲 New |
-| U-12 | `/admin/users` list and `/admin/users/:id` detail show current status (`active` / `discontinued`) with a toggle action, scoped per role (Super-Admin: any user; Group Admin: users in their team). | 🔲 New |
+| U-12 | `/admin/users` list and `/admin/users/:id` detail show current status (`active` / `discontinued`) with a toggle action, scoped per role (Super admin: any user; Team admin: users in their team). | 🔲 New |
 
 ### 4.2 Email Invitations
 
 | # | Requirement | Status |
 |---|-------------|--------|
-| U-13 | Super-Admin / Group Admin can invite a new user by email; the system sends an invitation email via **Google SMTP** (relay through a Google Workspace / Gmail SMTP account configured in `.env`). | 🔲 New (MVP) |
+| U-13 | Super admin / Team admin can invite a new user by email; the system sends an invitation email via **Google SMTP** (relay through a Google Workspace / Gmail SMTP account configured in `.env`). | 🔲 New (MVP) |
 | U-14 | Invitation email contains a time-limited signed link the invitee uses to set their password and activate their account. | 🔲 New (MVP) |
 | U-15 | Expired or unused invitations can be revoked or resent by the inviting admin. | 🔲 New (MVP) |
 | U-16 | Invite flow is intentionally basic for MVP: single SMTP provider (Google), plain-text/simple HTML template, no custom branding or multi-provider support (post-MVP hardening). | 🔲 New (MVP, scoped down) |
@@ -109,12 +122,12 @@ The MVP establishes the core platform architecture: multi-tenant team isolation,
 | # | Requirement | Status |
 |---|-------------|--------|
 | P-01 | Create, list, view, edit, archive projects. | ✅ Exists |
-| P-02 | Project member roles: `owner`, `editor`, `viewer`, `admin`. | ✅ Exists |
+| P-02 | Project member roles: `owner`, `editor`, `viewer` (retire project `admin`; avoid collision with Team admin). | 🔲 Align |
 | P-03 | At least one `owner` enforced per project. | ✅ Exists |
 | P-04 | Projects have a `team_id` (owning team). | 🔲 New |
-| P-05 | Group Admin can create projects within their team. | 🔲 New (currently admin-only) |
-| P-06 | Users see only projects in their team(s) or where explicitly added as members. | 🔲 New |
-| P-07 | Super-Admin sees all projects across all teams. | 🔲 New |
+| P-05 | Team admin can create projects within their team and link multiple owned or inbound-shared datasets (D-06, ADR-012). | 🔲 New (currently admin-only) |
+| P-06 | Users see only projects in their team(s) or where explicitly added as members (same team only in MVP). | 🔲 New |
+| P-07 | Super admin sees all projects across all teams. | 🔲 New |
 | P-08 | Project list and detail views display the owning team name. | 🔲 New |
 | P-09 | Project documentation stored in database (see §12). | 🔲 New |
 | P-10 | IRB protocol metadata stored per project (protocol ID, expiry date). | ✅ Exists |
@@ -136,7 +149,7 @@ All datasets in the W4H Toolkit are represented using the **GeoMTS (Geospatial M
 | D-05 | Each dataset version (original, derived) is tracked with provenance metadata. | 🔲 New |
 | D-06 | Datasets can be linked to one or more projects with per-link access type (`read` / `read_write`). | ✅ Exists |
 | D-07 | Team can only see datasets they own, plus datasets explicitly shared with them. | 🔲 New |
-| D-08 | Super-Admin sees all datasets across all teams. | 🔲 New |
+| D-08 | Super admin sees all datasets across all teams. | 🔲 New |
 
 ### 6.2 Data Ingestion
 
@@ -145,8 +158,8 @@ All datasets in the W4H Toolkit are represented using the **GeoMTS (Geospatial M
 | D-09 | Import datasets via **CSV** (most wearable device export format). | 🔲 New |
 | D-10 | Import datasets via **JSON**. | 🔲 New |
 | D-11 | Import datasets via **REDCap** (see §9). | 🔲 New |
-| D-12 | **Super-Admin / Group Admin** can ingest data directly to the database. | 🔲 New |
-| D-13 | **Researchers** ingest data via **API key** only (no direct DB access). | 🔲 New |
+| D-12 | **Super admin / Team admin** can ingest data directly to the database. | 🔲 New |
+| D-13 | **Project users** ingest data via **API key** only (no direct DB access) when so authorized; Team admins may also use API keys. | 🔲 New |
 | D-14 | Data ingestion notebooks available per dataset for script-based ETL pipelines. | 🔲 New |
 | D-15 | Ingestion logs stored with timestamp, user, row count, and status. | 🔲 New |
 
@@ -154,10 +167,10 @@ All datasets in the W4H Toolkit are represented using the **GeoMTS (Geospatial M
 
 | # | Requirement | Status |
 |---|-------------|--------|
-| D-16 | Researchers authenticate against the data API using a **personal**, individually-issued API key (not shared/team-level). | ✅ Partial (project DB tokens exist) |
+| D-16 | Project users authenticate against the data API using a **personal**, individually-issued API key (not shared/team-level). | ✅ Partial (project DB tokens exist) |
 | D-17 | API keys are scoped to a user's project memberships and their allowed datasets. | 🔲 New |
 | D-18 | API key analytics: log every API access event (user, dataset, query type, timestamp, row count). | 🔲 New |
-| D-19 | API usage dashboard visible to Group Admin and Super-Admin. | 🔲 New |
+| D-19 | API usage dashboard visible to Team admin and Super admin. | 🔲 New |
 | D-20 | API keys have a configurable timeout/expiration (TTL). Expired keys stop working and must be reissued by the user (or re-granted by an admin). | 🔲 New |
 | D-21 | When a user's status changes to `discontinued`, all of that user's personal API keys are immediately invalidated, in addition to their web-app session/JWT (see U-10). | 🔲 New |
 
@@ -165,14 +178,21 @@ All datasets in the W4H Toolkit are represented using the **GeoMTS (Geospatial M
 
 ## 7. Dataset Sharing (Cross-Team)
 
+Sharing is **dataset-scoped**, not project-scoped. See [ADR-002](ADR-002-cross-trial-sharing.md) and [ADR-012](ADR-012-project-dataset-linking.md).
+
+**Push-share UX (MVP default):** Team admin A opens an **owned** dataset → Share → Team B (or a Team B project). Team admin B then sees it as *"Shared by [Team A]"* and may **link** it to a Team B project. A’s modeling project that also uses that dataset remains **visible only to Team A**.
+
 | # | Requirement | Who |
 |---|-------------|-----|
-| S-01 | Share a dataset owned by your team with one or more other teams. | Group Admin, Super-Admin |
-| S-02 | Share can be team-wide (any project in target team can link it) or project-specific. | Group Admin |
-| S-03 | Default share access type is `read`; `read_write` is explicitly granted. | Group Admin |
-| S-04 | Revoke a dataset share at any time. | Group Admin, Super-Admin |
+| S-01 | Share a dataset owned by your team with one or more other teams (push share). | Team admin, Super admin |
+| S-02 | Share can be team-wide (any project in target team can link it) or project-specific. | Team admin |
+| S-03 | Default share access type is `read`; `read_write` is explicitly granted. | Team admin |
+| S-04 | Revoke a dataset share at any time. | Team admin (own datasets), Super admin |
 | S-05 | Shared datasets show owner team name in the UI: *"Shared by [Team Name]"*. | System |
-| S-06 | Super-Admin can view all active share agreements across all teams. | Super-Admin |
+| S-06 | Super admin can view all active share agreements across all teams. | Super admin |
+| S-07 | Recipient team catalog lists owned datasets ∪ inbound shared datasets only — never another team’s private catalog. | System |
+| S-08 | Linking a shared dataset into a project does not grant the source team visibility into that project. | System |
+| S-09 | Optional: recipient may request share; owner Team admin or Super admin approves (pull path). | Team admin, Super admin |
 
 ---
 
@@ -192,7 +212,7 @@ The platform must comply with HIPAA Security Rule requirements for handling Prot
 | H-08 | Automated HIPAA compliance checks as part of CI/CD pipeline. | 🔲 New |
 | H-09 | Ability to generate an access audit report per dataset or project for IRB review. | 🔲 New |
 | H-10 | Support de-identification pipelines before data is shared across teams. | 🔲 Post-MVP |
-| H-11 | **Audit log viewing access** is role-scoped: Super-Admin can view audit log entries across all teams; Group Admin can view audit log entries for their own team only. Researcher and Viewer roles cannot browse the raw audit log. | 🔲 New |
+| H-11 | **Audit log viewing access** is role-scoped: Super admin can view audit log entries across all teams; Team admin can view audit log entries for their own team only. Project users cannot browse the raw audit log. | 🔲 New |
 
 ---
 
@@ -317,7 +337,7 @@ The W4H Toolkit supports applying, retraining, and extending pre-built ML models
 
 | Page | Status | Notes |
 |------|--------|-------|
-| `/admin/teams` | 🔲 New | List all teams (Super-Admin only) |
+| `/admin/teams` | 🔲 New | List all teams (Super admin only) |
 | `/admin/teams/add` | 🔲 New | Create a new team |
 | `/admin/teams/:id/edit` | 🔲 New | Edit team, view/manage members |
 | `/admin/datasets` | 🔲 Modify | Show owning team; metadata; share button |
@@ -329,7 +349,7 @@ The W4H Toolkit supports applying, retraining, and extending pre-built ML models
 | `/admin/users/add` | ✅ Exists | Add team selector field; "Invite by email" action (Google SMTP) |
 | `/admin/users/:id` | 🔲 New | User detail: discontinue/resume toggle, API key list, status history |
 | `/admin/api-usage` | 🔲 New | API key analytics and usage logs |
-| `/admin/audit-log` | 🔲 New | Audit log viewer — Super-Admin: all teams; Group Admin: own team only |
+| `/admin/audit-log` | 🔲 New | Audit log viewer — Super admin: all teams; Team admin: own team only |
 
 ---
 
@@ -338,7 +358,7 @@ The W4H Toolkit supports applying, retraining, and extending pre-built ML models
 | Feature | Rationale |
 |---------|-----------|
 | Row-Level Security (RLS) in PostgreSQL | Application-layer scoping sufficient for MVP; RLS is a post-MVP hardening step. |
-| Cross-team project membership | MVP limits project members to users within the project's owning team. |
+| Cross-team project membership | MVP limits project members to users within the project's owning team. Dataset share ≠ project access (ADR-012). |
 | De-identification pipelines | Planned for post-MVP; raw data sharing relies on IRB-approved agreements. |
 | FHIR API endpoints | Interoperability with FHIR is planned post-MVP. |
 | Mobile application | Web platform only for MVP. |

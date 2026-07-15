@@ -1,5 +1,9 @@
-# ADR-001 — Schema-per-trial isolation
-
+---
+title: ADR-001 — Schema-per-trial isolation
+description: ""
+updated_by: nocera@usc.edu
+updated_at: 2026-07-04T23:10:40.000Z
+---
 **Status:** Accepted  
 **Date:** 2026-07-04  
 **Deciders:** W4H architecture team

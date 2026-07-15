@@ -5,11 +5,11 @@ updated_by: nocera@usc.edu
 updated_at: 2026-06-19T20:53:36.000Z
 ---
 
-<p class="fs-4">Welcome to the <strong>W4H Toolkit</strong>!</p>
-
-<p>If you are not familiar with the W4H Toolkit, you may want to keep reading. If you just want to get going with ingesting and analyzing your wearable data, head to the
+<p class="fs-4">If you are not familiar with the toolkit, keep reading below. To ingest and analyze wearable data right away, open the
   <a href="{{APP_URL}}/docs/quick-start">⚡️ Quick Start</a> guide.
 </p>
+
+<p>The docs sidebar is organized by topic. Start with <strong>Guides</strong> for how the platform works, or <strong>Developer</strong> for architecture and ADRs.</p>
 
 <h2>Key Concepts</h2>
 

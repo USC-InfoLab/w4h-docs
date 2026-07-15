@@ -4,8 +4,6 @@ description: ""
 updated_by: nocera@usc.edu
 updated_at: 2026-07-15T00:32:29.681Z
 ---
-# What's New
-
 ## June–July 2026
 
 ### Projects & Multi-Tenancy

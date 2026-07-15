@@ -4,8 +4,6 @@ description: ""
 updated_by: nocera@usc.edu
 updated_at: 2026-07-05T01:23:50.000Z
 ---
-# ADR-010 — Soft-delete only: no hard deletion of users, teams, or datasets
-
 **Status:** Accepted  
 **Date:** 2026-07-04  
 **Deciders:** W4H architecture team  
@@ -37,12 +35,12 @@ Three regulatory and operational pressures bear on this decision:
 
 | Entity | Active status | Inactive status | Who can change |
 |---|---|---|---|
-| User | `active` | `discontinued` | Super-Admin (any user); Group Admin (own team) |
-| Team | `active` | `deactivated` | Super-Admin only |
-| Dataset | `active` | `archived` | Group Admin, Super-Admin |
-| Project | `active` | `archived` | Project owner, Group Admin, Super-Admin |
-| API key | `active` | `revoked` | Key owner, Group Admin, Super-Admin |
-| Sharing agreement | `active` | `revoked` | Group Admin (own datasets), Super-Admin |
+| User | `active` | `discontinued` | Super admin (any user); Team admin (own team) |
+| Team | `active` | `deactivated` | Super admin only |
+| Dataset | `active` | `archived` | Team admin, Super admin |
+| Project | `active` | `archived` | Project owner, Team admin, Super admin |
+| API key | `active` | `revoked` | Key owner, Team admin, Super admin |
+| Sharing agreement | `active` | `revoked` | Team admin (own datasets), Super admin |
 | Audit log entry | — | — | **Never modified or deleted by anyone** |
 
 ### User lifecycle in detail
@@ -73,7 +71,7 @@ Retention enforcement: a PostgreSQL rule or trigger prevents deletion. Long-term
 
 ### What "archived" means for datasets and projects
 
-Archiving a dataset or project makes it invisible in the default UI and prevents new data ingestion or analysis runs. It does not delete data. Archived datasets remain queryable by Super-Admins and Group Admins for audit and IRB reporting purposes. Sharing agreements on archived datasets are automatically revoked.
+Archiving a dataset or project makes it invisible in the default UI and prevents new data ingestion or analysis runs. It does not delete data. Archived datasets remain queryable by Super admins and Team admins for audit and IRB reporting purposes. Sharing agreements on archived datasets are automatically revoked.
 
 ## Consequences
 

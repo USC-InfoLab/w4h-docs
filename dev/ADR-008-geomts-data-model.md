@@ -4,8 +4,6 @@ description: ""
 updated_by: nocera@usc.edu
 updated_at: 2026-07-05T01:23:50.000Z
 ---
-# ADR-008 — GeoMTS as the unifying wearable data abstraction
-
 **Status:** Accepted  
 **Date:** 2026-07-04  
 **Deciders:** W4H architecture team  

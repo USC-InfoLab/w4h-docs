@@ -4,8 +4,6 @@ description: ""
 updated_by: nocera@usc.edu
 updated_at: 2026-07-04T23:10:40.000Z
 ---
-# ADR-006 — Deployment modes: Flexible and TRE
-
 **Status:** Accepted  
 **Date:** 2026-07-04  
 **Revised:** 2026-07-05  

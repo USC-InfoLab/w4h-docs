@@ -4,8 +4,6 @@ description: ""
 updated_by: nocera@usc.edu
 updated_at: 2026-07-05T01:23:50.000Z
 ---
-# ADR-007 — Authentication model
-
 **Status:** Accepted  
 **Date:** 2026-07-04  
 **Revised:** 2026-07-05  
@@ -83,7 +81,7 @@ df = session.query("SELECT subject_id, ts, bpm FROM ds42_heart_rate")
 # Works identically from local laptop, HPC cluster, or cloud GPU instance
 ```
 
-**Admin visibility (D-19):** Group Admin and Super-Admin view key analytics at `/admin/api-usage` — label, user, created/expiry/last-used, revocation status, per-request usage log. Plaintext key never visible — label and hash prefix only (e.g. `w4h_sk_a3f2...`).
+**Admin visibility (D-19):** Team admin and Super admin view key analytics at `/admin/api-usage` — label, user, created/expiry/last-used, revocation status, per-request usage log. Plaintext key never visible — label and hash prefix only (e.g. `w4h_sk_a3f2...`).
 
 ---
 
@@ -140,8 +138,9 @@ CREATE TABLE w4h_app.service_accounts (
 
 | Mode | Principal | Credential | MFA | Expiry | Scope |
 |---|---|---|---|---|---|
-| Flexible | Researcher | Personal API key | No — ACL + audit compensate | Configurable TTL | Assigned project datasets, read-only |
-| Flexible | Super/Group Admin | Username + password (web UI) | Optional per institution | Web session | Admin functions only |
+| Flexible | Project user | Personal API key | No — ACL + audit compensate | Configurable TTL | Assigned project datasets, read-only |
+| Flexible | Super admin / Team admin | Username + password (web UI) | Optional per institution | Web session | Admin functions only |
+| Flexible | Any user (optional) | Email one-time code (SMTP required) | No — compensates with short TTL + audit | 10 min code / JWT session | Same as password login |
 | TRE | Any user | JWT from IdP | Yes — enforced | 1–8h, 15min idle | Role-scoped |
 | Both | Automated workload | Service account key | No — IP restriction compensates | 90 days max | Named datasets, IP-restricted |
 
@@ -167,3 +166,4 @@ CREATE TABLE w4h_app.service_accounts (
 |---|---|
 | 2026-07-04 | Initial — two-credential model (JWT for humans, service account for automation) |
 | 2026-07-05 | Revised — aligned with two deployment modes (ADR-006). Flexible mode uses personal API keys; TRE mode uses JWT from IdP. Removed blanket rejection of API keys for human users. |
+| 2026-07-15 | Added optional email OTP login for Flexible mode web UI when SMTP is configured (`POST /users/send-code`, `POST /users/verify-code`). Short-lived hashed codes; password login remains primary. Not a substitute for institutional MFA in TRE mode. |

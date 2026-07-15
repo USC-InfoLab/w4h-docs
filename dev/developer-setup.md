@@ -3,9 +3,8 @@ title: Developer Setup
 description: ""
 updated_by: nocera@usc.edu
 updated_at: 2026-07-04T23:10:40.000Z
+sort_order: 1
 ---
-
-# Developer Setup
 
 ## System architecture
 

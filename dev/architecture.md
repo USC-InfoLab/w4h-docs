@@ -1,11 +1,10 @@
 ---
-title: W4H wearables toolkit — architecture
+title: Architecture
 description: ""
 updated_by: nocera@usc.edu
 updated_at: 2026-07-05T01:23:50.000Z
+sort_order: 2
 ---
-# W4H wearables toolkit — architecture
-
 **Version:** 1.0  
 **Status:** Draft  
 **Last updated:** 2026-07-04
@@ -37,7 +36,7 @@ Platform-wide tables that are not trial-specific:
 - `users` — all platform accounts with role assignment
 - `trial_registry` — one row per trial; records schema name, status, created_by
 - `app_docs` — platform-level documentation
-- `audit_log` — immutable log of all privileged operations (sharing grants, revocations, role changes)
+- `audit_log` — append-only HIPAA audit ledger: API/notebook PHI access, super-admin activity, auth and ACL-boundary events (see ADR-011)
 - `sharing_requests` — workflow table for dataset sharing approvals
 
 ### trial_\<id\> — per-trial schemas
@@ -86,15 +85,23 @@ trial_a.ds42_sleep_stages    (subject_id, ts, stage)
 
 ## Dataset sharing
 
-Sharing is explicit, bilateral, and auditable. One trial's dataset can be shared with one specific other trial — no broadcast sharing.
+Sharing is explicit, bilateral, and auditable. One team's dataset can be shared with one specific other team — no broadcast sharing. **Share ≠ co-owned project** ([ADR-012](ADR-012-project-dataset-linking.md)).
 
-### Sharing flow
+### Sharing flow (MVP default — push)
 
-1. Trial C's team admin submits a sharing request (row in `w4h_app.sharing_requests`)
-2. Trial A's team admin or a super admin approves the request
-3. The platform's privileged DB role executes DDL: creates views in `w4h_global` and issues `GRANT` to `trial_c_role`
-4. The grant and approval are recorded in `w4h_app.audit_log`
-5. Trial C users can now query `w4h_global` views for the shared dataset
+1. Team admin A opens a dataset **owned by Team A** and chooses Share → Team B (or a specific Team B project)
+2. The platform records `dataset_shares` / `shared_datasets` and the privileged DB role executes DDL: views in `w4h_global` + `GRANT` to Team B's role ([ADR-002](ADR-002-cross-trial-sharing.md))
+3. The grant is recorded in `w4h_app.audit_log` ([ADR-011](ADR-011-hipaa-audit-logging.md))
+4. Team B's catalog shows the dataset as **"Shared by Team A"**; Team admin B may **link** it to a Team B project
+5. If Team A links that inbound share (after a reciprocal share the other way) or Team B's data was shared *to* A, A's project that uses both remains **visible only to Team A**
+
+Optional pull path: Team B submits `sharing_requests`; Team A's admin or a Super admin approves — same end state.
+
+### Project–dataset linking (within and after share)
+
+- Same-team multi-dataset modeling: Team admin links many owned datasets to one project via `project_datasets` (no Super admin required).
+- Cross-team: share first, then link on the **recipient** (or on the team that received the share).
+- MVP: no cross-team project membership — collaborators who need one workspace must be on the same team.
 
 ### Sharing agreement table
 
@@ -119,7 +126,7 @@ A share can be team-wide (`target_project_id` is NULL — any project in the tar
 
 ### Revocation
 
-- Any approving admin can revoke sharing
+- Owning Team admin or Super admin can revoke sharing
 - Revocation drops the view(s) and revokes the grant
 - Revocation is logged in `audit_log` with revoker identity and timestamp
 
@@ -136,7 +143,7 @@ Three platform roles, plus one structural database role per trial. Roles are cum
 | Role | Scope | Key permissions |
 |---|---|---|
 | Super admin | Platform-wide | All operations: create/delete trials, manage all users, approve/revoke sharing, access audit log, run cross-trial analytics |
-| Team admin | Assigned trial(s) | Create projects, load datasets, assign datasets to projects, manage project users within their trial, request dataset sharing |
+| Team admin | Assigned trial(s) | Create projects, load datasets, link datasets to projects, manage project users within their trial, push/approve dataset shares |
 | Project user | Assigned projects | Read datasets assigned to their project(s), add annotations, read trial docs |
 
 ### Super admin
@@ -156,7 +163,7 @@ Three platform roles, plus one structural database role per trial. Roles are cum
 - Assign datasets to projects
 - Add and remove project users within their trial
 - Set project-level permissions for users (read, annotate)
-- Submit dataset sharing requests to another trial
+- Submit dataset sharing requests to another trial **or** push shares to another team (MVP default — ADR-002 / ADR-012)
 - Approve incoming sharing requests from other trials (for their own datasets)
 - View their trial's audit log entries
 - Cannot access other trials' schemas or `w4h_global` unless a sharing grant exists
@@ -260,7 +267,7 @@ These are architectural decisions for the Vue frontend, not just setup preferenc
 
 - **User store** (`src/stores/user.js`) — parse and persist `team_id` from the JWT login payload; it must be available on every request for team-scoped API calls
 - **Dataset selector** (e.g. `ProjectsEdit.vue`) — label datasets in selection lists to distinguish origin: **"Shared from [Team Name]"** vs **"Local"**; never show raw UUIDs
-- **Admin routes** — team management lives at `/admin/teams` (Super-Admin only); cross-team dataset sharing agreements are visible at `/admin/datasets/shares`
+- **Admin routes** — team management lives at `/admin/teams` (Super admin only); cross-team dataset sharing agreements are visible at `/admin/datasets/shares`
 
 ---
 
@@ -269,7 +276,8 @@ These are architectural decisions for the Vue frontend, not just setup preferenc
 - [ ] Define retention and archival policy per trial (schema dump + drop vs. soft archive flag)
 - [ ] Define signal table column standards per sensor type (heart rate, accelerometer, glucose, etc.)
 - [ ] Decide on row-level security within a trial for project-scoped data access (alternative to view-per-project)
-- [ ] Define sharing request approval workflow — single approver vs. dual approval for compliance
+- [ ] Define sharing request approval workflow — single approver vs. dual approval for compliance (push share is MVP default; see ADR-002 / ADR-012)
+- [ ] **Project linkable set:** enforce dataset list/link picker as owned ∪ inbound shares only; migrate off legacy `datasets.project_id` for access (ADR-012)
 - [ ] Confirm TimescaleDB licence and deployment model (self-hosted vs. managed)
 - [ ] Define egress review process — manual approval vs. automated PHI disclosure check, turnaround SLA
 - [ ] Choose reference IdP for first deployment (institutional LDAP, Keycloak self-hosted, or managed Okta/Azure AD)
@@ -278,4 +286,5 @@ These are architectural decisions for the Vue frontend, not just setup preferenc
 - [ ] Clarify idle session timeout per deployment context (15 min for clinical, relaxed for HPC batch contexts?)
 - [ ] **GDPR / EU deployment:** soft-delete model conflicts with GDPR Article 17 (right to erasure) — requires legal review and a pseudonymisation strategy before any deployment enrolling EU-resident subjects or involving EU-based trial sites (see ADR-010)
 - [ ] **REDCap incremental sync dependency:** R-04 requires REDCap projects to have data access logging enabled or a `date_modified` field — import UI must detect and warn when this is absent (see ADR-009)
-- [ ] **Audit log cold storage:** define the archival path for audit log entries beyond the active query window (e.g. S3 Glacier with object lock) while preserving the HIPAA 6-year retrievability requirement (see ADR-010)
+- [ ] **Audit log cold storage:** define the archival path for audit log entries beyond the active query window (e.g. S3 Glacier with object lock) while preserving the HIPAA 6-year retrievability requirement (see ADR-010, ADR-011)
+- [ ] **Audit log writers:** implement shared fail-closed audit helper on PHI/API and super-admin paths; admin audit viewer + IRB export (H-09, H-11) (see ADR-011)
