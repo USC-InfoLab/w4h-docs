@@ -1,3 +1,9 @@
+---
+title: W4H wearables toolkit — architecture
+description: ""
+updated_by: nocera@usc.edu
+updated_at: 2026-07-05T01:23:50.000Z
+---
 # W4H wearables toolkit — architecture
 
 **Version:** 1.0  
@@ -175,94 +181,59 @@ Three platform roles, plus one structural database role per trial. Roles are cum
 
 ---
 
-## Trusted Research Environment (TRE)
+## Deployment modes
 
-W4H adopts the TRE model used by UK Biobank and All of Us. The governing principle is: **compute comes to the data — data never goes to the researcher.**
+W4H supports two deployment modes chosen at deployment time. The platform code is identical — the mode governs how data access and compute are permitted. See [ADR-006](adr/ADR-006-trusted-research-environment.md).
 
-The TRE is a self-contained, network-isolated environment. Researchers access their Jupyter notebook server running *inside* the TRE via a browser. Raw PHI never crosses the TRE boundary. Results pass through an egress review before download.
+### Flexible mode (default for MVP)
 
-| Component | Role |
-|---|---|
-| Identity provider (IdP) | Authenticates users; issues short-lived JWTs after MFA |
-| JupyterHub | Per-user notebook server spawned inside TRE; injects auth token automatically |
-| Spark cluster | Unattended compute; uses service account credentials |
-| W4H API proxy | Single point of data access; enforces permissions, read-only SQL guard, audit log |
-| PostgreSQL | Data zone — no external network access; encrypted at rest |
-| Egress review | Human or automated check before any file leaves the TRE |
+For academic research groups, CTSI-affiliated labs, and early-stage deployments. Researchers use personal API keys to query the data API from their own compute — local notebooks, HPC clusters, cloud GPU instances. No managed notebook infrastructure required. The platform enforces project-membership ACL and logs every access; the institution owns the data handling policy beyond the API.
 
-### What crosses the TRE boundary
+### TRE mode (post-MVP, regulated deployments)
 
-| Inbound | Outbound |
-|---|---|
-| HTTPS login (browser) | Reviewed, approved result files only |
-| Researcher's code (notebook cells, scripts) | Aggregated outputs — post egress review |
-| Software packages (via controlled mirror) | Audit log exports (super admin only) |
+For hospital systems and large research networks with identifiable PHI. All compute runs inside a managed TRE boundary — JupyterHub spawns per-user notebook servers, raw data never leaves the environment, and results pass through an egress review before download. Researchers authenticate via JWT from an institutional IdP with MFA enforced.
 
-Raw query result sets and subject-level records **never** leave the TRE.
-
-### Deployment targets
-
-The TRE stack is deployment-agnostic. The same architecture runs on institutional on-premise servers, university HPC clusters (with LDAP), or HIPAA-compliant cloud (AWS with BAA, Azure with BAA). The deployment target is an infrastructure concern — the TRE boundary and access controls are identical.
+| | Flexible | TRE |
+|---|---|---|
+| Authentication | Personal API key | JWT from IdP + MFA |
+| Data leaves platform | Yes — to caller's machine | Never |
+| Notebook environment | Researcher's own | Managed JupyterHub inside TRE |
+| GPU modeling | Anywhere | Inside TRE or approved export |
+| Operational complexity | Low | High |
+| UK Biobank / All of Us alignment | No | Yes |
 
 ---
 
 ## Authentication model
 
-Two credential tiers for two distinct principal types.
+Authentication is mode-dependent. See [ADR-007](adr/ADR-007-authentication-model.md).
 
-### Tier 1 — Human users (interactive)
+### Flexible mode — personal API key
 
-Authentication is fully delegated to an external IdP via OIDC or SAML. W4H never handles passwords.
-
-```
-Researcher → IdP login page → username + password + MFA
-→ short-lived JWT (1–8h) → injected into JupyterHub session automatically
-→ every W4H API call carries the JWT — researcher manages nothing
-→ 15-minute idle timeout → re-authentication required
-```
-
-Researcher's notebook experience:
+Researchers generate a personal API key from the W4H UI after login. The key is tied to their account, scoped to their project memberships, read-only, and immediately revoked when the user is discontinued.
 
 ```python
 import w4h
-# No login call — JWT injected by JupyterHub automatically
-datasets = w4h.list_datasets()
-df = w4h.query("SELECT subject_id, ts, bpm FROM ds42_heart_rate")
+session = w4h.connect(api_key=os.environ["W4H_API_KEY"])
+df = session.query("SELECT subject_id, ts, bpm FROM ds42_heart_rate")
+# Works from local laptop, HPC, or cloud GPU instance
 ```
 
-IdP options: institutional LDAP/Active Directory (via OIDC bridge), university SAML (Shibboleth), or managed (Okta, Azure AD, Keycloak). The W4H application is IdP-agnostic — it only consumes JWTs.
+### TRE mode — JWT from IdP
 
-### Tier 2 — Personal API keys (programmatic data access)
+JWT issued after MFA is injected into JupyterHub automatically — researchers manage no credential. 15-minute idle timeout enforced.
 
-Researchers who need to query the data API from local scripts or notebooks outside the TRE use a personal API key generated from the W4H UI within an MFA-authenticated session. Controls:
+### Service accounts — both modes
 
-- Data API only — cannot access admin, user management, or sharing endpoints
-- Read-only — no write, ingest, or DDL operations
-- Project-scoped — access limited to the researcher's current project memberships
-- Configurable TTL — expiry set at creation; expired keys must be reissued
-- Immediately revoked when the user is discontinued — all keys invalidated alongside the JWT
-- Full audit log — every request logged with user identity, dataset, timestamp, row count
-
-### Tier 3 — Service accounts (unattended automated workloads)
-
-Spark jobs and pipelines use long-lived API keys with compensating controls in place of MFA:
-
-- Read-only — cannot write, share, admin, or trigger DDL
-- Dataset-scoped — access to explicitly named datasets only
-- IP-restricted — only requests from the Spark cluster's IP range accepted
-- Mandatory expiry — 90 days maximum; automated rotation enforced
-- Human owner — named accountable person; all keys disabled when owner is discontinued
+Spark jobs and unattended pipelines use service account keys in both modes: IP-restricted, dataset-scoped, 90-day maximum expiry, named human owner.
 
 ### Credential summary
 
-| Principal | Credential | MFA | Expiry | Scope |
-|---|---|---|---|---|
-| Researcher (interactive) | JWT from IdP | Yes — required | 1–8h, 15min idle | Assigned projects |
-| Super admin | JWT from IdP | Yes — always | 1h max | Platform-wide |
-| Researcher (programmatic) | Personal API key | No — compensating controls | Configurable TTL | Assigned project datasets, read-only |
-| Spark / pipeline | Service account key | No — compensating controls | 90 days max | Named datasets only, IP-restricted |
-
-See [ADR-011](adr/ADR-011-authentication-model-v2.md) for full rationale and the boundary between personal API keys and service account keys.
+| Mode | Principal | Credential | MFA | Expiry | Scope |
+|---|---|---|---|---|---|
+| Flexible | Researcher | Personal API key | No — ACL + audit log | Configurable TTL | Assigned project datasets, read-only |
+| TRE | Any user | JWT from IdP | Yes — enforced | 1–8h, 15min idle | Role-scoped |
+| Both | Automated workload | Service account key | No — IP-restricted | 90 days max | Named datasets only |
 
 ---
 

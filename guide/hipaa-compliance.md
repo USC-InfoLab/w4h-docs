@@ -2,6 +2,8 @@
 title: HIPAA Compliance
 description: How W4H supports HIPAA Security Rule requirements through audit
   logging, access controls, and data handling practices.
+updated_by: nocera@usc.edu
+updated_at: 2026-05-31T22:16:30.000Z
 ---
 
 ## Overview

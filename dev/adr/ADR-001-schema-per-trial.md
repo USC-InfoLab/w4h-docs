@@ -8,11 +8,11 @@
 
 ## Context
 
-W4H is a clinical trials platform expecting hundreds of concurrent trials. Trials handle sensitive health data and are subject to regulatory audit requirements. We need a multi-tenancy model that:
+W4H is a clinical trials platform expecting tenth of concurrent trials. Trials handle sensitive health data and are subject to regulatory audit requirements. We need a multi-tenancy model that:
 
 - Prevents any accidental data leakage between trials
 - Supports per-trial audit, backup, and archival
-- Scales to hundreds of trials without prohibitive operational cost
+- Scales to tenth of trials without prohibitive operational cost
 - Works with standard PostgreSQL access control primitives
 
 Three common PostgreSQL multi-tenancy models were considered:

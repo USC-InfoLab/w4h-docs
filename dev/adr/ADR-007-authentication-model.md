@@ -1,9 +1,9 @@
-# ADR-007 — Authentication model: three-credential model
+# ADR-007 — Authentication model
 
 **Status:** Accepted  
 **Date:** 2026-07-04  
-**Revised:** 2026-07-04  
-**Relates to:** ADR-006 (TRE model), ADR-004 (ACL roles), ADR-010 (soft-delete)  
+**Revised:** 2026-07-05  
+**Relates to:** ADR-006 (deployment modes), ADR-004 (ACL roles), ADR-010 (soft-delete)  
 **References:**
 - W4H MVP Requirements §4 (User Management, U-06, U-10, U-11)
 - W4H MVP Requirements §6.3 (API Key Data Access, D-16–D-21)
@@ -12,75 +12,37 @@
 
 ## Context
 
-W4H has three distinct access patterns that need authentication:
+W4H operates in two deployment modes (ADR-006). Each mode has different authentication requirements:
 
-1. **Interactive sessions** — researchers and admins using the web app or TRE JupyterHub
-2. **Programmatic data access** — researchers querying the data API from local scripts or notebooks outside the TRE
-3. **Unattended automated workloads** — Spark jobs, ETL pipelines, scheduled modeling with no human present
+- **Flexible mode** — researchers work locally or on external compute. No interactive MFA session is practical for scripted access. Needs a stable embeddable credential.
+- **TRE mode** — all access is via a managed notebook session inside the TRE. MFA is enforced at login. The session credential is injected automatically.
 
-A single credential type cannot satisfy all three. Interactive sessions need MFA and session timeout. Programmatic access needs a stable embeddable credential without interactive MFA. Unattended workloads need machine identities with IP restriction and mandatory rotation.
-
-HIPAA requires:
-- Unique user identification — no shared credentials
-- Automatic session termination after inactivity
-- MFA for remote access to PHI
-- Audit log tied to an authenticated identity for every data access event
-- Immediate access revocation when a user is discontinued (U-10)
+Both modes must satisfy HIPAA's core identity requirements: unique user identification, immediate revocation on discontinuation, and a complete audit trail tied to a named individual.
 
 ## Decision
 
-W4H uses a **three-credential model**:
-
-| Credential | Principal | Use case | MFA | Expiry |
-|---|---|---|---|---|
-| JWT (from IdP) | Human user | Web app, TRE notebook session | Yes — required | 1–8h, 15min idle |
-| Personal API key | Human researcher | Programmatic data API (scripts, local notebooks) | No — compensating controls | Configurable TTL; revoked on discontinuation |
-| Service account key | Automated workload | Spark jobs, ETL pipelines, scheduled modeling | No — compensating controls | 90 days max; IP-restricted |
+Authentication is mode-dependent. In both modes, every data access event is logged with the authenticated user identity.
 
 ---
 
-### Credential 1 — JWT (interactive sessions)
+### Flexible mode — personal API key
 
-Authentication is fully delegated to an external IdP via OIDC or SAML. W4H never handles passwords.
+The primary credential for Flexible mode deployments.
 
-```
-Researcher → IdP login page → username + password + MFA
-→ short-lived JWT (1–8h) → injected into JupyterHub session automatically
-→ every W4H API call carries the JWT — researcher manages nothing
-→ 15-minute idle timeout → re-authentication required
-```
+A researcher generates a personal API key from the W4H UI after logging in (username + password). The key is tied to their user account, scoped to their project memberships, and used for all programmatic data access — local notebooks, HPC scripts, cloud GPU jobs.
 
-Researcher's TRE notebook experience:
-
-```python
-import w4h
-# No login call — JWT injected by JupyterHub automatically
-datasets = w4h.list_datasets()
-df = w4h.query("SELECT subject_id, ts, bpm FROM ds42_heart_rate")
-```
-
-IdP options: institutional LDAP/Active Directory (via OIDC bridge), university SAML (Shibboleth), or managed (Okta, Azure AD, Keycloak). W4H is IdP-agnostic — it only consumes JWTs.
-
-JWT validation checks: signature (IdP public key), expiry, and a server-side invalidation list. Discontinuing a user (U-10) immediately adds all their active JWTs to the invalidation list.
-
----
-
-### Credential 2 — Personal API key (programmatic data access)
-
-A researcher generates a personal API key from the W4H UI within an MFA-authenticated session. It provides access to the **data API only** — read-only queries against datasets in their project memberships.
-
-**Compensating controls for absence of MFA:**
+**Controls:**
 
 | Control | Detail |
 |---|---|
-| Data API only | Cannot access admin, user management, or sharing endpoints |
-| Read-only | No write, ingest, or DDL operations |
-| Project-scoped | Access limited to the researcher's current project memberships (D-17) |
-| Configurable TTL | Expiry set at creation; expired keys rejected and must be reissued (D-20) |
-| Multiple keys permitted | One per use case ("laptop", "analysis script") |
-| Revoked on discontinuation | All personal API keys invalidated immediately when user is discontinued (D-21, U-10) |
-| Resumed users must reissue | Old keys remain revoked after resume; user generates new keys (U-11) |
-| Full audit log | Every request logged: user, key ID, dataset, timestamp, row count, IP (D-18) |
+| Per-user, non-shared | Each key is issued to a named individual; no team or shared keys |
+| Project-scoped | Access limited to datasets in the researcher's assigned projects (D-17) |
+| Read-only | No write, ingest, admin, or DDL operations via API key |
+| Configurable TTL | Expiry set at creation; expired keys rejected; user reissues (D-20) |
+| Multiple keys permitted | One per use case — "laptop", "HPC script", "cloud job" |
+| Immediate revocation on discontinuation | All keys invalidated the moment a user is discontinued (D-21, U-10) |
+| Resumed users must reissue | Old keys remain revoked after resume; user generates new ones (U-11) |
+| Full audit log | Every request logged: user ID, key ID, dataset, timestamp, row count, IP (D-18) |
 
 **`w4h_app.api_keys` table:**
 
@@ -89,93 +51,113 @@ CREATE TABLE w4h_app.api_keys (
   id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id       uuid NOT NULL REFERENCES w4h_app.users(id),
   key_hash      text NOT NULL,         -- SHA-256; plaintext never stored
-  label         text NOT NULL,         -- user-provided: "laptop", "analysis script"
-  scoped_project_ids uuid[],           -- NULL = all current project memberships
+  label         text NOT NULL,         -- user-provided: "laptop", "HPC script"
   expires_at    timestamptz NOT NULL,  -- mandatory; set at creation
   last_used_at  timestamptz,
   revoked       boolean DEFAULT false,
   revoked_at    timestamptz,
-  revoked_by    uuid,                  -- user_id of revoker, or system for auto-revocation
+  revoked_by    uuid,                  -- user_id or system for auto-revocation
   created_at    timestamptz DEFAULT now()
 );
 ```
 
-Key issuance: the researcher navigates to profile → API keys → "Generate new key", sets a label and TTL. The plaintext key is shown once in the UI (never again or stored). Subsequent API calls use `Authorization: Bearer w4h_sk_...`.
+Key issuance: researcher logs in to the web UI, navigates to profile → API keys → "Generate new key", sets a label and TTL. Plaintext key shown once only — researcher copies it. Platform stores SHA-256 hash only.
 
-**Researcher experience in a local notebook:**
+**Researcher experience:**
 
 ```python
 import w4h
+
+# Key in environment variable — never hardcoded
 session = w4h.connect(api_key=os.environ["W4H_API_KEY"])
-df = session.query("SELECT subject_id, ts, bpm FROM ds42_heart_rate LIMIT 1000")
+
+datasets = session.list_datasets()
+df = session.query("SELECT subject_id, ts, bpm FROM ds42_heart_rate")
+
+# Works identically from local laptop, HPC cluster, or cloud GPU instance
 ```
+
+**Admin visibility (D-19):** Group Admin and Super-Admin view key analytics at `/admin/api-usage` — label, user, created/expiry/last-used, revocation status, per-request usage log. Plaintext key never visible — label and hash prefix only (e.g. `w4h_sk_a3f2...`).
 
 ---
 
-### Credential 3 — Service account key (unattended workloads)
+### TRE mode — JWT from IdP
 
-For Spark jobs and ETL pipelines with no human present. Distinct from personal API keys:
+The credential for TRE mode deployments (post-MVP).
 
-| | Personal API key | Service account key |
-|---|---|---|
-| Issued to | Named human user | Named machine identity |
-| Scope | User's project memberships | Explicitly named datasets |
-| IP restriction | No | Yes — Spark cluster IPs only |
-| Expiry | Configurable TTL | 90 days maximum |
-| Revoked on user discontinuation | Yes — automatically | Only if human owner is discontinued |
+Authentication is delegated entirely to an institutional IdP via OIDC or SAML. W4H never handles passwords. The JWT is injected into the researcher's JupyterHub session automatically — no credential management required.
 
-**`w4h_app.service_accounts` table:**
+```
+Researcher → IdP login → username + password + MFA
+→ short-lived JWT (1–8h) → injected into JupyterHub session
+→ every W4H API call carries JWT automatically
+→ 15-minute idle timeout → re-authentication required
+```
+
+JWT validation checks: signature, expiry, and a server-side invalidation list. Discontinuing a user immediately adds their active JWTs to the invalidation list.
+
+IdP options: institutional LDAP/AD (via OIDC bridge), university SAML (Shibboleth), managed (Okta, Azure AD, Keycloak). W4H is IdP-agnostic.
+
+---
+
+### Service accounts — both modes
+
+Unattended automated workloads (Spark jobs, ETL pipelines) use service account keys in both modes. These are machine identities, not user credentials.
+
+| Control | Detail |
+|---|---|
+| IP-restricted | Only requests from the registered IP range accepted |
+| Dataset-scoped | Explicitly named datasets only — not project-wide |
+| Read-only | No write, admin, or DDL operations |
+| Mandatory expiry | 90 days maximum; rotation enforced |
+| Human owner | Named accountable user; keys disabled when owner is discontinued |
 
 ```sql
 CREATE TABLE w4h_app.service_accounts (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name            text NOT NULL,           -- e.g. "spark-trial-abc-hrv-model"
+  name            text NOT NULL,
   owner_user_id   uuid NOT NULL REFERENCES w4h_app.users(id),
   trial_id        uuid NOT NULL,
   dataset_ids     uuid[] NOT NULL,
   key_hash        text NOT NULL,
   ip_allowlist    inet[] NOT NULL,
-  expires_at      timestamptz NOT NULL,    -- max 90 days
+  expires_at      timestamptz NOT NULL,
   disabled        boolean DEFAULT false,
   created_at      timestamptz DEFAULT now(),
   last_used_at    timestamptz
 );
 ```
 
-Key rotation: keys within 7 days of expiry return `KEY_ROTATION_REQUIRED`; keys past expiry are rejected entirely.
-
 ---
 
-### Admin visibility (D-19)
+### Credential summary
 
-Group Admin and Super-Admin can view API key analytics at `/admin/api-usage`:
-- Key label, user, created/expiry/last-used dates, revocation status
-- Per-key usage logs: dataset, timestamp, row count, IP
-- Plaintext key is never visible — only the label and hash prefix (e.g. `w4h_sk_a3f2...`)
+| Mode | Principal | Credential | MFA | Expiry | Scope |
+|---|---|---|---|---|---|
+| Flexible | Researcher | Personal API key | No — ACL + audit compensate | Configurable TTL | Assigned project datasets, read-only |
+| Flexible | Super/Group Admin | Username + password (web UI) | Optional per institution | Web session | Admin functions only |
+| TRE | Any user | JWT from IdP | Yes — enforced | 1–8h, 15min idle | Role-scoped |
+| Both | Automated workload | Service account key | No — IP restriction compensates | 90 days max | Named datasets, IP-restricted |
+
+---
 
 ## Consequences
 
 **Positive:**
-- Satisfies D-16–D-21 fully
-- Personal API keys are generated within an MFA-authenticated session — identity is bound at creation time
-- Revocation on discontinuation is enforced at the database level — a single UPDATE covers all keys for a discontinued user
-- Researchers have a stable credential for scripted work without interactive re-authentication
-- Three clearly distinct credential types with no ambiguity about which applies to which use case
+- Flexible mode is immediately usable by researchers with no infrastructure overhead — local notebooks, HPC, cloud GPU all work identically
+- Personal API keys tied to named users satisfy HIPAA unique user identification; the audit log satisfies access logging requirements
+- Immediate revocation on discontinuation is enforced at the database level — a single UPDATE covers all keys
+- TRE mode provides the strong containment model for regulated deployments when needed
+- Service account model is identical across both modes — no special handling for Spark/ETL
 
 **Negative / risks:**
-- API key leakage — a key committed to a git repo exposes data access until revoked. Mitigations: short TTLs, environment variable guidance in docs, future secret-scanning in CI/CD
-- No IP restriction on personal API keys — a stolen key can be used from anywhere until revoked. Accepted: researchers work from varied locations; short TTLs and immediate revocation on discontinuation are the primary mitigations
-- Three credential types require clear UX in `/admin/api-usage` and `/admin/users/:id` to avoid confusion
-
-## Alternatives not chosen
-
-- **JWT only for all human access:** Rejected — interactive MFA login is not practical for scripted/programmatic access; researchers need a stable embeddable credential for notebook scripts.
-- **Single API key for all access (human and machine):** Rejected — does not satisfy HIPAA unique user identification; a shared or role-level key cannot be tied to an individual's audit trail.
-- **OAuth client credentials for human programmatic access:** Considered as a way to unify tiers 2 and 3. Rejected — client credentials flows have no standard way to enforce project-scoped access or tie revocation to a user lifecycle event (discontinuation).
+- Flexible mode data leaves the platform — the institution owns the compliance posture for data on researcher machines. Must be documented clearly in deployment guides
+- API key leakage risk — key committed to a git repo exposes access until revoked. Mitigations: short TTLs, environment variable guidance, future secret-scanning integration
+- No MFA in Flexible mode web UI login for MVP — institutions with strict MFA requirements should deploy TRE mode or add an IdP in front of the web UI
 
 ## Changelog
 
 | Date | Change |
 |---|---|
-| 2026-07-04 | Initial version — two-credential model (JWT + service account key only) |
-| 2026-07-04 | Revised to three-credential model — added personal API key tier after reconciling with requirements D-13, D-16–D-21 which specify personal API keys for researcher programmatic data access |
+| 2026-07-04 | Initial — two-credential model (JWT for humans, service account for automation) |
+| 2026-07-05 | Revised — aligned with two deployment modes (ADR-006). Flexible mode uses personal API keys; TRE mode uses JWT from IdP. Removed blanket rejection of API keys for human users. |

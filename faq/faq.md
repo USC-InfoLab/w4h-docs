@@ -1,6 +1,8 @@
 ---
 title: Frequently Asked Questions
 description: Common questions and answers
+updated_by: nocera@usc.edu
+updated_at: 2026-05-30T13:31:26.000Z
 ---
 
 # Frequently Asked Questions
