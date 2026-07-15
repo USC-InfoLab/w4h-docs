@@ -13,7 +13,7 @@ If you are new to the project, read in this order:
 
 1. [`requirements.md`](requirements.md) — what the system must do (MVP scope, roles, features, timeline)
 2. [`architecture.md`](architecture.md) — how it is built (database structure, TRE model, authentication, ACL)
-3. [`adr/README.md`](adr/README.md) — why each major technical decision was made
+3. [`adr/README.md`](adr/README.md) — list major technical decisions and their current status
 
 For setting up a local development environment, go straight to:
 - [`developer-setup.md`](developer-setup.md)
