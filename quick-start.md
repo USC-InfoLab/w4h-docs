@@ -90,9 +90,11 @@ Researchers only see datasets that are linked to projects they belong to.
 
 ## 4. Invite users (admin)
 
-1. Go to **Admin → Users** and click **Add User**.
-2. Set name, email, role (`admin`, `researcher`, or `clinician`), and assign projects.
-3. Share login credentials securely. If SMTP is configured, invitation emails are sent automatically.
+1. Configure **SMTP** and set **`APP_URL`** to your public app base URL (required for invitation links) — see [SMTP Configuration]({{APP_URL}}/docs/smpt-configuration).
+2. Go to **Admin → Users** and click **Invite User**.
+3. Enter email, optional name, role (`super_admin`, `team_admin`, or `project_user`), and team when required.
+4. Click **Send Invite**. The invitee receives a **time-limited link** to set their own password and activate the account. Passwords are never sent by email.
+5. Pending invites can be **resent** or **revoked** from the user edit screen.
 
 User accounts are never hard-deleted — they can be discontinued and resumed later ([ADR-010]({{APP_URL}}/docs/ADR-010-soft-delete-no-hard-deletion)).
 

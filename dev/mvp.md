@@ -2,12 +2,12 @@
 title: MVP
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-07-17T00:00:00.000Z
+updated_at: 2026-07-18T00:00:00.000Z
 sort_order: 3
 ---
 **Protocol Version:** 1
 
-**Date Updated:** July 17, 2026
+**Date Updated:** July 18, 2026
 
 **Title:** W4H Toolkit — Validating and Promoting the W4H Toolkit
 
@@ -17,8 +17,10 @@ sort_order: 3
 
 **Funding:** SC CTSI Pilot Funding Program
 
-**Document Status:** Draft v0.8
+**Document Status:** Draft v0.9
 
+> **Changelog (v0.8 → v0.9):** Invite flow aligned with U-14/U-15: time-limited activation link (no password in email); resend/revoke; `invited` user status; quick-start updated.
+>
 > **Changelog (v0.7 → v0.8):** Re-audited **Impl Status** against `w4h-api` / `w4h-app` (teams/projects/datasets catalog, platform docs, roles). Corrected overstated M1/M2 progress. Gaps remain: user discontinue/resume, dataset share CRUD, GeoMTS/ingestion, project-scoped docs, HIPAA audit viewer.
 >
 > **Changelog (v0.6 → v0.7):** MVP doc editor is a **Markdown editor with preview** (not rich-text WYSIWYG). Project page edit rights follow project membership (`owner`/`editor`) and may be refined via project ACL `resource_type=doc`. Corrected Doc-* implementation statuses to match existing platform docs work. Removed misplaced “project UI editor for admins” row that collided with Doc-08.
@@ -137,10 +139,10 @@ These membership roles are **not** a fourth platform tier. Platform role remains
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
-| U-13 | Super admin / Team admin can invite a new user by email via **Google SMTP**. | `✅ Stable` | `🔁 In review` |
-| U-14 | Invitation email contains a time-limited signed link for password set and account activation. | `✅ Stable` | `🚩 Todo` |
-| U-15 | Expired or unused invitations can be revoked or resent by the inviting admin. | `✅ Stable` | `🚩 Todo` |
-| U-16 | Invite flow is intentionally basic for MVP: single SMTP provider (Google), plain-text/simple HTML template, no custom branding. | `✅ Stable` | `🔁 In review` |
+| U-13 | Super admin / Team admin can invite a new user by email via **Google SMTP**. | `✅ Stable` | `✅ Done` |
+| U-14 | Invitation email contains a time-limited signed link for password set and account activation. | `✅ Stable` | `✅ Done` |
+| U-15 | Expired or unused invitations can be revoked or resent by the inviting admin. | `✅ Stable` | `✅ Done` |
+| U-16 | Invite flow is intentionally basic for MVP: single SMTP provider (Google), plain-text/simple HTML template, no custom branding. | `✅ Stable` | `✅ Done` |
 
 ---
 
@@ -386,7 +388,7 @@ Hierarchy and authoring match platform docs **within the project**: page types/g
 | `/admin/projects` | `✅ Stable` | `✅ Done` | Owning team column |
 | `/admin/projects/:id/edit` | `✅ Stable` | `✅ Done` | Catalog/metadata; project pages on workspace (§12.2) |
 | `/admin/users` | `✅ Stable` | `🔁 In review` | Team column + filter; no discontinue status yet |
-| `/admin/users/add` | `✅ Stable` | `🔁 In review` | Team selector + create; invite-link flow incomplete |
+| `/admin/users/add` | `✅ Stable` | `✅ Done` | Invite by email; activation link (no password in email); resend/revoke on edit |
 | `/admin/users/:id` | `✅ Stable` | `🚩 Todo` | Discontinue/resume, API key list, status history |
 | `/admin/api-usage` | `✅ Stable` | `🚩 Todo` | API key analytics and usage logs |
 | `/admin/audit-log` | `✅ Stable` | `🚩 Todo` | Audit log viewer — Super admin: all teams; Team admin: own team only |
