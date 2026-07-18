@@ -19,7 +19,7 @@ sort_order: 3
 
 **Document Status:** Draft v0.9
 
-> **Changelog (v0.8 → v0.9):** Invite flow aligned with U-14/U-15: time-limited activation link (no password in email); resend/revoke; `invited` user status; quick-start updated.
+> **Changelog (v0.8 → v0.9):** Invite flow aligned with U-14/U-15: time-limited activation link (no password in email); resend/revoke; `invited` user status; quick-start updated. Hard user delete replaced by discontinue/resume (ADR-010, U-01/U-05/U-08–U-12).
 >
 > **Changelog (v0.7 → v0.8):** Re-audited **Impl Status** against `w4h-api` / `w4h-app` (teams/projects/datasets catalog, platform docs, roles). Corrected overstated M1/M2 progress. Gaps remain: user discontinue/resume, dataset share CRUD, GeoMTS/ingestion, project-scoped docs, HIPAA audit viewer.
 >
@@ -74,7 +74,7 @@ Role and sharing semantics follow [ADR-004](ADR-004-acl-roles.md), [ADR-002](ADR
 | R-04 | Every project belongs to exactly one owning team. | `✅ Stable` | `🔁 In review` |
 | R-05 | Sharing a dataset never shares a project (ADR-012). | `✅ Stable` | `🚧 In progress` |
 | R-06 | All users, projects, and datasets must belong to a team. | `✅ Stable` | `🚧 In progress` |
-| R-07 | Users are never hard-deleted; lifecycle uses `active` / `discontinued`. | `✅ Stable` | `🚩 Todo` |
+| R-07 | Users are never hard-deleted; lifecycle uses `active` / `discontinued`. | `✅ Stable` | `✅ Done` |
 
 These membership roles are **not** a fourth platform tier. Platform role remains **Project user**. Project-level `admin` is retired (legacy schema may still store it — map to `owner` on read).
 
@@ -122,18 +122,18 @@ These membership roles are **not** a fourth platform tier. Platform role remains
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
-| U-01 | Create, edit, discontinue, and resume users. Users are never hard-deleted. | `✅ Stable` | `🚧 In progress` |
+| U-01 | Create, edit, discontinue, and resume users. Users are never hard-deleted. | `✅ Stable` | `✅ Done` |
 | U-02 | Assign platform roles: `super_admin`, `team_admin`, `project_user` (maps to ADR-004; migrate off legacy `admin` / `researcher` / `clinician`). | `✅ Stable` | `🔁 In review` |
 | U-03 | Users have a `team_id` (multi-valued) linking them to their teams. | `✅ Stable` | `✅ Done` |
 | U-04 | Team admin can invite/add Project users to their team. | `✅ Stable` | `✅ Done` |
-| U-05 | Team admin can discontinue and resume Project users in their team. | `✅ Stable` | `🚩 Todo` |
+| U-05 | Team admin can discontinue and resume Project users in their team. | `✅ Stable` | `✅ Done` |
 | U-06 | `team_id` (primary) embedded in JWT at login for request scoping. | `✅ Stable` | `✅ Done` |
 | U-07 | User profile displays their team(s) and project memberships. | `✅ Stable` | `🚩 Todo` |
-| U-08 | Users have a `status` field: `active` or `discontinued`. | `✅ Stable` | `🚩 Todo` |
-| U-09 | Discontinuing a user preserves their full historical record (audit trail, prior contributions, team/project links) — only their ability to authenticate and access data is suspended. | `✅ Stable` | `🚩 Todo` |
-| U-10 | Discontinuing a user immediately invalidates all of that user's active web-app sessions/JWTs and all of their personal API keys (see D-20). | `✅ Stable` | `🚩 Todo` |
-| U-11 | Resuming a discontinued user restores web-app login ability; the user must issue new API key(s) post-resume (old keys remain revoked). | `✅ Stable` | `🚩 Todo` |
-| U-12 | `/admin/users` list and `/admin/users/:id` detail show current status (`active` / `discontinued`) with a toggle action, scoped per role. | `✅ Stable` | `🚩 Todo` |
+| U-08 | Users have a `status` field: `active` or `discontinued`. | `✅ Stable` | `✅ Done` |
+| U-09 | Discontinuing a user preserves their full historical record (audit trail, prior contributions, team/project links) — only their ability to authenticate and access data is suspended. | `✅ Stable` | `✅ Done` |
+| U-10 | Discontinuing a user immediately invalidates all of that user's active web-app sessions/JWTs and all of their personal API keys (see D-20). | `✅ Stable` | `✅ Done` |
+| U-11 | Resuming a discontinued user restores web-app login ability; the user must issue new API key(s) post-resume (old keys remain revoked). | `✅ Stable` | `✅ Done` |
+| U-12 | `/admin/users` list and `/admin/users/:id` detail show current status (`active` / `discontinued`) with a toggle action, scoped per role. | `✅ Stable` | `✅ Done` |
 
 ### 4.2 Email Invitations
 
@@ -201,7 +201,7 @@ All datasets in the W4H Toolkit are represented using the **GeoMTS (Geospatial M
 | D-18 | API key analytics: log every API access event (user, dataset, query type, timestamp, row count). | `✅ Stable` | `🚩 Todo` |
 | D-19 | API usage dashboard visible to Team admin and Super admin. | `✅ Stable` | `🚩 Todo` |
 | D-20 | API keys have a configurable timeout/expiration (TTL). | `✅ Stable` | `🚩 Todo` |
-| D-21 | When a user is `discontinued`, all personal API keys are immediately invalidated. | `✅ Stable` | `🚩 Todo` |
+| D-21 | When a user is `discontinued`, all personal API keys are immediately invalidated. | `✅ Stable` | `✅ Done` |
 
 ---
 
@@ -387,9 +387,9 @@ Hierarchy and authoring match platform docs **within the project**: page types/g
 | `/admin/datasets/:id/ingest` | `✅ Stable` | `🚩 Todo` | Ingestion UI (CSV, JSON, REDCap) |
 | `/admin/projects` | `✅ Stable` | `✅ Done` | Owning team column |
 | `/admin/projects/:id/edit` | `✅ Stable` | `✅ Done` | Catalog/metadata; project pages on workspace (§12.2) |
-| `/admin/users` | `✅ Stable` | `🔁 In review` | Team column + filter; no discontinue status yet |
+| `/admin/users` | `✅ Stable` | `✅ Done` | Team column + filter; status badge for invited/discontinued |
 | `/admin/users/add` | `✅ Stable` | `✅ Done` | Invite by email; activation link (no password in email); resend/revoke on edit |
-| `/admin/users/:id` | `✅ Stable` | `🚩 Todo` | Discontinue/resume, API key list, status history |
+| `/admin/users/:id` | `✅ Stable` | `🔁 In review` | Discontinue/resume done; API key list / status history still thin |
 | `/admin/api-usage` | `✅ Stable` | `🚩 Todo` | API key analytics and usage logs |
 | `/admin/audit-log` | `✅ Stable` | `🚩 Todo` | Audit log viewer — Super admin: all teams; Team admin: own team only |
 
