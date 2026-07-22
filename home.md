@@ -72,6 +72,7 @@ updated_at: 2026-06-19T20:53:36.000Z
         <p class="mb-2">Guides walk you through every aspect of the platform in full detail. Good starting points:</p>
         <ul class="mb-0">
           <li><a href="{{APP_URL}}/docs/quick-start">Quick Start</a> — first-time setup and core workflows</li>
+          <li><a href="{{APP_URL}}/docs/setting-up-projects">Setting Up Projects</a> — multi-dataset projects, shares, dual-hat linking</li>
           <li><a href="{{APP_URL}}/docs/hipaa-compliance">HIPAA Compliance</a> — audit logging, authentication, data handling</li>
           <li><a href="{{APP_URL}}/docs/smpt-configuration">SMTP Configuration</a> — email for invitations and password resets</li>
         </ul>

@@ -2,14 +2,15 @@
 title: "ADR-011 — HIPAA audit logging model"
 description: Append-only audit log covering API/notebook PHI access, super-admin activity, and ACL-boundary events
 updated_by: nocera@usc.edu
-updated_at: 2026-07-15T00:00:00.000Z
+updated_at: 2026-07-20T00:00:00.000Z
 ---
 **Status:** Draft  
 **Date:** 2026-07-15  
 **Deciders:** W4H architecture team  
 **Relates to:** ADR-004 (ACL roles), ADR-006 (deployment modes), ADR-007 (authentication), ADR-010 (soft-delete / immutable retention)  
 **References:**
-- W4H MVP Requirements §8 (HIPAA Compliance, H-01–H-04, H-09, H-11)
+- W4H MVP Requirements §8 (HIPAA Compliance, H-01–H-04, H-09–H-12)
+- W4H MVP Requirements §15 (Admin & Operator UI — home surfaces)
 - W4H MVP Requirements §4 (User Management, U-09)
 - HIPAA Security Rule 45 CFR §164.312(b) — Audit controls
 - HIPAA Security Rule 45 CFR §164.316(b)(2)(i) — 6-year retention
@@ -81,11 +82,26 @@ IRB and compliance reports (H-09) filter by dataset/project/user across both met
 
 ### Who may view and export (H-11)
 
-| Role | Audit log access |
-|---|---|
-| Super-admin | All teams / trials; export allowed |
-| Team / group admin | Own team / trial entries only |
-| Researcher / viewer / API-key-only caller | No raw audit browse |
+| Role | Raw audit log browse / export | IRB access report (H-09) |
+|---|---|---|
+| Super admin | All teams / trials; export allowed | Platform-wide reports |
+| Team admin | Own team entries only | Team datasets / projects (primary surface: **Team admin home**, not Platform Admin shell) |
+| Project `owner` | No raw browse | **Own project only** from project workspace |
+| Project `editor` / `viewer` / API-key-only caller | No | No |
+
+### Operator UI surfaces (MVP)
+
+Homes are **snapshots and entry points**, not full log tables. Dedicated pages hold filterable ledgers.
+
+| Surface | Role | Content |
+|---|---|---|
+| `/admin/home` (Platform Admin) | Super admin only | KPIs (teams, users, projects, datasets, shares); platform health (SMTP, DB, audit-write OK); thin usage snapshot (API calls, active keys); attention strip (failed logins, break-glass, **invites pending**, **datasets without team**, **teams without Team admin**, **last successful backup / backup reminder**); link to **HIPAA compliance checklist** doc; deep links to `/admin/audit-log` and `/admin/usage` |
+| `/admin/audit-log` | Super admin (all); Team admin (own team, non–Platform-Admin route or scoped view) | Filterable raw ledger; view/export audited (`audit.view` / `audit.export`) |
+| `/admin/usage` | Super admin (platform); Team admin (own team) | Platform usage & SC-CTSI study metrics (D-19*) — adoption, latency/reliability, workflow/knowledge-transfer when available; **not** a substitute for `audit_log`. Menu label **Usage**; legacy `/admin/api-usage` redirects here. |
+| App home / team dashboard | Team admin | Team summary + **IRB access report** generator (H-09a) |
+| Project workspace | Project `owner` | Project-scoped IRB access report (H-09b) |
+
+**Do not** put anonymous product telemetry or clickstream on these surfaces. Identified local `usage_events` used for SC-CTSI study reporting on `/admin/usage` are allowed and remain separate from HIPAA audit (see operator guide). Opt-in external telemetry stays Settings-only.
 
 ### Retention and archival
 
@@ -121,3 +137,16 @@ IRB and compliance reports (H-09) filter by dataset/project/user across both met
 - **Rely on reverse-proxy / SIEM access logs alone:** Rejected as primary control — lacks named user, key id, dataset scope, and row counts bound to W4H ACL.
 - **Fail-open on audit write errors:** Rejected for PHI and privileged paths — a silent gap in the ledger is worse than a temporary 5xx.
 - **Per-request full query text or result samples in `details`:** Rejected — recreates PHI in the audit store; prefer hashes/fingerprints and counts.
+- **Full audit table on Super admin home:** Rejected — home is ops/KPI snapshot + deep links; filterable ledger stays on `/admin/audit-log` (MVP §15.1).
+- **Raw audit browse for project owners:** Rejected — owners get project-scoped IRB reports (H-09b) only; H-11 reserves raw browse for Super admin and Team admin.
+
+## Changelog
+
+| Date | Change |
+|---|---|
+| 2026-07-15 | Initial draft — event set, fail-closed PHI writes, H-11 view/export roles, split from usage telemetry. |
+| 2026-07-20 | Documented operator UI surfaces: Super admin `/admin/home` KPIs + audit/usage deep links; Team admin home IRB reports; project-owner scoped reports without raw browse. |
+| 2026-07-20 | Super admin home attention strip: invites pending, datasets without team, teams without Team admin, backup reminder, HIPAA checklist link (H-12a). |
+| 2026-07-20 | Implementation started: `GET /config/admin-home` snapshot + Platform Admin home UI; stub audit/usage pages (still 🚧 for full ledger/viewer). |
+| 2026-07-20 | Super admin audit log viewer: `GET /config/audit-log` with filters, pagination, CSV export; `audit.view` / `audit.export` self-logging; shared `lib/utils/audit.js`. |
+| 2026-07-22 | Usage surface renamed to `/admin/usage` (SC-CTSI study metrics, MVP D-19*); clarified identified local usage vs anonymous telemetry vs HIPAA audit. |

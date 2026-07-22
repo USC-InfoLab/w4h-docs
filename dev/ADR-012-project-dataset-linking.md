@@ -102,9 +102,9 @@ Not visible to: Team B  (share alone does not grant project membership)
 
 | Surface | Behavior |
 |---|---|
-| `/admin/datasets` (team scoped) | Own datasets + inbound shared (“Shared by …”); **Share** on owned rows |
+| `/admin/datasets` (team scoped) | Filters **All** / **Mine** / **Others** / **Shared**. Mine = owned; Shared = inbound shares (linkable); Others = peer **Discoverable** metadata only. Share from dataset edit. |
 | `/admin/datasets/shares` | Active inbound/outbound agreements; revoke |
-| Project edit / workspace | Link picker = linkable set (owned ∪ shared-to-this-team [∪ project-specific shares]); never show other teams’ private datasets |
+| Project edit / workspace | Link picker = linkable set (owned ∪ shared-to-this-team [∪ project-specific shares]); never show discoverable-only peer datasets |
 | Project list | Owning-team projects only (+ Super admin global) |
 
 ## Consequences
@@ -123,7 +123,7 @@ Not visible to: Team B  (share alone does not grant project membership)
 ## Alternatives not chosen
 
 - **Shared / dual-owned projects in MVP:** Rejected — blurs tenancy and audit scope; deferred as cross-team project membership (§16).
-- **Browsing another team’s full dataset catalog to “pick and use”:** Rejected — violates least privilege; only explicit shares appear.
+- **Browsing another team’s full dataset catalog to “pick and use”:** Rejected — violates least privilege. **Discoverable** (MVP D-23) is the middle ground: opt-in metadata listing only; use still requires an explicit share.
 - **Auto-link shared datasets into every recipient project:** Rejected — Team admin / project managers choose which projects consume a share (S-02 project-specific vs team-wide).
 - **Copying rows into the recipient team schema:** Rejected — see ADR-002 (views / grants).
 
@@ -131,5 +131,6 @@ Not visible to: Team B  (share alone does not grant project membership)
 
 | Date | Change |
 |---|---|
+| 2026-07-21 | Discoverable catalog listing (metadata only) vs share; Mine / Others / Shared filters. |
 | 2026-07-15 | Accepted — documents multi-dataset linking, push-share UX, and project visibility vs dataset share. |
 | 2026-07-15 | Project membership roles: owner / editor / viewer only. |

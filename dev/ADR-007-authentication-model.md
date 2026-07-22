@@ -2,15 +2,16 @@
 title: ADR-007 — Authentication model
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-07-05T01:23:50.000Z
+updated_at: 2026-07-20T00:00:00.000Z
 ---
 **Status:** Accepted  
 **Date:** 2026-07-04  
-**Revised:** 2026-07-05  
-**Relates to:** ADR-006 (deployment modes), ADR-004 (ACL roles), ADR-010 (soft-delete)  
+**Revised:** 2026-07-20  
+**Relates to:** ADR-006 (deployment modes), ADR-004 (ACL roles), ADR-010 (soft-delete), ADR-011 (audit / usage split)  
 **References:**
 - W4H MVP Requirements §4 (User Management, U-06, U-10, U-11)
 - W4H MVP Requirements §6.3 (API Key Data Access, D-16–D-21)
+- W4H MVP Requirements §15.1 (Super admin home usage KPIs)
 
 ---
 
@@ -81,7 +82,11 @@ df = session.query("SELECT subject_id, ts, bpm FROM ds42_heart_rate")
 # Works identically from local laptop, HPC cluster, or cloud GPU instance
 ```
 
-**Admin visibility (D-19):** Team admin and Super admin view key analytics at `/admin/api-usage` — label, user, created/expiry/last-used, revocation status, per-request usage log. Plaintext key never visible — label and hash prefix only (e.g. `w4h_sk_a3f2...`).
+**Admin visibility (D-19):** Super admin opens **Usage** at `/admin/usage` (menu label **Usage**; redirect from legacy `/admin/api-usage`) via `GET /config/usage` (rename from `api-usage`). The page is the CTSI **platform usage & study metrics** surface: key hygiene (prefix, user, created/last-used, active/revoked — plaintext never shown), adoption volume, system performance (latency percentiles, error rate from `usage_events`), and — as D-19b–d land — workflow outcomes, knowledge-transfer milestones, and usability aggregates. Per-request rows come from best-effort `usage_events` (`api.request` today; richer types later). Every API-key-authenticated request updates `api_key_last_used_at` and inserts a usage row. Team admin scoped dashboard is the same layout filtered by team membership. This page is **not** the HIPAA audit ledger (ADR-011).
+
+**Super admin home (D-19a / MVP §15.1):** `/admin/home` shows a **thin usage snapshot** (recent API calls, active keys) so operators can see the platform is being exercised, with a deep link to `/admin/usage`. Full study metrics stay on the Usage page — not on home. Operational validation only; not `audit_log`.
+
+**Team admin home:** Team-scoped usage summary may appear on the normal app home alongside IRB report entry points; Team admins do not use the Platform Admin shell.
 
 ---
 
@@ -167,3 +172,6 @@ CREATE TABLE w4h_app.service_accounts (
 | 2026-07-04 | Initial — two-credential model (JWT for humans, service account for automation) |
 | 2026-07-05 | Revised — aligned with two deployment modes (ADR-006). Flexible mode uses personal API keys; TRE mode uses JWT from IdP. Removed blanket rejection of API keys for human users. |
 | 2026-07-15 | Added optional email OTP login for Flexible mode web UI when SMTP is configured (`POST /users/send-code`, `POST /users/verify-code`). Short-lived hashed codes; password login remains primary. Not a substitute for institutional MFA in TRE mode. |
+| 2026-07-20 | Documented Super admin home usage KPIs (D-19a) and Team admin scoped usage/IRB entry points; clarified Platform Admin shell remains Super admin only. |
+| 2026-07-20 | Super admin API usage dashboard: `usage_events` logging on API-key requests, `api_key_last_used_at`, `GET /config/api-usage`, full `/admin/api-usage` UI. |
+| 2026-07-22 | Renamed operator surface to `/admin/usage` (menu **Usage**); framed as SC-CTSI study metrics (MVP D-19*); API `GET /config/usage` (legacy `api-usage` alias during transition). |

@@ -145,12 +145,28 @@ W4H includes two distinct tracking mechanisms that serve different purposes:
 | | Audit Log | Usage Events | Anonymous Telemetry |
 |---|---|---|---|
 | **Location** | Your PostgreSQL DB | Your PostgreSQL DB | External (W4H project) |
-| **Purpose** | HIPAA §164.312(b) compliance | Efficiency metrics, ROI reporting | Product improvement |
+| **Purpose** | HIPAA §164.312(b) compliance | CTSI study assessments (adoption, latency/workflow metrics, knowledge transfer); efficiency / ROI reporting | Product improvement |
 | **Contains user identity** | Yes | Yes (user_id) | No — fully anonymised |
 | **Can be disabled** | No — always active | Configurable | Yes — opt-in toggle in Settings |
-| **Who sees it** | Your organisation | Your organisation | W4H maintainers |
+| **Who sees it** | Your organisation | Your organisation (`/admin/usage`) | W4H maintainers |
+| **Operator UI** | `/admin/audit-log` | `/admin/usage` (menu **Usage**) | Settings only |
 
-The **"Enable anonymous usage data"** toggle in **Settings → Usage Tracking** controls only whether anonymised, non-identifiable product telemetry is sent to the W4H project. It has no effect on the audit log or local usage events table.
+The **"Enable anonymous usage data"** toggle in **Settings → Usage Tracking** controls only whether anonymised, non-identifiable product telemetry is sent to the W4H project. It has no effect on the audit log or the local usage events table used for study metrics.
+
+---
+
+## PHI-safe AI chat
+
+The optional in-app assistant ([ADR-014]({{APP_URL}}/docs/ADR-014-ai-assistant-claude)) is labeled **PHI-safe AI chat** when the egress filter is in its default **strict** mode.
+
+| Mode | Who sets it | Behavior |
+|------|-------------|----------|
+| **PHI-safe (strict)** — default | Team admin (team key) / Super admin (platform key) | Only metadata, Help/docs, and allowlisted context may be sent to Claude. Subject IDs, raw wearable rows, and query result cells are blocked. |
+| **Permissive** | Same, explicit opt-in | Still no bulk row injection; risky pastes require confirmation. Shows a warning that chat is **not** PHI-safe. |
+
+- Anthropic API keys are **team-scoped** (the team pays) or optional **platform** key for Super admin ops — never stored in the browser.
+- Chat transcripts are **not** the HIPAA audit log. Blocked sends appear in usage metrics; PHI-class tool use under permissive mode is audited.
+- The filter is defense-in-depth. Institutions remain responsible for BAAs and policy when using third-party LLMs.
 
 ---
 
@@ -183,6 +199,7 @@ Use this checklist before processing real PHI:
 - Database connection uses TLS (set `DB_SSL=true` in `.env`)
 - A Business Associate Agreement (BAA) is in place with any cloud infrastructure provider
 - A HIPAA Risk Analysis has been completed for your deployment
+- If AI chat is enabled: team/platform Claude keys are configured intentionally; **PHI-safe (strict)** remains the default unless institutional policy allows permissive mode (ADR-014)
 - Break-glass password reset procedure is documented and access is restricted to authorized system administrators only
 - SSH access to the server is restricted to authorized administrators only
 - Passwords are never passed as command-line arguments — always use the interactive prompt

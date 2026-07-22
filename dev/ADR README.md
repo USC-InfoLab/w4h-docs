@@ -22,6 +22,8 @@ This directory contains ADRs for the W4H wearables toolkit. Each file captures t
 | [ADR-010](ADR-010-soft-delete-no-hard-deletion.md) | Soft-delete only: no hard deletion of users, teams, or datasets | Accepted |
 | [ADR-011](ADR-011-hipaa-audit-logging.md) | HIPAA audit logging model | Draft |
 | [ADR-012](ADR-012-project-dataset-linking.md) | Project–dataset linking and shared-dataset projects | Accepted |
+| [ADR-013](ADR-013-brand-theming-white-label.md) | Brand theming: CSS tokens now, white-label / multi-brand later | Accepted |
+| [ADR-014](ADR-014-ai-assistant-claude.md) | PHI-safe AI chat (Claude): team keys, Cursor-like UX, egress filter | Accepted |
 
 ## What is an ADR?
 

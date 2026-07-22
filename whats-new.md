@@ -6,13 +6,24 @@ updated_at: 2026-07-15T20:21:00.000Z
 ---
 ## July 2026
 
+### Guides
+- [Setting Up Projects]({{APP_URL}}/docs/setting-up-projects) — multi-dataset projects from owned datasets, inbound shares, and dual-hat Team admin linking (with diagrams)
+- MVP **v0.13** onboarding model: Super admin bootstraps Team admin + initial team; PI self-serves trials (Draft T-15–T-18) — Super admin does **not** approve individual trials
+- Quick Start / ADR-004 / architecture: Super admin **always** uses Platform Admin (no Admin UI toggle); Team admins use the app shell
+
+### UI
+- Global **USC Cardinal + Gold** brand layer (`style.css`) + Super admin **UI kit** (`/admin/style-guide`); [ADR-013]({{APP_URL}}/docs/ADR-013-brand-theming-white-label) — tokens now, white-label later
+- Dark-mode text utilities lightened for contrast; list-group / nav-pills active use Cardinal fills
+
 ### Architecture & Requirements
-- Role vocabulary aligned across ADRs and MVP requirements: **Super admin** · **Team admin** · **Project user** (replaces Group Admin / legacy platform role names)
+- Role vocabulary aligned across ADRs and MVP requirements: **Super admin** (platform) · **Team admin / member** (per team) · project **owner / editor / viewer**
+- **Per-team roles** (MVP v0.11 / ADR-004): `team_members.role` supports dual-hat; legacy global Team admin migrates to membership
+- Ingest-without-Team-admin (PI → student) tracked as Draft **ACL/capability** D-22 — not a third team role
 - Project membership simplified to **owner** / **editor** / **viewer** (project-level `admin` retired to avoid colliding with Team admin)
 - [ADR-011]({{APP_URL}}/docs/ADR-011-hipaa-audit-logging) — HIPAA audit logging model (API/notebook access, super-admin paths, fail-closed PHI writes)
 - [ADR-012]({{APP_URL}}/docs/ADR-012-project-dataset-linking) — project–dataset linking and shared-dataset projects (multi-dataset modeling; push-share UX; share ≠ co-owned project)
 - ADR-002 / ADR-004 / architecture / MVP requirements updated for push-share defaults and project visibility rules
-- MVP requirements moved to `dev/mvp-requirements.md` (v0.4)
+- MVP requirements in `dev/mvp.md` (v0.12)
 
 ### Documentation browser
 - Mobile docs navigation: new **Menu** (sidebar offcanvas) and (TOC) bar on small screens

@@ -25,25 +25,25 @@ For the full architectural picture — schema-per-trial isolation, dataset shari
 
 ## Roles
 
-| Role | What you can do |
-|---|---|
-| **Admin** | Configure the platform, manage users and datasets, create projects, refresh documentation |
-| **Researcher** | Access assigned projects, view linked datasets, issue API tokens, run notebooks |
-| **Clinician** | Read-only access to assigned project data |
+| Role | Shell | What you can do |
+|---|---|---|
+| **Super admin** | **Platform Admin** only (`W4H Toolkit Admin`) | Bootstrap the platform: SMTP, initial teams, invite Team admins, audit, usage, settings. Does **not** run day-to-day trials. |
+| **Team admin** | App shell (`W4H Toolkit`) | Own trials: teams, datasets, projects, members, shares. |
+| **Project user** | App shell | Work in assigned projects (`owner` / `editor` / `viewer`). |
 
-Admins toggle **Admin UI** from the user menu to reach settings, user management, and dataset administration. See [ADR-004]({{APP_URL}}/docs/ADR-004-acl-roles) for how application roles map to database-level access control.
+There is **no** “toggle Admin UI” for Super admins — they land in Platform Admin on login and stay there. Team admins never enter Platform Admin. See [ADR-004]({{APP_URL}}/docs/ADR-004-acl-roles) and MVP §3.0 (onboarding).
 
 ---
 
-## 1. First-time platform setup (admin)
+## 1. First-time platform setup (Super admin)
 
 On a fresh install, the login page walks you through setup automatically:
 
 1. **Connect PostgreSQL** — enter host, port, database name, and credentials. The `w4h` schema is created automatically if the database user has `CREATEDB` privilege.
-2. **Create the initial admin account** — choose an email and a strong password (minimum 12 characters).
-3. **Log in** — you land on the home page. Change the default password if prompted.
+2. **Create the initial Super admin account** — choose an email and a strong password (minimum 12 characters).
+3. **Log in** — you land on **Platform Admin home**. Change your password from the account menu → Profile if needed.
 
-After login, finish these one-time configuration steps in **Admin → Settings** (`{{APP_URL}}/admin/settings`):
+After login, finish these one-time configuration steps under **Settings** (`{{APP_URL}}/admin/settings`):
 
 | Step | Where | Why |
 |---|---|---|
@@ -51,20 +51,28 @@ After login, finish these one-time configuration steps in **Admin → Settings**
 | Configure SMTP (optional) | Settings → Mail Server | Required for password resets and user invitations — see [SMTP Configuration]({{APP_URL}}/docs/smpt-configuration) |
 | Refresh documentation | Settings → Documentation Management → **Refresh Docs** | Imports pages from the `w4h-docs` source repository into the platform |
 
-> **Tip:** Use **Export Docs** in the same panel to download a ZIP backup before refreshing.
+Then bootstrap the first PI:
+
+1. **Teams → Add Team** — create their initial team.
+2. **Users → Invite** — invite them as **Team admin** on that team.
+
+The PI (Team admin) then sets up projects and datasets in the **app shell**. See [Setting Up Projects]({{APP_URL}}/docs/setting-up-projects).
+
+> **Tip:** Use **Export Docs** in Settings to download a ZIP backup before refreshing.
 
 For local development setup (cloning repos, `npm run dev`, environment variables), see [Developer Setup]({{APP_URL}}/docs/developer-setup).
 
 ---
 
-## 2. Create a project
+## 2. Create a project (Team admin)
 
 Projects are the central unit of work — every dataset link, notebook, and member assignment is scoped to a project ([ADR-001]({{APP_URL}}/docs/ADR-001-schema-per-trial)).
 
-1. Switch to **Admin UI** (user menu → Admin).
-2. Go to **Projects** (`{{APP_URL}}/projects`) and click **+ New project**.
-3. Enter a name and optional description.
-4. Open the project to reach its **workspace**.
+For multi-dataset setups (owned datasets, inbound shares, dual-hat Team admins), see **[Setting Up Projects]({{APP_URL}}/docs/setting-up-projects)**.
+
+1. In the **app shell**, go to **Projects** and create a project (owning team required).
+2. Open the project → **Linked datasets** and add datasets.
+3. Open the project **workspace** for notebooks, members, and tokens.
 
 In the workspace you can manage:
 
@@ -158,13 +166,15 @@ Documentation is organized into doc types — each type is a folder in the sourc
 
 | I want to… | Go to… |
 |---|---|
-| Set up the database | Login page (first run) or Admin → Settings → Database |
-| Create a project | Projects → + New project (Admin UI) |
-| Manage datasets | Admin → Datasets |
-| Add a user | Admin → Users → Add User |
+| Set up the database | Login page (first run) or Platform Admin → Settings → Database |
+| Onboard a PI | Platform Admin → Teams (initial team) → Users → Invite as Team admin |
+| Create a project | App shell → Projects (Team admin) |
+| Manage datasets | App shell → Datasets (Team admin) |
+| Add a team member | App shell → Users → Invite (Team admin) |
 | Issue a data-access token | Project workspace → Database access |
-| Configure email | Admin → Settings → Mail Server |
-| Refresh docs from source | Admin → Settings → Documentation Management |
+| Configure email | Platform Admin → Settings → Mail Server |
+| Refresh docs from source | Platform Admin → Settings → Documentation Management |
+| Change Super admin password | Platform Admin → account menu → Profile |
 | Understand the architecture | [Architecture]({{APP_URL}}/docs/architecture) |
 | Review design decisions | ADR docs under **Developer** in the sidebar |
 | HIPAA deployment checklist | [HIPAA Compliance]({{APP_URL}}/docs/hipaa-compliance) |

@@ -136,44 +136,50 @@ A share can be team-wide (`target_project_id` is NULL — any project in the tar
 
 ## Access control (ACL)
 
-Three platform roles, plus one structural database role per trial. Roles are cumulative — team admin inherits project user permissions.
+Layered model (ADR-004): **platform role** → **team membership role** → **project membership role** → optional **resource ACL**.
+
+Team admin is **per team** (`team_members.role`), not a single global user flag — the same account may be Team admin on one team and `member` on another (dual-hat).
 
 ### Role summary
 
 | Role | Scope | Key permissions |
 |---|---|---|
-| Super admin | Platform-wide | All operations: create/delete trials, manage all users, approve/revoke sharing, access audit log, run cross-trial analytics |
-| Team admin | Assigned trial(s) | Create projects, load datasets, link datasets to projects, manage project users within their trial, push/approve dataset shares |
-| Project user | Assigned projects | Read datasets assigned to their project(s), add annotations, read trial docs |
+| Super admin | Platform-wide (`users.role`) | Platform Admin shell only: bootstrap teams/users, audit, settings. Does **not** configure individual trials day-to-day |
+| Team admin | Per team (`team_members.role = team_admin`) | App shell: create teams/projects/datasets, manage members, shares |
+| Member | Per team (`team_members.role = member`) | Participate via project memberships on that team |
+| Project membership | Per project (`owner` / `editor` / `viewer`) | Refine what a member may do inside a project |
+
+**Ingest without Team admin** (e.g. PI delegates ETL to a student) is a finer-grained **capability/ACL** grant (MVP D-22), not a third team membership role.
 
 ### Super admin
 
 - Create and delete trial schemas (triggers DDL automation)
-- Manage all users across all trials — create, deactivate, assign roles
+- Manage all users across all trials — create, deactivate, assign memberships
 - Approve or revoke any dataset sharing request
 - Access `w4h_global` for cross-trial analytics
 - Read and export the audit log
 - Access all trial schemas for support and compliance purposes
-- Promote a team admin to super admin
+- Promote a user to Super admin
 
-### Team admin
+### Team admin (per team)
 
-- Create and manage projects within their assigned trial
+- Create and manage projects within that team
 - Load datasets into the trial schema (initiates signal table creation)
 - Assign datasets to projects
-- Add and remove project users within their trial
+- Add and remove members; set team membership role on that team
 - Set project-level permissions for users (read, annotate)
 - Submit dataset sharing requests to another trial **or** push shares to another team (MVP default — ADR-002 / ADR-012)
 - Approve incoming sharing requests from other trials (for their own datasets)
-- View their trial's audit log entries
+- View that team's audit log entries
+- Cannot exercise Team admin powers on teams where they are only `member`
 - Cannot access other trials' schemas or `w4h_global` unless a sharing grant exists
 
-### Project user
+### Member / project participant
 
 - Read wearable data for datasets assigned to their project
-- Read and write annotations on subjects within their project
+- Read and write annotations on subjects within their project (membership permitting)
 - Read trial docs and project docs
-- Cannot load data, create projects, or manage users
+- Cannot load/create datasets (unless granted a future ingest capability), create projects, or manage team users
 - Cannot access datasets not assigned to their project
 - Cannot access `w4h_global` unless explicitly granted via sharing
 
@@ -183,7 +189,7 @@ Three platform roles, plus one structural database role per trial. Roles are cum
 |---|---|---|
 | Super admin | `w4h_superadmin` | All schemas — full privileges |
 | Team admin (trial A) | `trial_a_admin` | `w4h_app` (read/write own rows), `trial_a` (full), `w4h_global` (read if granted) |
-| Project user (trial A) | `trial_a_role` | `w4h_app` (read own profile), `trial_a` (SELECT on assigned datasets only), `w4h_global` (read if granted) |
+| Member / project user (trial A) | `trial_a_role` | `w4h_app` (read own profile), `trial_a` (SELECT on assigned datasets only), `w4h_global` (read if granted) |
 | Platform DDL executor | `w4h_platform` | All schemas — CREATE, GRANT, REVOKE (used only by backend for DDL operations) |
 
 ---
@@ -267,7 +273,13 @@ These are architectural decisions for the Vue frontend, not just setup preferenc
 
 - **User store** (`src/stores/user.js`) — parse and persist `team_id` from the JWT login payload; it must be available on every request for team-scoped API calls
 - **Dataset selector** (e.g. `ProjectsEdit.vue`) — label datasets in selection lists to distinguish origin: **"Shared from [Team Name]"** vs **"Local"**; never show raw UUIDs
-- **Admin routes** — team management lives at `/admin/teams` (Super admin only); cross-team dataset sharing agreements are visible at `/admin/datasets/shares`
+- **Operator routes** — Platform Admin (`/admin/home`, settings, audit, usage) is Super admin only and has **no toggle** into the team app shell. Team admins use the app shell for teams/projects/datasets; cross-team shares at `/admin/datasets/shares` in that shell.
+- **Brand theme (USC Cardinal + Gold)** — see [ADR-013](ADR-013-brand-theming-white-label.md). Global CSS tokens in `w4h-app/src/style.css` (imported **after** Bootstrap); Super admin **UI kit** at `/admin/style-guide` is in MVP for tuning. White-label / Bootswatch-style multi-brand is post-MVP.
+  - Tokens: `--w4h-cardinal` (`#990000` per [USC Identity](https://identity.usc.edu/identity/color/)), `--w4h-gold` (`#FFCC00`), `--w4h-nav-bg`, `--w4h-active-fg`
+  - Solid primary / list-group active / nav-pills active → Cardinal **fill** + white label. Keep `--bs-danger` distinct from brand CTAs
+  - **Links:** light → Cardinal `#990000`; dark → Gold `#FFCC00`. No underline by default; underline on hover (**same color**, no darken/lighten on hover)
+  - **Never** deep Cardinal/danger/success as *text* on near-black — dark `.text-primary` / `.text-danger` / `.text-success` use lightened utilities
+  - Callouts: `.w4h-callout`; auth plate `w4h-light.svg`; nav mark `w4h-mark.svg`
 
 ---
 
@@ -288,3 +300,4 @@ These are architectural decisions for the Vue frontend, not just setup preferenc
 - [ ] **REDCap incremental sync dependency:** R-04 requires REDCap projects to have data access logging enabled or a `date_modified` field — import UI must detect and warn when this is absent (see ADR-009)
 - [ ] **Audit log cold storage:** define the archival path for audit log entries beyond the active query window (e.g. S3 Glacier with object lock) while preserving the HIPAA 6-year retrievability requirement (see ADR-010, ADR-011)
 - [ ] **Audit log writers:** implement shared fail-closed audit helper on PHI/API and super-admin paths; admin audit viewer + IRB export (H-09, H-11) (see ADR-011)
+- [x] **Operator homes (partial):** Super admin `/admin/home` KPIs + health + attention strip + usage/audit deep links via `GET /config/admin-home` (D-19a, H-12, H-12a); `/admin/audit-log` viewer; `/admin/usage` (legacy `/admin/api-usage`) adoption/key hygiene dashboard. Still open: study-metric sections on Usage (D-19*), Team admin scoped Usage, Team admin IRB home (H-09a), project-owner report (H-09b).
