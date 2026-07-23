@@ -1,96 +1,216 @@
 ---
 title: 🆕 What's New!
-description: ""
+description: Highlights from the latest W4H Toolkit release — screenshots and walkthroughs for researchers and operators.
 updated_by: nocera@usc.edu
-updated_at: 2026-07-15T20:21:00.000Z
+updated_at: 2026-07-23T14:50:00.000Z
 ---
-## July 2026
 
-### Guides
-- [Setting Up Projects]({{APP_URL}}/docs/setting-up-projects) — multi-dataset projects from owned datasets, inbound shares, and dual-hat Team admin linking (with diagrams)
-- MVP **v0.13** onboarding model: Super admin bootstraps Team admin + initial team; PI self-serves trials (Draft T-15–T-18) — Super admin does **not** approve individual trials
-- Quick Start / ADR-004 / architecture: Super admin **always** uses Platform Admin (no Admin UI toggle); Team admins use the app shell
+<p class="lead">
+  Welcome to the <strong>July 2026</strong> update of the W4H Toolkit.
+  Below are the changes we think you'll notice most — with screenshots and short animations from the live app.
+</p>
 
-### UI
-- Global **USC Cardinal + Gold** brand layer (`style.css`) + Super admin **UI kit** (`/admin/style-guide`); [ADR-013]({{APP_URL}}/docs/ADR-013-brand-theming-white-label) — tokens now, white-label later
-- Dark-mode text utilities lightened for contrast; list-group / nav-pills active use Cardinal fills
+**Highlights**
 
-### Architecture & Requirements
-- Role vocabulary aligned across ADRs and MVP requirements: **Super admin** (platform) · **Team admin / member** (per team) · project **owner / editor / viewer**
-- **Per-team roles** (MVP v0.11 / ADR-004): `team_members.role` supports dual-hat; legacy global Team admin migrates to membership
-- Ingest-without-Team-admin (PI → student) tracked as Draft **ACL/capability** D-22 — not a third team role
-- Project membership simplified to **owner** / **editor** / **viewer** (project-level `admin` retired to avoid colliding with Team admin)
-- [ADR-011]({{APP_URL}}/docs/ADR-011-hipaa-audit-logging) — HIPAA audit logging model (API/notebook access, super-admin paths, fail-closed PHI writes)
-- [ADR-012]({{APP_URL}}/docs/ADR-012-project-dataset-linking) — project–dataset linking and shared-dataset projects (multi-dataset modeling; push-share UX; share ≠ co-owned project)
-- ADR-002 / ADR-004 / architecture / MVP requirements updated for push-share defaults and project visibility rules
-- MVP requirements in `dev/mvp.md` (v0.12)
+- [Sign in with email code](#sign-in-with-email-code) — passwordless one-time codes over SMTP
+- [Platform Admin shell & setup](#platform-admin-shell--setup) — Super admin home, SMTP, first team, invite PI
+- [Discoverable datasets](#discoverable-datasets) — browse what other teams publish without getting access yet
+- [About & Report an issue](#about--report-an-issue) — version info and feedback from your account menu
+- [Usage dashboard](#usage-dashboard) — adoption and study metrics for operators
+- [HIPAA audit log viewer](#hipaa-audit-log-viewer) — compliance ledger (separate from Usage)
+- [Setting up projects](#setting-up-projects) — multi-dataset projects, shares, dual-hat linking
+- [PHI-safe AI chat (design)](#phi-safe-ai-chat-design) — accepted architecture for the upcoming assistant
 
-### Documentation browser
-- Mobile docs navigation: new **Menu** (sidebar offcanvas) and (TOC) bar on small screens
-- Docs title comes from frontmatter / title field only — no duplicate leading H1 in the body
-- `sort_order` in frontmatter orders docs within a section; ADR files auto-order by number when omitted
-- ADR index and Developer docs reorganized under `dev/`
+> Tip: click any image to enlarge it in the docs browser.
+>
+> **Cursor preview:** use the built-in command **Markdown: Open Preview to the Side** (`Cmd+K` then `V`) — not “Markdown Editor”. Image files are in `media/whats-new/`.
 
 ---
 
-## June–July 2026
+## Sign in with email code
 
-### Projects & Multi-Tenancy
-- Renamed "studies" to "projects" across the app, API, routes, and components for consistency
-- Introduced project-scoped access control (ACL) with per-user membership and roles
-- Added multitenancy design documentation and Architecture Decision Records (ADRs)
+Prefer not to type a password? On the sign-in page, choose **Login with email code**.
 
-### Security & Compliance
-- HIPAA-compliant bcrypt rounds for password hashing
-- Break-glass password support with dedicated documentation and instructions
-- Per-user notebook API keys with JWT-or-key authentication on datasets and project endpoints
-- Optional email one-time-code login (SMTP) alongside password sign-in
+![Password sign-in with email-code link](media/whats-new/login-password.png)
 
-### Notebooks
-- New single-user notebook workflow with JWT-authenticated server endpoints
-- Token-only client SDK, sample data loader, and token generator
-- Updated band wear analysis notebook
+Enter your account email and click **Send code**. W4H emails a one-time 6-digit code (SMTP must be configured — see [Platform Admin shell & setup](#platform-admin-shell--setup)).
 
----
+![Sign in with email code — enter email](media/whats-new/login-code-email.png)
 
-## May 2026
+Then enter the code from your inbox to finish signing in.
 
-### Documentation
-- Server-side doc rendering with Markdown ZIP export and Mermaid diagram support
-- Docs now initialized from a dedicated documentation repository on first install
-- HIPAA compliance guide added
-- Break-glass access instructions added
+![Sign in with email code — enter verification code](media/whats-new/login-code-verify.png)
 
-### Projects Hub
-- Project workspace UI with three-tab layout (Monitor, Manage, Visualize)
-- Dataset selection and preview within workspaces
-- Notebook management UI with run metadata, edit, duplicate, and delete flows
-- Sortable run columns, run filters, and a run details panel
-- DB token list and purge support
+![Flow: password login → email code → verify](media/whats-new/login-code-flow.gif)
 
-### API
-- Consolidated PostgreSQL access in `db.js`
-- Audit support added
-- Docs export and refresh endpoints
+*Animation: password screen → request code → enter code.*
+
+You can always return to password sign-in with **← Back to password sign in**.
 
 ---
 
-## March–April 2026
+## Platform Admin shell & setup
 
-### Authentication & Users
-- Login with email, show/hide password toggle
-- Dev login prefill from environment variables
-- User management and password generation
+**Super admins** always work in the **Platform Admin** shell (`W4H Toolkit Admin`) — there is no toggle into the researcher app shell. Use it to bootstrap the platform, not to run individual trials.
 
-### Developer Experience
-- `.env` removed from tracking; `.env.example` provided
-- Contribution docs added across all repos
-- VS Code launch configuration for opening the app in the editor browser
+### Welcome setup guide
+
+On first visit (or when no teams exist yet), Platform Admin home shows a short checklist:
+
+1. **Settings → SMTP** — invitations and login codes
+2. **Teams → Add Team** — the PI's initial team
+3. **Users → Invite** — invite the PI as **Team admin** on that team
+4. The Team admin then creates projects, datasets, and further teams in the **app shell**
+
+![Platform Admin home with setup guide](media/whats-new/admin-setup-guide.png)
+
+### SMTP (required for email)
+
+Configure the mailer under **Settings** so invites and email codes work.
+
+![Settings — SMTP configuration](media/whats-new/admin-settings-smtp.png)
+
+### Create the initial team
+
+![Add Team form](media/whats-new/admin-teams-add.png)
+
+### Invite the PI as Team admin
+
+![Invite User form](media/whats-new/admin-users-invite.png)
+
+![Setup walkthrough: home → SMTP → Add Team → Invite](media/whats-new/admin-setup-flow.gif)
+
+*Animation: setup guide → SMTP → Add Team → Invite User.*
+
+After onboard, the PI self-serves further trials. Super admin does **not** approve each study. See [Setting Up Projects]({{APP_URL}}/docs/setting-up-projects).
 
 ---
 
-## Earlier
+## Discoverable datasets
 
-- Initial W4H platform setup with PostgreSQL backend, login, and dataset/subject routes
-- Basic studies and datasets management
-- Calories, heart rate, activity classification, and position/stats APIs
+Other teams can now **see** datasets you mark as discoverable (name, description, owning team) under **Others** — without being able to link or query them until you **share**.
+
+Use the catalog filters to focus your work:
+
+| Filter | What you see |
+|---|---|
+| **Mine** | Datasets your team owns |
+| **Others** | Discoverable peer datasets (metadata only) |
+| **Shared** | Datasets explicitly shared with your team (linkable) |
+| **All** | The combined list |
+
+![Dataset catalog with Mine / Others / Shared filters](media/whats-new/datasets-catalog.png)
+
+![Switching dataset catalog filters](media/whats-new/datasets-filters.gif)
+
+*Animation: switching All → Mine → Others → Shared.*
+
+Discoverability is **not** a share. To let another team use a dataset in a project, open the dataset and manage **Shares**.
+
+---
+
+## About & Report an issue
+
+Open your **account menu** (avatar) for product info and feedback.
+
+### About
+
+See the product name, app version, SC-CTSI funding, investigators, and links to the public GitHub repositories.
+
+![About W4H modal](media/whats-new/about-modal.png)
+
+![Opening About from the account menu](media/whats-new/about-menu.gif)
+
+*Animation: account menu → About.*
+
+### Report an issue
+
+**App-shell** users (Team admins / members) can email platform administrators (`HELP_EMAIL`) from **Report an issue** in the account menu. Super admins receive those reports in Platform Admin and do not see the report form themselves.
+
+**Please do not include PHI** or identifiable study data. Technical contributors may prefer [GitHub Issues](https://github.com/USC-InfoLab/w4h-docs/issues){target="_blank"} for docs/code (still no PHI).
+
+---
+
+## Usage dashboard
+
+Platform operators get a **Usage** page at `/admin/usage` for SC-CTSI study metrics: adoption (UI logins, sessions, page views), API key hygiene, latency, and related sections.
+
+This is **not** the HIPAA audit log — it answers "is the platform being used?" not "who accessed which PHI?"
+
+![Usage dashboard](media/whats-new/usage-dashboard.png)
+
+![Changing the Usage dashboard period](media/whats-new/usage-period.gif)
+
+*Animation: changing the reporting period (7 / 30 / 90 / 14 days).*
+
+Platform Admin **home** stays a thin snapshot with deep links into Usage and Audit:
+
+![Platform Admin home](media/whats-new/admin-home.png)
+
+---
+
+## HIPAA audit log viewer
+
+Super admins can browse the compliance **audit log** at `/admin/audit-log` — filters for period, action, and resource type, plus search.
+
+![HIPAA audit log viewer](media/whats-new/audit-log.png)
+
+Use **Audit** for compliance review; use **Usage** for adoption and study metrics. Details: [HIPAA Compliance]({{APP_URL}}/docs/hipaa-compliance) · [ADR-011]({{APP_URL}}/docs/ADR-011-hipaa-audit-logging).
+
+---
+
+## Setting up projects
+
+New guide for Team admins: create projects, link multiple datasets (owned, shared, or dual-hat), and understand share vs discoverable.
+
+![Setting Up Projects guide in Help](media/whats-new/docs-guide.png)
+
+Read: [Setting Up Projects]({{APP_URL}}/docs/setting-up-projects).
+
+---
+
+## PHI-safe AI chat (design)
+
+We accepted [ADR-014]({{APP_URL}}/docs/ADR-014-ai-assistant-claude) for an in-app **PHI-safe AI chat** (Claude):
+
+- Cursor-like multi-chat threads
+- **Team-paid** Anthropic keys (team pays) + optional Super admin platform key
+- Context chips for the page you're on
+- Default **PHI-safe (strict)** egress filter so ePHI does not leave the platform by accident
+
+Implementation is in progress — this release documents the decision so teams can plan keys and policy.
+
+---
+
+## Also in this release
+
+### Brand & UI
+- USC **Cardinal + Gold** brand layer across the app
+- Super admin **UI kit** at `/admin/style-guide`
+- [ADR-013]({{APP_URL}}/docs/ADR-013-brand-theming-white-label) — CSS tokens now; white-label later
+
+### Roles & access
+- Per-team roles (`team_admin` / `member`) with dual-hat membership
+- Project roles simplified to **owner** / **editor** / **viewer**
+- Super admin always works in **Platform Admin** (no app-shell toggle)
+
+### Docs browser
+- Mobile **Menu** + TOC for small screens
+- Cleaner titles and ADR ordering
+
+### For developers
+Architecture and requirements live in [MVP]({{APP_URL}}/docs/mvp) (v0.16) and the [ADR index]({{APP_URL}}/docs/ADR-README).
+
+---
+
+## Previous releases
+
+Older months are archived (same idea as VS Code’s versioned Updates pages) so this page stays focused on the **current** month:
+
+| Release | Notes |
+|---|---|
+| **July 2026** | This page |
+| [June 2026]({{APP_URL}}/docs/2026-06) | Projects rename, ACL, notebook keys, email login codes |
+| [Earlier 2026]({{APP_URL}}/docs/earlier-2026) | May Projects hub, March–April auth, initial platform |
+
+Full index: [Release notes archive]({{APP_URL}}/docs/archive) (under **releases** in the sidebar).
