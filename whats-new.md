@@ -88,7 +88,9 @@ After onboard, the PI self-serves further trials. Super admin does **not** appro
 
 ## Discoverable datasets
 
-Other teams can now **see** datasets you mark as discoverable (name, description, owning team) under **Others** — without being able to link or query them until you **share**.
+In the **app shell** (Team admin), open **Datasets**. Other teams can **see** datasets you mark as discoverable (name, description, owning team) under **Others** — without being able to link or query them until you **share**.
+
+Super admins can open the same catalog from **Datasets** in Platform Admin (all teams).
 
 Use the catalog filters to focus your work:
 

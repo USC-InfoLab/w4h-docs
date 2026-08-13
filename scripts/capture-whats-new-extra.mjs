@@ -235,11 +235,18 @@ async function main() {
 
   await page.goto(`${APP_URL}/admin/settings`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(800);
-  // Scroll SMTP into view if needed
-  const smtp = page.locator('text=SMTP').first();
-  if (await smtp.count()) await smtp.scrollIntoViewIfNeeded();
+  const mailCard = page.locator('.card').filter({ hasText: 'Mail Server' }).first();
+  await mailCard.scrollIntoViewIfNeeded();
+  // Docs shots: generic addresses only (do not Save)
+  await mailCard.locator('label').filter({ hasText: 'Username' }).locator('..').locator('input').fill('noreply@example.com');
+  await mailCard.locator('label').filter({ hasText: /^From$/ }).locator('..').locator('input').fill('W4H Toolkit <noreply@example.com>');
+  await mailCard.locator('label').filter({ hasText: 'Reply-To' }).locator('..').locator('input').fill('support@example.com');
+  await mailCard.locator('label').filter({ hasText: 'Test Recipient' }).locator('..').locator('input').fill('you@example.com');
+  const helpEmail = page.locator('label').filter({ hasText: 'Help request email' }).locator('..').locator('input');
+  if (await helpEmail.count()) await helpEmail.fill('support@example.com');
   await page.waitForTimeout(300);
-  await shot(page, 'admin-settings-smtp', { fullPage: true });
+  await mailCard.screenshot({ path: path.join(OUT, 'admin-settings-smtp.png') });
+  console.log('shot media/whats-new/admin-settings-smtp.png (element)');
 
   await page.goto(`${APP_URL}/admin/teams/add`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(600);
@@ -295,6 +302,16 @@ async function main() {
 
   await page.goto(`${APP_URL}/admin/settings`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(700);
+  {
+    const mailCard = page.locator('.card').filter({ hasText: 'Mail Server' }).first();
+    await mailCard.scrollIntoViewIfNeeded();
+    await mailCard.locator('label').filter({ hasText: 'Username' }).locator('..').locator('input').fill('noreply@example.com');
+    await mailCard.locator('label').filter({ hasText: /^From$/ }).locator('..').locator('input').fill('W4H Toolkit <noreply@example.com>');
+    await mailCard.locator('label').filter({ hasText: 'Reply-To' }).locator('..').locator('input').fill('support@example.com');
+    await mailCard.locator('label').filter({ hasText: 'Test Recipient' }).locator('..').locator('input').fill('you@example.com');
+    const helpEmail = page.locator('label').filter({ hasText: 'Help request email' }).locator('..').locator('input');
+    if (await helpEmail.count()) await helpEmail.fill('support@example.com');
+  }
   fp = path.join(OUT, '_su_1.png');
   await page.screenshot({ path: fp, fullPage: true });
   setupFrames.push(fp);

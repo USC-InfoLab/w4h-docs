@@ -63,8 +63,18 @@ PLAYWRIGHT_BROWSERS_PATH="$HOME/Library/Caches/ms-playwright" \
 node scripts/capture-whats-new-extra.mjs
 # SMTP card + Usage period GIF (fixes sticky-nav / clipped bars):
 node scripts/recapture-smtp-usage.mjs
+# Setup walkthrough GIF (generic SMTP / help emails in Settings frame):
+node scripts/recapture-setup-gif.mjs
+# Datasets catalog (Team admin app shell — Datasets selected):
+W4H_TEAM_EMAIL=… W4H_TEAM_PASSWORD=… node scripts/recapture-datasets.mjs
 ```
 
+Docs captures overwrite Username / From / Help email with `noreply@example.com` and
+`support@example.com` **in the browser only** (forms are not Saved).
+
+Dataset catalog shots must use a **Team admin** login so the app shell shows **Datasets**
+selected. Super admin Platform Admin chrome also has Datasets (platform-wide), but
+discoverability docs default to the team app-shell view.
 ## Monthly What's New archive
 
 Keep `whats-new.md` as the **current month** only. Older months live under `releases/`

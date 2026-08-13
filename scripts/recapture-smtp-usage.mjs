@@ -89,6 +89,13 @@ async function main() {
   await hideOverlays(page);
   const mailCard = page.locator('.card').filter({ hasText: 'Mail Server' }).first();
   await mailCard.scrollIntoViewIfNeeded();
+  // Docs shots: generic addresses only (do not Save — leave real SMTP credentials intact)
+  await mailCard.locator('label').filter({ hasText: 'Username' }).locator('..').locator('input').fill('noreply@example.com');
+  await mailCard.locator('label').filter({ hasText: /^From$/ }).locator('..').locator('input').fill('W4H Toolkit <noreply@example.com>');
+  await mailCard.locator('label').filter({ hasText: 'Reply-To' }).locator('..').locator('input').fill('support@example.com');
+  await mailCard.locator('label').filter({ hasText: 'Test Recipient' }).locator('..').locator('input').fill('you@example.com');
+  const helpEmail = page.locator('label').filter({ hasText: 'Help request email' }).locator('..').locator('input');
+  if (await helpEmail.count()) await helpEmail.fill('support@example.com');
   await page.waitForTimeout(300);
   await mailCard.screenshot({ path: path.join(OUT, 'admin-settings-smtp.png') });
   console.log('shot media/whats-new/admin-settings-smtp.png (element)');

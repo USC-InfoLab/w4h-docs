@@ -8,7 +8,7 @@ updated_at: 2026-07-20T00:00:00.000Z
 
 **Status:** Accepted  
 **Date:** 2026-07-04  
-**Revised:** 2026-07-20  
+**Revised:** 2026-08-12  
 **Deciders:** W4H architecture team  
 **Relates to:** ADR-012 (project–dataset linking), ADR-002 (sharing), ADR-011 (audit)
 
@@ -28,14 +28,13 @@ Access control must be enforceable at the database level (not just the applicati
 
 ### Canonical vocabulary (ADR + MVP)
 
-| Canonical name | Scope | Where stored |
+| UI name | Scope | Where stored |
 |---|---|---|
-| **Super admin** | Platform-wide | `users.role = super_admin` |
-| **Team admin** | One team / trial | `team_members.role = team_admin` |
-| **Member** | One team / trial | `team_members.role = member` |
-| **Project user** (by membership) | One project | `project_members.role` = `owner` \| `editor` \| `viewer` |
+| **Super admin** | Platform-wide | `users.role = super_admin` — **not** a project membership |
+| **Project admin** | One team / project | `team_members.role = team_admin` and/or `project_members.role = owner` |
+| **User** | One team / project | `team_members.role = member`; `project_members.role = editor` (legacy `viewer` displays as User) |
 
-Product copy may still say “Project user” for a non–Super-admin account. Effective team authority comes from **team membership role**, not from a global `users.role = team_admin` (legacy — migrate).
+Super admin is platform-only. Do not put Super admin on a project Members dropdown. Effective team authority comes from **team membership role**, not from a global `users.role = team_admin` (legacy — migrate). Stored values `team_admin` / `member` / `owner` / `editor` are unchanged.
 
 ## Decision
 
@@ -51,12 +50,12 @@ Non–Super-admin accounts do **not** carry global Team admin privileges. Their 
 
 ### 2. Team membership roles (per team)
 
-Stored on `team_members.role`:
+Stored on `team_members.role`. Product UI: **Project admin** / **User**.
 
-| Role | Typical use |
-|---|---|
-| `team_admin` | Manage that team's users, projects, datasets, shares; create further teams after onboard; team-scoped audit/IRB |
-| `member` | Participate via project memberships; no team-wide admin on that team |
+| UI label | Stored as | Typical use |
+|---|---|---|
+| **Project admin** | `team_admin` | Manage that team's users, projects, datasets, shares; create further teams after onboard; team-scoped audit/IRB |
+| **User** | `member` | Participate via project memberships; no team-wide admin on that team |
 
 **Dual-hat:** the same user may be `team_admin` on team A and `member` on team B.
 
@@ -66,15 +65,18 @@ Legacy `users.role = team_admin` migrates to `team_members.role = team_admin` on
 
 ### 3. Project membership roles
 
-A member is assigned to a project with one membership role:
+Product UI on a project roster is **Project admin** or **User**. Super admin is platform-wide and is **not** a project membership.
 
-| Membership | Typical use |
-|---|---|
-| `owner` | Manage the project (members, linked datasets, settings); at least one required |
-| `editor` | Run analytics and notebooks; read linked datasets |
-| `viewer` | Read-only dashboards and docs |
+| UI label | Stored as | Typical use |
+|---|---|---|
+| **Project admin** | `owner` | Manage the project (members, linked datasets, settings); at least one required |
+| **User** | `editor` (legacy `viewer` also shows as User) | Work in the project: analytics, notebooks, linked datasets |
 
-These are **not** a platform tier. Legacy project membership `admin` maps to `owner`.
+These are **not** a platform tier. Legacy project membership `admin` maps to `owner`. Legacy `viewer` is treated as User in the UI.
+
+There is **one** Project admin type. Super admin inviting the PI at onboard does not create a second role — that person is a Project admin like any other. GitHub/GitLab-style orgs work the same way: many owners of equal rank, at least one must remain, and platform operators recover access. Do **not** add a “primary PI” vs “invited admin” split.
+
+A Project admin **cannot remove themselves**. Another Project admin (or Super admin, by inviting a replacement) must do that. The last Project admin cannot be removed or demoted.
 
 ### 4. Resource ACL (optional refinement)
 
@@ -117,8 +119,8 @@ Session `search_path` / DB role must follow the **active team context** for the 
 - Cannot exercise Team admin powers on other teams where they are only `member`
 - Cannot enter the Platform Admin UI (`/admin/*` shell is Super admin only)
 
-**Member can:**
-- Act within projects per `owner` / `editor` / `viewer`
+**User can:**
+- Act within projects as **User** (`editor`; legacy `viewer` displays as User) or **Project admin** (`owner`)
 - Read wearable data for datasets **linked** to their projects only
 - As project **`owner` only:** generate a **project-scoped IRB access report** (H-09b) — not raw audit browse
 - Cannot load/create datasets (unless granted a future ingest capability — D-22), manage team users, or access unlinked datasets
@@ -132,7 +134,7 @@ Session `search_path` / DB role must follow the **active team context** for the 
 - Database-enforced boundaries — a misconfigured application cannot leak data between roles
 - Sharing grants are issued to specific DB roles, making them immediately enforceable and revocable
 - The `w4h_platform` DDL role is the only entity that can create views and issue grants — a controlled and auditable path
-- Aligns MVP language: Super admin (platform) · Team admin / member (per team) · project membership roles
+- Aligns MVP language: Super admin (platform) · Project admin / User (per team and project)
 
 **Negative / risks:**
 - Must migrate legacy global `users.role = team_admin` onto `team_members.role`
@@ -158,3 +160,5 @@ Session `search_path` / DB role must follow the **active team context** for the 
 | 2026-07-21 | Super admin Platform Admin shell only (no app toggle); Team admin self-service teams after onboard (MVP v0.13). |
 | 2026-07-20 | **Per-team roles** on `team_members` (`team_admin` \| `member`); dual-hat; legacy global Team admin migrates to membership. Ingest-without-admin = ACL/capability (MVP D-22), not a third team role. |
 | 2026-07-22 | Usage surface `/admin/usage` (study metrics); Team admin team-scoped view; members cannot browse Usage ledger. |
+| 2026-08-12 | Product UI: **Super admin** · **Project admin** · **User**. Stored `team_admin`/`member` and `owner`/`editor` unchanged; Super admin is not a project membership. |
+| 2026-08-12 | One Project admin type (no primary vs invited split). Project admin cannot remove themselves; at least one must remain. |

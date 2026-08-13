@@ -76,10 +76,10 @@ Open **Administration → Mail Server** and configure the following fields.
 |--------|-------|
 | SMTP Host | `smtp.gmail.com` |
 | Port | `587` |
-| Username | Your Gmail address |
+| Username | Your Gmail address (SMTP auth only) |
 | Password | Google App Password |
-| From | `Your Name <your@gmail.com>` |
-| Reply-To | Optional |
+| From | `W4H Toolkit <noreply@example.com>` |
+| Reply-To | Optional (e.g. `support@example.com`) |
 | Use SSL/TLS (SMTPS) | **Disabled** |
 
 ---
@@ -89,14 +89,20 @@ Open **Administration → Mail Server** and configure the following fields.
 ```text
 SMTP Host : smtp.gmail.com
 Port      : 587
-Username  : your@gmail.com
+Username  : your-gmail@example.com
 Password  : <Google App Password>
+From      : W4H Toolkit <noreply@example.com>
+Reply-To  : support@example.com
 
 SSL/TLS   : Disabled
 STARTTLS  : Enabled automatically by SMTP client
 ```
 
 Port **587** uses **STARTTLS**, which upgrades the connection to TLS after connecting.
+
+> **Tip**
+>
+> Use a **generic From address** such as `noreply@example.com` in docs and on shared environments. Username is only for authenticating to the SMTP provider (for Gmail, that is still your Google account address).
 
 ---
 
@@ -126,10 +132,10 @@ SSL/TLS   : Enabled
 |---------|---------|
 | SMTP Host | smtp.gmail.com |
 | Port | 587 |
-| Username | john.doe@gmail.com |
+| Username | your-gmail@example.com |
 | Password | Google App Password |
-| From | John Doe \<john.doe@gmail.com\> |
-| Reply-To | john.doe@gmail.com |
+| From | W4H Toolkit \<noreply@example.com\> |
+| Reply-To | support@example.com |
 
 ---
 

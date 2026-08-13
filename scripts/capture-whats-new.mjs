@@ -116,7 +116,7 @@ async function main() {
   await page.waitForTimeout(1000);
   await shot(page, 'docs-guide');
 
-  // GIF: dataset filters
+  // GIF: dataset filters (prefer Team admin app-shell — see scripts/recapture-datasets.mjs)
   await page.goto(`${APP_URL}/admin/datasets`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
   const ds = [];

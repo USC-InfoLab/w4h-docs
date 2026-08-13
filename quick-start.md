@@ -27,11 +27,11 @@ For the full architectural picture — schema-per-trial isolation, dataset shari
 
 | Role | Shell | What you can do |
 |---|---|---|
-| **Super admin** | **Platform Admin** only (`W4H Toolkit Admin`) | Bootstrap the platform: SMTP, initial teams, invite Team admins, audit, usage, settings. Does **not** run day-to-day trials. |
-| **Team admin** | App shell (`W4H Toolkit`) | Own trials: teams, datasets, projects, members, shares. |
-| **Project user** | App shell | Work in assigned projects (`owner` / `editor` / `viewer`). |
+| **Super admin** | **Platform Admin** only (`W4H Toolkit Admin`) | Bootstrap the platform: SMTP, initial teams, invite Project admins, audit, usage, settings. Does **not** run day-to-day trials. |
+| **Project admin** | App shell (`W4H Toolkit`) | Own trials: teams, datasets, projects, members, shares. |
+| **User** | App shell | Work in assigned projects. |
 
-There is **no** “toggle Admin UI” for Super admins — they land in Platform Admin on login and stay there. Team admins never enter Platform Admin. See [ADR-004]({{APP_URL}}/docs/ADR-004-acl-roles) and MVP §3.0 (onboarding).
+There is **no** “toggle Admin UI” for Super admins — they land in Platform Admin on login and stay there. Project admins never enter Platform Admin. See [ADR-004]({{APP_URL}}/docs/ADR-004-acl-roles) and MVP §3.0 (onboarding).
 
 ---
 
