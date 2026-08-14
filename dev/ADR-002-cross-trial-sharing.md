@@ -30,7 +30,7 @@ Some teams/trials need to share specific datasets with other teams for cross-tea
 Introduce a dedicated `w4h_global` schema that holds:
 
 1. A sharing agreement registry (`shared_datasets` / `dataset_shares` — source team, target team, dataset ID, optional target project, who shared/approved, when, access type)
-2. Scoped views — one per signal table in the shared dataset — named `<source_trial>_ds<id>_<signal_type>`
+2. Scoped views — one per signal table in the shared dataset — named `<source_ds>_<signal_type>` (e.g. `ds_<id>_heart_rate`)
 3. Targeted PostgreSQL `GRANT SELECT` on each view to the target team's DB role only
 
 Nothing lands in `w4h_global` automatically. Access is created only after an explicit share.
@@ -93,7 +93,7 @@ Revocation drops the views and revokes the grants, and is logged in `w4h_app.aud
 
 ## Alternatives not chosen
 
-- **Direct cross-schema SELECT grants:** Granting `trial_c_role` SELECT on `trial_a.wearable_data` directly would expose the entire table, not just one dataset. Rejected — too coarse.
+- **Direct cross-schema SELECT grants:** Granting a recipient role SELECT on the source dataset schema (`ds_<id>.*`) would skip the audited view layer. Rejected — too coarse for a controlled share.
 - **Data copying into w4h_global:** Physically copying rows into a shared table was considered for performance. Rejected — creates a synchronisation problem and doubles storage. Views are sufficient and always reflect source data.
 - **Shared projects as the sharing primitive:** Rejected for MVP — see ADR-012.
 
@@ -102,3 +102,4 @@ Revocation drops the views and revokes the grants, and is logged in `w4h_app.aud
 | Date | Change |
 |---|---|
 | 2026-07-15 | Documented push-share as MVP default; clarified dataset≠project; vocabulary Team admin / Super admin; relates ADR-012. |
+| 2026-08-13 | Share views name source **dataset** schemas (`ds_*`), not `trial_*`. |

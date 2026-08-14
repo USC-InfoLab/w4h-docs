@@ -8,9 +8,11 @@ sort_order: 4
 
 This directory contains ADRs for the W4H wearables toolkit. Each file captures the context, decision, and consequences for one significant architectural choice.
 
+A **dataset** is a catalog row (`w4h.datasets`) plus its own PostgreSQL schema (`ds_*`, `w4h.dataset_registry`). See [ADR-001](ADR-001-schema-per-trial.md).
+
 | ID | Title | Status |
 |---|---|---|
-| [ADR-001](ADR-001-schema-per-trial.md) | Schema-per-trial isolation | Accepted |
+| [ADR-001](ADR-001-schema-per-trial.md) | Schema-per-dataset isolation (filename kept as schema-per-trial) | Accepted |
 | [ADR-002](ADR-002-cross-trial-sharing.md) | Cross-trial / cross-team dataset sharing via w4h_global | Accepted |
 | [ADR-003](ADR-003-dataset-table-model.md) | Physical signal tables + platform mapping registry (`w4h`) | Accepted |
 | [ADR-004](ADR-004-acl-roles.md) | Three-tier access control model (Super / Team / Project user) | Accepted |

@@ -14,18 +14,18 @@ updated_at: 2026-07-04T23:10:40.000Z
 
 With hundreds of concurrent trials and multiple users per trial, the platform will have many simultaneous database connections. PostgreSQL's default process-per-connection model does not scale to thousands of connections without significant memory pressure.
 
-Additionally, our schema-per-trial isolation model requires setting `search_path` correctly for each trial. This must work safely with a connection pool — a pooled connection must not carry a previous tenant's `search_path` into a new request.
+Additionally, schema-per-dataset isolation (ADR-001) requires setting `search_path` correctly for each **dataset**. This must work safely with a connection pool — a pooled connection must not carry a previous dataset's `search_path` into a new request.
 
 ## Decision
 
 Use **PgBouncer in transaction mode** as the connection pooler.
 
-`search_path` is set at the **transaction level** (`SET LOCAL search_path = trial_abc`), not at the session level (`SET search_path`). In transaction mode, PgBouncer returns the connection to the pool after each transaction, so session-level settings do not persist. `SET LOCAL` is scoped to the transaction and is automatically reset when the transaction ends — making it safe for pooled connections.
+`search_path` is set at the **transaction level** (`SET LOCAL search_path = ds_<id>, w4h`), not at the session level (`SET search_path`). In transaction mode, PgBouncer returns the connection to the pool after each transaction, so session-level settings do not persist. `SET LOCAL` is scoped to the transaction and is automatically reset when the transaction ends — making it safe for pooled connections.
 
 ```sql
 BEGIN;
-SET LOCAL search_path = trial_abc, w4h_app;
--- all queries in this transaction target trial_abc
+SET LOCAL search_path = ds_<id>, w4h;
+-- all queries in this transaction target that dataset schema
 COMMIT;
 -- connection returned to pool with search_path reset
 ```
@@ -45,5 +45,11 @@ COMMIT;
 ## Alternatives not chosen
 
 - **Session-mode pooling:** Simpler, but `SET search_path` at session level would persist on the connection after the session ends and be visible to the next tenant. Rejected as unsafe for multi-tenant use.
-- **No pooling (direct connections):** Rejected — PostgreSQL cannot handle thousands of direct connections at the scale of hundreds of concurrent trials with multiple users each.
+- **No pooling (direct connections):** Rejected — PostgreSQL cannot handle thousands of direct connections at the scale of hundreds of concurrent datasets with multiple users each.
+
+## Changelog
+
+| Date | Change |
+|---|---|
+| 2026-08-13 | `search_path` examples use dataset schemas (`ds_*`), not `trial_*`. |
 - **Pgpool-II:** More complex to operate than PgBouncer with no meaningful advantage for this use case. Rejected.

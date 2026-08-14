@@ -77,7 +77,7 @@ import w4h
 session = w4h.connect(api_key=os.environ["W4H_API_KEY"])
 
 datasets = session.list_datasets()
-df = session.query("SELECT subject_id, ts, bpm FROM ds42_heart_rate")
+df = session.query("SELECT subject_id, ts, bpm FROM heart_rate")
 
 # Works identically from local laptop, HPC cluster, or cloud GPU instance
 ```
@@ -126,7 +126,7 @@ CREATE TABLE w4h_app.service_accounts (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name            text NOT NULL,
   owner_user_id   uuid NOT NULL REFERENCES w4h_app.users(id),
-  trial_id        uuid NOT NULL,
+  trial_id        uuid NOT NULL,  -- owning team (legacy column name; not a PostgreSQL schema id)
   dataset_ids     uuid[] NOT NULL,
   key_hash        text NOT NULL,
   ip_allowlist    inet[] NOT NULL,
@@ -175,3 +175,4 @@ CREATE TABLE w4h_app.service_accounts (
 | 2026-07-20 | Documented Super admin home usage KPIs (D-19a) and Team admin scoped usage/IRB entry points; clarified Platform Admin shell remains Super admin only. |
 | 2026-07-20 | Super admin API usage dashboard: `usage_events` logging on API-key requests, `api_key_last_used_at`, `GET /config/api-usage`, full `/admin/api-usage` UI. |
 | 2026-07-22 | Renamed operator surface to `/admin/usage` (menu **Usage**); framed as SC-CTSI study metrics (MVP D-19*); API `GET /config/usage` (legacy `api-usage` alias during transition). |
+| 2026-08-13 | Query example uses `heart_rate` in the dataset schema; `service_accounts.trial_id` is owning team, not a `trial_*` schema. |

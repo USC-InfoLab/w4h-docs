@@ -25,7 +25,7 @@ W4H handles wearable clinical research data that may include Protected Health In
 Several architectural decisions already assume an audit trail exists:
 
 - **ADR-006 / ADR-007** — Flexible mode allows notebooks, HPC, and cloud jobs to pull datasets via personal API keys. The compensating control for data leaving the TRE boundary is ACL + audit logging (every request: user, key, dataset, row count, IP).
-- **ADR-004** — Super-admins can access every trial schema and the full audit log for support and compliance. Privileged access without logging creates a compliance blind spot.
+- **ADR-004** — Super-admins can access every dataset schema (`ds_*`) and the full audit log for support and compliance. Privileged access without logging creates a compliance blind spot.
 - **ADR-010** — The audit log is append-only and never hard-deleted; retention is at least 6 years.
 
 What is still undecided is the **auditing model itself**: which events are mandatory for MVP, how JWT and API-key traffic share one ledger, whether PHI access fails if logging fails, who may view/export the log, and how the log supports IRB access reports (H-09).
@@ -150,3 +150,4 @@ Homes are **snapshots and entry points**, not full log tables. Dedicated pages h
 | 2026-07-20 | Implementation started: `GET /config/admin-home` snapshot + Platform Admin home UI; stub audit/usage pages (still 🚧 for full ledger/viewer). |
 | 2026-07-20 | Super admin audit log viewer: `GET /config/audit-log` with filters, pagination, CSV export; `audit.view` / `audit.export` self-logging; shared `lib/utils/audit.js`. |
 | 2026-07-22 | Usage surface renamed to `/admin/usage` (SC-CTSI study metrics, MVP D-19*); clarified identified local usage vs anonymous telemetry vs HIPAA audit. |
+| 2026-08-13 | Super-admin schema access is every dataset schema (`ds_*`), not `trial_*`. |
