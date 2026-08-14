@@ -145,7 +145,7 @@ Team admin is **per team** (`team_members.role`), not a single global user flag 
 | Role | Scope | Key permissions |
 |---|---|---|
 | Super admin | Platform-wide (`users.role`) | Platform Admin shell only: bootstrap teams/users, audit, settings. Does **not** configure individual trials day-to-day |
-| Project admin | Per team (`team_members.role = team_admin`) and/or per project (`project_members.role = owner`) | App shell: create teams/projects/datasets, manage members, shares |
+| Admin | Per team (`team_members.role = team_admin`) and/or per project (`project_members.role = owner`) | App shell: create teams/projects/datasets, manage members, shares |
 | User | Per team (`team_members.role = member`); per project (`editor`, legacy `viewer`) | Participate in assigned projects |
 
 **Ingest without Team admin** (e.g. PI delegates ETL to a student) is a finer-grained **capability/ACL** grant (MVP D-22), not a third team membership role.

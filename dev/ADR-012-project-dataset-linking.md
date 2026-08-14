@@ -36,7 +36,7 @@ Confusion arises if “shared project” is assumed: MVP projects have **one own
 | Role | Scope | Notes |
 |---|---|---|
 | **Super admin** | Platform-wide | Formerly “Super-Admin” in early MVP drafts. Not a project membership. |
-| **Project admin** | Own team / project | UI name for stored `team_admin` / project `owner`. Formerly “Team admin” / “Group Admin”. |
+| **Admin** | Own team / project | UI name for stored `team_admin` / project `owner`. Formerly “Team admin” / “Group Admin”. |
 | **User** | Assigned projects | Stored as `member` on the team and `editor` on the project (legacy `viewer` displays as User). |
 
 Team admin inherits Project user capabilities within their team. Project membership roles refine what a Project user may do on a given project (ADR-004).

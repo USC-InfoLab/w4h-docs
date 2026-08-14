@@ -14,9 +14,9 @@ action_label: Read the guide
   Datasets stay owned by a <strong>team</strong>; projects <em>link</em> them — they do not move ownership.
 </p>
 
-This guide is for **Project admins** (and Super admins reading for context). It covers single-team multi-dataset projects and cross-team setups via **shares**. Design details: [ADR-012]({{APP_URL}}/docs/ADR-012-project-dataset-linking).
+This guide is for **Admins** (and Super admins reading for context). It covers single-team multi-dataset projects and cross-team setups via **shares**. Design details: [ADR-012]({{APP_URL}}/docs/ADR-012-project-dataset-linking).
 
-**Shells:** Project admins work in the **app shell** (`W4H Toolkit`). Super admins stay in **Platform Admin** (`W4H Toolkit Admin`) for bootstrap only — they do not toggle into the app shell.
+**Shells:** Admins work in the **app shell** (`W4H Toolkit`). Super admins stay in **Platform Admin** (`W4H Toolkit Admin`) for bootstrap only — they do not toggle into the app shell.
 
 ---
 
@@ -68,7 +68,7 @@ Use this when all study datasets already belong to **one** team (the usual case)
 1. Open **Projects → Add Project** and set the **owning team** to that team.
 2. Open the project → **Linked datasets**.
 3. **Add** each dataset you need (any number).
-4. Add **Members** from that team: **Project admin** (manages the study) or **User** (works in it). Super admin is not assigned on a project.
+4. Add **Members** from that team: **Admin** (manages the study) or **User** (works in it). Super admin is not assigned on a project.
 
 ```mermaid
 flowchart TD

@@ -27,11 +27,11 @@ For the full architectural picture — schema-per-trial isolation, dataset shari
 
 | Role | Shell | What you can do |
 |---|---|---|
-| **Super admin** | **Platform Admin** only (`W4H Toolkit Admin`) | Bootstrap the platform: SMTP, initial teams, invite Project admins, audit, usage, settings. Does **not** run day-to-day trials. |
-| **Project admin** | App shell (`W4H Toolkit`) | Own trials: teams, datasets, projects, members, shares. |
+| **Super admin** | **Platform Admin** only (`W4H Toolkit Admin`) | Bootstrap the platform: SMTP, initial teams, invite Admins, audit, usage, settings. Does **not** run day-to-day trials. |
+| **Admin** | App shell (`W4H Toolkit`) | Own trials: teams, datasets, projects, members, shares. |
 | **User** | App shell | Work in assigned projects. |
 
-There is **no** “toggle Admin UI” for Super admins — they land in Platform Admin on login and stay there. Project admins never enter Platform Admin. See [ADR-004]({{APP_URL}}/docs/ADR-004-acl-roles) and MVP §3.0 (onboarding).
+There is **no** “toggle Admin UI” for Super admins — they land in Platform Admin on login and stay there. Admins never enter Platform Admin. See [ADR-004]({{APP_URL}}/docs/ADR-004-acl-roles) and MVP §3.0 (onboarding).
 
 ---
 
@@ -77,7 +77,7 @@ For multi-dataset setups (owned datasets, inbound shares, dual-hat Team admins),
 In the workspace you can manage:
 
 - **Notebooks** — register analysis notebooks with repo URL, branch, and launcher (Jupyter, VS Code, RStudio)
-- **Project documentation** — pages linked to this project
+- **Project documentation** — private Markdown pages for this project (not platform Help)
 - **Members** — researchers and collaborators assigned to the project
 - **Database access tokens** — short-lived tokens for programmatic data access from scripts and notebooks
 - **Fine-grained ACL** — optional rules on top of member roles (dataset, notebook, doc permissions)
@@ -119,7 +119,7 @@ Once you are assigned to a project:
 
 ### Flexible mode (default)
 
-In Flexible deployments ([ADR-006]({{APP_URL}}/docs/ADR-006-trusted-research-environment)), researchers connect from a local machine, HPC cluster, or cloud GPU using a personal API key or project token ([ADR-007]({{APP_URL}}/docs/ADR-007-authentication-model)). Every data access request is authenticated, project-scoped, and written to the audit log.
+In Flexible deployments ([ADR-006]({{APP_URL}}/docs/ADR-006-trusted-research-environment)), researchers connect from a local machine, HPC cluster, or cloud GPU using a personal API key ([ADR-007]({{APP_URL}}/docs/ADR-007-authentication-model)). Every data access request is authenticated, project-scoped, and written to the audit log.
 
 ```python
 import os
