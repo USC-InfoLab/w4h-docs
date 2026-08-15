@@ -2,12 +2,14 @@
 title: ADR-008 — GeoMTS as the unifying wearable data abstraction
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-07-05T01:23:50.000Z
+updated_at: 2026-08-14T00:00:00.000Z
 ---
 **Status:** Accepted  
 **Date:** 2026-07-04  
+**Revised:** 2026-08-14  
 **Deciders:** W4H architecture team  
 **Principal investigator:** Cyrus Shahabi, PhD (USC InfoLab)  
+**Relates to:** [ADR-003](ADR-003-dataset-table-model.md) (physical tables + `w4h` mapping registry)  
 **References:**
 - Hajisafi et al., *Wearables for Health (W4H) Toolkit for Acquisition, Storage, Analysis and Visualization of Data from Various Wearable Devices*, IEEE ICDE 2024 (Demo)
 - Nocera et al., *Multi-Context Graph Neural Networks for Enhanced Multivariate Time-Series Analysis in Healthcare*, NIH Special Track at ISMB 2024
@@ -23,96 +25,111 @@ Wearable devices used in clinical research are heterogeneous — Fitbit, Apple W
 - Sampling rates (1Hz heart rate vs. 100Hz accelerometer vs. irregular GPS pings)
 - Data formats (CSV exports, proprietary APIs, JSON streams)
 - Geospatial context (some devices are GPS-equipped; others are worn in fixed locations)
-- Vendor-specific data models and API contracts
+- Vendor-specific **field names** and API contracts
 
-Without a unifying abstraction, each device type requires custom ingestion, storage, and analysis code. Queries across device types become impossible without application-level joins and transformations. ML models trained on one device's data cannot be applied to another.
+Without a unifying abstraction, each device type requires custom analysis code. The abstraction must not force every team to rename columns to a single physical layout.
 
-The W4H platform needs a single data model that:
+The W4H platform needs a model that:
 
-1. Represents all wearable signal types in a common form
-2. Separates device type from data management and analysis logic
+1. Represents wearable signals in a common **logical** form (GeoMTS)
+2. Separates device type from analysis logic
 3. Supports unified querying, visualization, and ML across heterogeneous sensors
-4. Preserves geospatial context, which is clinically relevant (location affects activity, exposure, context)
-5. Maps cleanly to a PostgreSQL + TimescaleDB storage model
+4. Preserves optional geospatial context when present
+5. Maps cleanly onto PostgreSQL tables **via metadata**, without mandatory column rename
+
+---
 
 ## Decision
 
-All datasets in W4H are represented using the **GeoMTS (Geo-referenced Multivariate Time Series)** abstraction, developed by the USC InfoLab as the foundational data model of the W4H research programme.
+All datasets in W4H are interpreted using the **GeoMTS (Geo-referenced Multivariate Time Series)** abstraction.
 
 ### What GeoMTS is
 
 GeoMTS models wearable data as **geo-tagged, multivariate time series collections**:
 
 - **Time series** — every signal is a sequence of (timestamp, value) pairs
-- **Multivariate** — multiple signals are captured simultaneously per subject (heart rate, steps, accelerometer axes, SpO2, etc.)
-- **Geo-referenced** — each observation carries optional geospatial context (GPS coordinates, location tag, or spatial region)
-- **Subject-anchored** — each time series belongs to a subject (participant) in a study
+- **Multivariate** — multiple signals may be captured per subject
+- **Geo-referenced** — observations may carry optional geospatial context
+- **Subject-anchored** — series belong to a subject (participant)
 
-A GeoMTS dataset is formally a collection of tuples:
-
-```
-(subject_id, signal_type, timestamp, value, [latitude, longitude])
-```
-
-where `signal_type` is drawn from a device-specific schema defined at dataset creation time.
-
-### How GeoMTS maps to the database model
-
-Each signal type within a dataset becomes a physical table in the trial schema (per ADR-003):
+Logically, an observation is:
 
 ```
-trial_a.ds42_heart_rate      (subject_id, ts, bpm, lat, lon)
-trial_a.ds42_accelerometer   (subject_id, ts, x, y, z, lat, lon)
-trial_a.ds42_sleep_stages    (subject_id, ts, stage)
+(subject, signal_type, timestamp, value…, [latitude, longitude])
 ```
 
-The `schema_def` JSONB column on the `datasets` table holds the GeoMTS schema for that dataset — the list of signal types, their column definitions, sampling rate, device type, and whether geospatial columns are present.
+Those names are **roles**, not required physical column identifiers.
 
-```jsonc
-// Example schema_def for a Fitbit dataset
+### How GeoMTS maps to the database
+
+Per [ADR-003](ADR-003-dataset-table-model.md):
+
+1. **Physical tables** hold the data with researcher-/device-familiar columns (e.g. `id`, `date`, `timestamp`, `value`). Lat/lon columns are optional.
+2. **Platform mapping** in `w4h.tables` (field/role mapping JSON) states which columns fill GeoMTS roles (`subject`, `time`, optional `geo_*`, `value`s).
+3. **`w4h.datasets.schema_def`** may store declared GeoMTS intent at create time; after ingest, the **live** table/field mapping in `w4h.tables` is the source of truth for registered tables.
+
+Example — physical table keeps native names; no GPS:
+
+```text
+fitbit_hr (id, date, timestamp, value)
+```
+
+```json
 {
-  "device_type": "fitbit_charge5",
-  "signals": [
-    { "name": "heart_rate", "columns": [{"name": "bpm", "type": "int"}], "sampling_hz": 1 },
-    { "name": "accelerometer", "columns": [{"name": "x", "type": "float"}, {"name": "y", "type": "float"}, {"name": "z", "type": "float"}], "sampling_hz": 25 },
-    { "name": "sleep_stages", "columns": [{"name": "stage", "type": "text"}], "sampling_hz": null }
-  ],
-  "geospatial": false,
-  "irb_reference": "OS-16-2"
+  "signal_type": "heart_rate",
+  "subject": "id",
+  "time": { "combine": ["date", "timestamp"] },
+  "geo": null,
+  "values": [{ "source": "value", "name": "bpm", "type": "integer" }]
 }
 ```
 
+Example — table that already has geo columns under other names:
+
+```json
+{
+  "signal_type": "gps_track",
+  "subject": "participant",
+  "time": { "column": "recorded_at" },
+  "geo": { "lat": "latitude", "lon": "longitude" },
+  "values": [{ "source": "speed_mps", "name": "speed", "type": "double precision" }]
+}
+```
+
+There is **no** separate side table whose purpose is only to store lat/lon/ts encodings of every row. GeoMTS is the interpretation layer; rows stay in the signal tables.
+
 ### What GeoMTS enables
 
-- **Unified ingestion** — ImportHub maps CSV/JSON/REDCap exports from any device to the GeoMTS schema at ingest time; device-specific parsers are pluggable
-- **Unified querying** — researchers query signal tables with standard SQL; the GeoMTS schema tells the query proxy which tables exist and what columns are valid
-- **Unified ML** — the BysGNN, NeuroGNN, WaveGNN, and Motif models in W4H are built on GeoMTS representations, making them applicable across device types without model-level changes
-- **Unified visualization** — the analytics dashboard renders any GeoMTS-compliant dataset without bespoke code per device type
-- **Cross-dataset analysis** — datasets from different devices can be joined on `(subject_id, ts)` when GeoMTS schemas are compatible
+- **Unified ingestion** — CSV/JSON/REDCap imports supply a mapping from source headers → roles (and optional load into typed tables)
+- **Unified querying / ML / viz** — tools resolve subject/time/geo/value through the registry mapping
+- **Cross-device analysis** — join logically on mapped subject + time when schemas are compatible
+- **Non-geo datasets** — first-class; `geo` mapping is null
 
 ### Provenance and additive model
 
-GeoMTS enforces an additive data model: original signal data is never modified. Derived data (model outputs, filtered signals, resampled series) is stored as a new GeoMTS dataset linked to its parent via provenance metadata. This satisfies requirement D-04/D-05 and preserves the audit trail for HIPAA and IRB purposes.
+Original signal data is not overwritten in place for derived products. Derived series are new datasets (or new registered tables) with provenance — D-04/D-05 — preserving auditability.
+
+---
 
 ## Consequences
 
 **Positive:**
-- Device-type independence — adding a new wearable device requires only a new GeoMTS schema definition and a device-specific ingestion parser; no changes to storage, query, or ML layers
-- ML model reuse — GeoMTS-based models (BysGNN, NeuroGNN, WaveGNN) apply to any conforming dataset
-- Unified analytics and visualization without per-device bespoke code
-- Clean mapping to TimescaleDB hypertables — each signal table is a natural hypertable candidate
-- Geospatial context is a first-class citizen — supports spatial queries (activity by location, exposure analysis) without schema changes
-- Aligns W4H with the published USC InfoLab research, ensuring the platform reflects the PI's validated academic contributions
+- Device-type independence without forcing a universal physical column layout
+- ML/viz reuse against GeoMTS **roles** resolved via mapping
+- Optional geospatial context without null-filled lat/lon on every table
+- Aligns with USC InfoLab GeoMTS research while matching how teams already name fields
 
 **Negative / risks:**
-- Schema definition at dataset creation time — if a researcher's device produces signals not anticipated in the initial `schema_def`, the schema must be updated and new signal tables created (DDL operation via `w4h_platform` role)
-- Not all wearables have geospatial data — the `lat`/`lon` columns are optional, but their presence must be handled consistently in queries and visualizations to avoid nulls causing silent errors
-- GeoMTS is a USC InfoLab research abstraction, not an external standard — interoperability with platforms expecting FHIR or HL7 requires a translation layer (planned post-MVP, see §16 of requirements)
-- Heterogeneous sampling rates across signal types in the same dataset require care in cross-signal queries — joining `heart_rate` (1Hz) with `accelerometer` (25Hz) requires explicit resampling
+- Every analysis path must consult mapping (cannot hard-code `subject_id` / `ts`)
+- Bad or missing mappings break interpretation even when SQL `SELECT *` looks fine
+- Heterogeneous sampling rates still require explicit care when joining signals
+- FHIR/HL7 remain export/interop concerns, not the internal store
+
+---
 
 ## Alternatives not chosen
 
-- **FHIR (Fast Healthcare Interoperability Resources):** The dominant interoperability standard in clinical systems. Rejected for the primary data model because FHIR is optimised for clinical record exchange, not time-series analytics or ML. FHIR Observations are verbose and not suited to high-frequency sensor data (25Hz accelerometer at scale). FHIR remains planned as a post-MVP export/interoperability layer, not the internal model.
-- **Per-device custom schemas:** Rejected — would require bespoke ingestion, storage, query, and ML code per device. Unscalable as device diversity grows, and makes cross-device analysis impossible without application-level joins.
-- **Single wide JSONB table:** Rejected for performance reasons (see ADR-003). GeoMTS signal tables are typed physical tables, not JSONB blobs.
-- **openEHR archetypes:** A flexible clinical data modelling standard. Rejected — significant implementation complexity, limited tooling for time-series analytics, and no alignment with the existing W4H research codebase.
+- **Forced physical rename** to `(subject_id, ts, lat, lon, …)` on ingest: Rejected — see ADR-003.
+- **Separate GeoMTS encoding table** for lat/lon/ts: Rejected — duplicate storage; mapping metadata is enough.
+- **FHIR / openEHR as primary store:** Rejected for high-rate wearable analytics (as before).
+- **Per-device analysis stacks with no shared roles:** Rejected — no cross-device ML/viz.

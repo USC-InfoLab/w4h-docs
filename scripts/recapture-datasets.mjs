@@ -1,12 +1,8 @@
 /**
- * Re-capture Datasets catalog still + filter GIF as Team admin (app shell).
+ * Re-capture Datasets catalog still + filter GIF as Admin (app shell).
  *
- * Requires a team_admin (or equivalent) login — Super admin always uses Platform Admin chrome.
- *
- *   W4H_TEAM_EMAIL=… W4H_TEAM_PASSWORD=… \
- *   PLAYWRIGHT_BROWSERS_PATH="$HOME/Library/Caches/ms-playwright" \
- *   W4H_APP_URL=http://localhost:5175 \
- *   node scripts/recapture-datasets.mjs
+ * Super admin always uses Platform Admin chrome — use the seeded Admin account.
+ * See dev/docs-fixtures.md.
  */
 import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
@@ -14,35 +10,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
+import { assertSampleApiAcceptsLogin, loadCaptureCredentials, loginForCapture } from './lib/docs-capture-env.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DOCS_ROOT = path.resolve(__dirname, '..');
 const APP_ROOT = path.resolve(DOCS_ROOT, '../w4h-app');
 const { chromium } = createRequire(path.join(APP_ROOT, 'package.json'))('playwright');
 const OUT = path.join(DOCS_ROOT, 'media', 'whats-new');
-const APP_URL = process.env.W4H_APP_URL || 'http://localhost:5173';
+const creds = loadCaptureCredentials('admin');
+const { appUrl: APP_URL } = creds;
 
 if (!process.env.PLAYWRIGHT_BROWSERS_PATH) {
   process.env.PLAYWRIGHT_BROWSERS_PATH = path.join(os.homedir(), 'Library/Caches/ms-playwright');
 }
-
-function loadAppEnv() {
-  const envPath = path.join(APP_ROOT, '.env');
-  if (!fs.existsSync(envPath)) return {};
-  const out = {};
-  for (const line of fs.readFileSync(envPath, 'utf8').split(/\r?\n/)) {
-    const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
-    if (!m) continue;
-    let v = m[2];
-    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
-    out[m[1]] = v.replace(/\\\$/g, '$');
-  }
-  return out;
-}
-
-const env = loadAppEnv();
-const EMAIL = process.env.W4H_TEAM_EMAIL || env.W4H_TEAM_EMAIL || process.env.W4H_EMAIL;
-const PASSWORD = process.env.W4H_TEAM_PASSWORD || env.W4H_TEAM_PASSWORD || process.env.W4H_PASSWORD;
 
 fs.mkdirSync(OUT, { recursive: true });
 
@@ -65,24 +45,11 @@ async function hideOverlays(page) {
   });
 }
 
-async function login(page) {
-  if (!EMAIL || !PASSWORD) {
-    throw new Error('Set W4H_TEAM_EMAIL and W4H_TEAM_PASSWORD (Team admin) for app-shell Datasets shots.');
-  }
-  await page.goto(`${APP_URL}/login`, { waitUntil: 'networkidle' });
-  await page.fill('#inputEmail', EMAIL);
-  await page.fill('#inputPassword', PASSWORD);
-  await Promise.all([
-    page.waitForURL((u) => !u.pathname.includes('/login'), { timeout: 15000 }),
-    page.click('button[type="submit"]'),
-  ]);
-  await page.waitForTimeout(800);
-}
-
 async function main() {
+  await assertSampleApiAcceptsLogin(creds);
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
-  await login(page);
+  await loginForCapture(page, creds);
   await hideOverlays(page);
 
   // Assert we are not on Platform Admin chrome (Datasets must appear in app-shell nav)
@@ -91,7 +58,7 @@ async function main() {
   const datasetsNav = page.locator('.navbar .nav-link', { hasText: 'Datasets' });
   if (!(await datasetsNav.count())) {
     throw new Error(
-      'Datasets nav item not found. Use a Team admin account (not Super admin) so the app shell is shown.'
+      'Datasets nav item not found. Use an Admin account (not Super admin) so the app shell is shown.'
     );
   }
   const datasetsActive = await datasetsNav.first().evaluate((el) => el.classList.contains('active'));

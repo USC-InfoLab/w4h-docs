@@ -6,8 +6,7 @@
  *   PLAYWRIGHT_BROWSERS_PATH="$HOME/Library/Caches/ms-playwright" \
  *     node scripts/capture-whats-new.mjs
  *
- * Env overrides: W4H_EMAIL, W4H_PASSWORD, W4H_APP_URL
- * Credentials default to VITE_APP_ADMIN_* in w4h-app/.env
+ * Env: w4h-docs/.env (see dev/docs-fixtures.md). Role: Super admin.
  */
 import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
@@ -15,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
+import { assertSampleApiAcceptsLogin, loadCaptureCredentials, loginForCapture } from './lib/docs-capture-env.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DOCS_ROOT = path.resolve(__dirname, '..');
@@ -22,36 +22,11 @@ const APP_ROOT = path.resolve(DOCS_ROOT, '../w4h-app');
 const requireFromApp = createRequire(path.join(APP_ROOT, 'package.json'));
 const { chromium } = requireFromApp('playwright');
 const OUT = path.join(DOCS_ROOT, 'media', 'whats-new');
-const APP_URL = process.env.W4H_APP_URL || 'http://localhost:5173';
+const creds = loadCaptureCredentials('superadmin');
+const { appUrl: APP_URL } = creds;
 
 if (!process.env.PLAYWRIGHT_BROWSERS_PATH) {
   process.env.PLAYWRIGHT_BROWSERS_PATH = path.join(os.homedir(), 'Library/Caches/ms-playwright');
-}
-
-function loadAppEnv() {
-  const envPath = path.join(APP_ROOT, '.env');
-  if (!fs.existsSync(envPath)) return {};
-  const out = {};
-  for (const line of fs.readFileSync(envPath, 'utf8').split(/\r?\n/)) {
-    const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
-    if (!m) continue;
-    let v = m[2];
-    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
-      v = v.slice(1, -1);
-    }
-    v = v.replace(/\\\$/g, '$').replace(/\\n/g, '\n');
-    out[m[1]] = v;
-  }
-  return out;
-}
-
-const appEnv = loadAppEnv();
-const EMAIL = process.env.W4H_EMAIL || appEnv.VITE_APP_ADMIN_EMAIL;
-const PASSWORD = process.env.W4H_PASSWORD || appEnv.VITE_APP_ADMIN_PASSWORD;
-
-if (!EMAIL || !PASSWORD) {
-  console.error('Missing W4H_EMAIL / W4H_PASSWORD (or VITE_APP_ADMIN_* in w4h-app/.env)');
-  process.exit(1);
 }
 
 fs.mkdirSync(OUT, { recursive: true });
@@ -74,22 +49,12 @@ async function shot(page, name, opts = {}) {
   console.log('shot', path.relative(DOCS_ROOT, file));
 }
 
-async function login(page) {
-  await page.goto(`${APP_URL}/login`, { waitUntil: 'networkidle' });
-  await page.fill('#inputEmail', EMAIL);
-  await page.fill('#inputPassword', PASSWORD);
-  await Promise.all([
-    page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 }),
-    page.click('button[type="submit"]'),
-  ]);
-  await page.waitForTimeout(800);
-}
-
 async function main() {
+  await assertSampleApiAcceptsLogin(creds);
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 
-  await login(page);
+  await loginForCapture(page, creds);
   await shot(page, 'admin-home');
 
   await page.goto(`${APP_URL}/admin/usage`, { waitUntil: 'networkidle' });
@@ -116,7 +81,7 @@ async function main() {
   await page.waitForTimeout(1000);
   await shot(page, 'docs-guide');
 
-  // GIF: dataset filters (prefer Team admin app-shell — see scripts/recapture-datasets.mjs)
+  // GIF: dataset filters (prefer Admin app-shell — see scripts/recapture-datasets.mjs)
   await page.goto(`${APP_URL}/admin/datasets`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
   const ds = [];

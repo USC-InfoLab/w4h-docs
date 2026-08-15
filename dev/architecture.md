@@ -39,18 +39,17 @@ Platform-wide tables that are not trial-specific:
 - `audit_log` — append-only HIPAA audit ledger: API/notebook PHI access, super-admin activity, auth and ACL-boundary events (see ADR-011)
 - `sharing_requests` — workflow table for dataset sharing approvals
 
-### trial_\<id\> — per-trial schemas
+### trial_\<id\> — per-trial schemas (target isolation)
 
-Created automatically when a trial is registered. Every trial schema has the same table structure:
+Created when a trial/team isolation boundary is provisioned. Physical **data** tables live here (or in dataset-scoped `ds_*` schemas during the current transition). Platform **catalog and mapping** stay in `w4h` / later `w4h_app` ([ADR-003](ADR-003-dataset-table-model.md)).
 
-- `subjects` — enrolled participants
-- `datasets` — named collections of signal tables, with a `schema_def` (JSONB) and status
-- `dataset_tables` — manifest of physical tables belonging to each dataset
-- `wearable_data tables` — one table per signal type per dataset (e.g. `ds42_heart_rate`, `ds42_accelerometer`)
-- `trial_docs` — trial-specific documentation
-- `annotations` — researcher notes attached to subjects or time ranges
+Typical contents of an isolation schema:
 
-> **Note:** Signal tables use TimescaleDB hypertables partitioned on `(subject_id, ts)` for time-series performance at scale.
+- `subjects` — enrolled participants (when used)
+- Wearable / signal tables — typed physical tables; **column names are not forced** to a global layout
+- `trial_docs` / `annotations` — trial-local artifacts (as implemented)
+
+> **Note:** Time-series performance may use TimescaleDB on the mapped time column. GeoMTS roles (`subject`, `time`, optional geo, values) come from the **`w4h.tables` mapping**, not from mandatory physical names like `subject_id` / `ts` / `lat` / `lon`.
 
 ### w4h_global — cross-trial analytics schema
 
@@ -64,21 +63,25 @@ No data flows here automatically. A project manager explicitly publishes a datas
 
 ## Dataset model
 
-A dataset is a named namespace inside a trial schema. It contains one or more typed signal tables, registered in the `dataset_tables` manifest.
+A **dataset** is a catalog row in `w4h.datasets` (owning team, metadata, optional `schema_def` intent, ingest status). It owns one or more **physical signal tables** in an isolation schema. **Table/field metadata and GeoMTS role mapping** are registered in **`w4h.tables`** — one source of truth in the platform schema ([ADR-003](ADR-003-dataset-table-model.md), [ADR-008](ADR-008-geomts-data-model.md)).
 
 | Concept | Implementation |
 |---|---|
-| Dataset | Row in `trial_<id>.datasets` with `id`, `name`, `schema_def` (JSONB), `status` |
-| Signal table | Physical table: `trial_<id>.ds<dataset_id>_<signal_type>` |
-| Table manifest | Rows in `trial_<id>.dataset_tables`: `dataset_id`, `table_name`, `signal_type`, `columns_def` |
-| Sharing unit | A dataset (all its signal tables) shared as a set of views in `w4h_global` |
+| Dataset | `w4h.datasets` (`schema_def` = declared intent; live truth for registered tables is `w4h.tables`) |
+| Signal / import table | Physical relation in an isolation schema (e.g. `ds_*` or `trial_*`); familiar column names allowed |
+| Mapping registry | `w4h.tables`: dataset_id, schema/table identity, signal_type, mapping/columns_def (subject, time, optional geo, values), descriptions |
+| Sharing unit | A dataset (its registered tables) shared as a set of views/grants in `w4h_global` |
 
-Example signal tables for dataset 42 in trial A:
+Example — physical columns stay recognizable; mapping supplies GeoMTS roles:
 
 ```
-trial_a.ds42_heart_rate      (subject_id, ts, bpm)
-trial_a.ds42_accelerometer   (subject_id, ts, x, y, z)
-trial_a.ds42_sleep_stages    (subject_id, ts, stage)
+ds_<uuid>.fitbit_hr (id, date, timestamp, value)
+
+w4h.tables.mapping →
+  subject: id
+  time: combine [date, timestamp]
+  geo: null
+  values: [{ source: value, name: heart_rate, type: integer }]
 ```
 
 ---

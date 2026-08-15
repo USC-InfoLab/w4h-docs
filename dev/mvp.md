@@ -19,6 +19,8 @@ sort_order: 3
 
 **Document Status:** Draft v0.16
 
+> **Changelog (v0.16 mapping clarification):** GeoMTS is a **role mapping** over physical tables (`w4h.tables` in platform schema), not forced column rename to `subject_id`/`ts`/`lat`/`lon`. ADR-003 / ADR-008 / architecture dataset model revised 2026-08-14. D-03 updated.
+>
 > **Changelog (v0.15 → v0.16):** **ADR-014 Accepted** — **PHI-safe AI chat** (Claude): Cursor-like multi-chat; **team-scoped API keys** (team pays) + optional Super admin **platform key**; context chips; default **PHI-safe (strict)** egress filter with team setting. Expanded MVP §13.1 (AI-01a…, AI-13…AI-16). CTSI pilot: assistant supports knowledge-transfer / usability without central LLM budget.
 >
 > **Changelog (v0.14 → v0.15):** Documentation Quality assessments split into **platform Help** vs **project pages**. Account menu: **About** + **Report an issue** (email to `HELP_EMAIL`). Docs mention GitHub Issues for technical contributors (no PHI). UI adoption events (`user.login`, `session.start`, `page.view`) feed `/admin/usage`; unique users expanded (UI vs API). Admin home remains a thin snapshot.
@@ -209,7 +211,7 @@ sequenceDiagram
 
 ## 6. Dataset Management & GeoMTS Abstraction
 
-All datasets in the W4H Toolkit are represented using the **GeoMTS (Geospatial Multivariate Time Series)** abstraction, which treats wearable data as geotagged, multi-sensor time series collections. This enables unified querying, analysis, and modeling across heterogeneous device types (Fitbit, Apple Watch, ActiGraph, etc.).
+All datasets in the W4H Toolkit are interpreted using the **GeoMTS (Geospatial Multivariate Time Series)** abstraction: subject-anchored, multivariate time series with **optional** geospatial context. GeoMTS roles (`subject`, `time`, optional lat/lon, values) are applied through a **platform mapping registry** in `w4h` (`w4h.tables`) — physical tables keep researcher-/device-familiar column names and need not include lat/lon ([ADR-003](ADR-003-dataset-table-model.md), [ADR-008](ADR-008-geomts-data-model.md)).
 
 ### 6.1 Dataset Core
 
@@ -217,7 +219,7 @@ All datasets in the W4H Toolkit are represented using the **GeoMTS (Geospatial M
 |---|-------------|------------|-------------|
 | D-01 | Datasets have a `team_id` (owning team). | `✅ Stable` | `✅ Done` |
 | D-02 | Datasets have rich metadata: name, description, device type, sampling rate, subject count, date range, GeoMTS schema, IRB reference. | `✅ Stable` | `🚧 In progress` |
-| D-03 | All datasets conform to the GeoMTS abstraction layer. | `✅ Stable` | `🚩 Todo` |
+| D-03 | Datasets used for GeoMTS analysis have registered tables in `w4h.tables` with a role **mapping** (subject, time, optional geo, values). Physical column names are not required to be normalized. | `✅ Stable` | `🚧 In progress` |
 | D-04 | Original data is always preserved. Derived or modified data is stored separately (additive model). | `✅ Stable` | `🚩 Todo` |
 | D-05 | Each dataset version (original, derived) is tracked with provenance metadata. | `✅ Stable` | `🚩 Todo` |
 | D-06 | Datasets can be linked to one or more projects with per-link access type (`read` / `read_write`). Linkable set = project team’s owned datasets ∪ inbound shares ∪ datasets the actor admins on their other teams (linking those auto-creates a team share). | `✅ Stable` | `🚧 In progress` |

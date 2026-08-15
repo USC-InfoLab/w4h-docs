@@ -38,6 +38,7 @@ Prefer updating ADRs/MVP when changing roles, tenancy, datasets, or docs model �
 - Structural docs map: [`DOCS_INDEX.md`](./DOCS_INDEX.md) (generated; file → title — not a substitute for MVP/ADRs). Regenerate: `node scripts/generate-docs-index.mjs` when adding/renaming docs.
 - Keep status tables in `mvp.md` honest when features land.
 - Screenshots/GIFs: prefer existing `scripts/` capture helpers when updating UI docs.
+- Docs captures log into **seeded synthetic users** on the **`w4h-sample`** database (`dev/docs-fixtures.md`), not real emails and not `DB_DATABASE`. Playwright reads `w4h-docs/.env`, never `w4h-app/.env`. Serve the sample with `npm run start:sample` in **w4h-api**.
 
 ## Cross-repo changes
 

@@ -1,70 +1,111 @@
 ---
-title: ADR-003 — One physical table per signal type
+title: ADR-003 — Physical signal tables + platform mapping registry
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-07-04T23:10:40.000Z
+updated_at: 2026-08-14T00:00:00.000Z
 ---
 **Status:** Accepted  
 **Date:** 2026-07-04  
-**Deciders:** W4H architecture team
+**Revised:** 2026-08-14  
+**Deciders:** W4H architecture team  
+**Relates to:** [ADR-008](ADR-008-geomts-data-model.md) (GeoMTS roles via mapping), [ADR-001](ADR-001-schema-per-trial.md) (isolation schemas)
 
 ---
 
 ## Context
 
-Wearable devices produce heterogeneous time-series signals — heart rate, accelerometry, sleep stages, glucose, ECG, etc. Each signal type has different columns, sampling rates, and query patterns. We need a storage model for this data inside each trial schema.
+Wearable devices produce heterogeneous time-series signals — heart rate, accelerometry, sleep stages, glucose, ECG, etc. Each signal type has different columns, sampling rates, and query patterns.
 
-Two main options were considered:
+Researchers and device exports already use **diverse column names** (`id` vs `subject_id`, `date`+`time` vs `timestamp`, optional GPS). Forcing every physical table into a single canonical layout (`subject_id`, `ts`, `lat`, `lon`, …) makes tables harder to recognize and rejects valid datasets that have no geospatial columns.
 
-**Option A — One physical table per signal type per dataset**
+We still need:
 
-Each dataset gets a set of tables named `ds<id>_<signal_type>`, registered in a `dataset_tables` manifest:
+1. Efficient typed storage (not a single JSONB blob)
+2. One place the platform can discover tables and interpret GeoMTS roles
+3. Platform catalog metadata under the shared **`w4h`** schema (not buried only inside each isolation schema)
 
-```
-trial_a.ds42_heart_rate      (subject_id, ts, bpm)
-trial_a.ds42_accelerometer   (subject_id, ts, x, y, z)
-trial_a.ds42_sleep_stages    (subject_id, ts, stage)
-```
-
-**Option B — Single wide table with JSONB payload**
-
-All signals stored in one table with a `table_name` discriminator and a `payload` JSONB column:
-
-```
-trial_a.wearable_data (dataset_id, table_name, subject_id, ts, payload jsonb)
-```
+---
 
 ## Decision
 
-Use **Option A — one physical table per signal type**.
+### Storage: one physical table per signal (or logical table) per dataset
 
-Signal tables are created automatically by the platform when a dataset is loaded, based on the signal type definitions in `schema_def`. The `dataset_tables` table in each trial schema acts as the manifest, recording which physical tables belong to each dataset.
+Prefer **Option A** — separate typed PostgreSQL tables for distinct signals / imports — over a single wide JSONB payload table.
+
+Physical tables may live in an isolation schema (dataset-scoped `ds_*` today; trial-scoped `trial_*` remains the longer-term ADR-001 direction). **Column names stay as loaded** (or as the team prefers). The platform does **not** require renaming to `subject_id` / `ts` / `lat` / `lon`.
+
+### Metadata: one source of truth in `w4h`
+
+**Table and field metadata — including the GeoMTS role mapping — live in the platform schema `w4h`.**
+
+| Concept | Where |
+|--------|--------|
+| Dataset catalog | `w4h.datasets` (optional `schema_def` = declared intent) |
+| Physical / logical table registry | `w4h.tables` (one row per registered table) |
+| Role + field mapping | JSON on that registry row (e.g. `columns_def` / `mapping`) — **not** a separate GeoMTS encoding table |
+| Optional DB comments | `COMMENT ON TABLE` / `COMMENT ON COLUMN` kept in lockstep with the registry |
+
+Per-isolation-schema manifests (e.g. `{schema}.dataset_tables`) are **not** the authority. If present for local bookkeeping, they must not diverge from `w4h.tables`.
+
+### Mapping (not normalization)
+
+The registry maps **physical column names → GeoMTS roles**:
+
+| Role | Meaning | Required? |
+|------|---------|-----------|
+| `subject` | Participant key column | Yes for GeoMTS analysis |
+| `time` | Single timestamp column, or combine of date+time columns | Yes for time-series |
+| `geo_lat` / `geo_lon` | Latitude / longitude columns | Optional |
+| `value` (one or more) | Signal / measure columns | Yes (≥1) |
+
+Example registry mapping for a Fitbit-style heart-rate table that keeps native names and has **no** lat/lon:
+
+```json
+{
+  "signal_type": "heart_rate",
+  "subject": "id",
+  "time": { "combine": ["date", "timestamp"] },
+  "geo": null,
+  "values": [
+    { "source": "value", "name": "heart_rate", "type": "integer", "description": "BPM" }
+  ]
+}
+```
+
+Ingest, query helpers, viz, and ML use this mapping to interpret tables. Researchers can still `SELECT *` and recognize familiar columns.
+
+### Optional descriptions
+
+Human-readable table/field descriptions belong on the `w4h` registry (and may be mirrored as PostgreSQL comments). Descriptions are not a second independent schema.
+
+---
 
 ## Consequences
 
 **Positive:**
-- Typed columns enable efficient B-tree and TimescaleDB indexes
-- TimescaleDB hypertables work optimally on dedicated tables with a clear time column
-- Queries are simple SQL — no JSONB operators or casts
-- Schema evolution per signal type is independent (add a column to `ds42_heart_rate` without touching accelerometer data)
-- Cross-trial sharing via views is clean — one view per table, typed
+- Typed columns remain efficient and indexable
+- Teams keep familiar field names; datasets without GPS remain first-class
+- One platform SoT (`w4h.tables`) for catalog counts, project overview, and agents
+- Isolation schemas hold data; platform schema holds how to read that data
 
 **Negative / risks:**
-- Requires DDL automation — the platform must CREATE TABLE on dataset load and DROP TABLE on dataset deletion
-- Schema migrations for signal table structure must account for all existing `ds*_*` tables (enumerable via `dataset_tables`)
-- A dataset with many signal types creates many tables — acceptable at the hundreds-of-trials scale but worth monitoring
+- Query/ML layers must resolve roles via mapping (cannot assume fixed physical names)
+- Ingest/DDL paths must be the **only writers** of `w4h.tables` to avoid drift
+- Dual manifests (platform + in-schema) are forbidden as competing sources of truth
 
-## Signal table naming convention
+---
 
-```
-ds<dataset_id>_<signal_type>
-```
+## Signal / table identity
 
-- `dataset_id` is the integer primary key from `datasets`
-- `signal_type` is a lowercase slug (e.g. `heart_rate`, `accelerometer`, `sleep_stages`)
-- Tables live in the trial schema: `trial_a.ds42_heart_rate`
+- Each registered row points at a physical relation: `schema_name` + `table_name` (qualified as needed).
+- `signal_type` (or equivalent slug) labels the logical signal for UI and GeoMTS.
+- Naming of isolation schemas/tables may evolve (`ds_*` vs `trial_*`); the **mapping registry in `w4h` remains the constant**.
+
+---
 
 ## Alternatives not chosen
 
-- **JSONB payload table:** Rejected due to poor query performance at scale, inability to use TimescaleDB hypertables effectively, and loss of column-level typing. Acceptable as a staging/ingestion buffer but not for the primary analytical store.
-- **Partitioned single table (by signal_type):** Considered as a middle ground. Rejected because PostgreSQL declarative partitioning on a text discriminator still requires JSONB or a very wide column list to accommodate heterogeneous signals.
+- **JSONB payload table as primary store:** Rejected for analytics performance (see prior Option B).
+- **Forced physical normalization** to `(subject_id, ts, lat, lon, …)` on every table: Rejected — harms recognizability and excludes non-geo datasets.
+- **Manifest only inside each isolation schema** (`dataset_tables` as SoT): Rejected — platform catalog, hydrate, and cross-dataset tooling need metadata in `w4h`.
+- **Separate normalized “GeoMTS encoding” table for lat/lon/ts:** Rejected — roles are mapping metadata, not a second copy of the data.

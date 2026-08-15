@@ -7,35 +7,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
+import { assertSampleApiAcceptsLogin, loadCaptureCredentials, loginForCapture } from './lib/docs-capture-env.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DOCS_ROOT = path.resolve(__dirname, '..');
 const APP_ROOT = path.resolve(DOCS_ROOT, '../w4h-app');
 const { chromium } = createRequire(path.join(APP_ROOT, 'package.json'))('playwright');
 const OUT = path.join(DOCS_ROOT, 'media', 'whats-new');
-const APP_URL = process.env.W4H_APP_URL || 'http://localhost:5173';
+const creds = loadCaptureCredentials('superadmin');
+const { appUrl: APP_URL } = creds;
 
 if (!process.env.PLAYWRIGHT_BROWSERS_PATH) {
   process.env.PLAYWRIGHT_BROWSERS_PATH = path.join(os.homedir(), 'Library/Caches/ms-playwright');
 }
-
-function loadAppEnv() {
-  const envPath = path.join(APP_ROOT, '.env');
-  if (!fs.existsSync(envPath)) return {};
-  const out = {};
-  for (const line of fs.readFileSync(envPath, 'utf8').split(/\r?\n/)) {
-    const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
-    if (!m) continue;
-    let v = m[2];
-    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
-    out[m[1]] = v.replace(/\\\$/g, '$');
-  }
-  return out;
-}
-
-const env = loadAppEnv();
-const EMAIL = process.env.W4H_EMAIL || env.VITE_APP_ADMIN_EMAIL;
-const PASSWORD = process.env.W4H_PASSWORD || env.VITE_APP_ADMIN_PASSWORD;
 fs.mkdirSync(OUT, { recursive: true });
 
 function pngsToGif(framePaths, gifPath, duration = 700) {
@@ -68,21 +52,11 @@ async function fillGenericMail(page) {
   if (await helpEmail.count()) await helpEmail.fill('support@example.com');
 }
 
-async function login(page) {
-  await page.goto(`${APP_URL}/login`, { waitUntil: 'networkidle' });
-  await page.fill('#inputEmail', EMAIL);
-  await page.fill('#inputPassword', PASSWORD);
-  await Promise.all([
-    page.waitForURL((u) => !u.pathname.includes('/login'), { timeout: 15000 }),
-    page.click('button[type="submit"]'),
-  ]);
-  await page.waitForTimeout(600);
-}
-
 async function main() {
+  await assertSampleApiAcceptsLogin(creds);
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
-  await login(page);
+  await loginForCapture(page, creds);
   await hideOverlays(page);
 
   const setupFrames = [];

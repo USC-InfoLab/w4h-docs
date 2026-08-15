@@ -122,3 +122,10 @@ npm run test:e2e -- --debug
 ```sh
 npm run lint
 ```
+
+## Local docs screenshots
+
+Do not capture the UI while signed in as yourself, and do not seed fake users
+into your working database. `seed-docs` creates a separate **`w4h-sample`**
+Postgres database; serve it with `npm run start:sample`. Details:
+[docs-fixtures.md](docs-fixtures.md).

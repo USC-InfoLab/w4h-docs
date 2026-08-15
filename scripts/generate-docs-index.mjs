@@ -13,7 +13,7 @@ const ROOT = path.resolve(__dirname, '..')
 const OUT = path.join(ROOT, 'DOCS_INDEX.md')
 
 const SKIP_DIRS = new Set(['.git', 'node_modules', 'media', 'scripts'])
-const SKIP_FILES = new Set(['LICENSE', 'CONTRIBUTING.md'])
+const SKIP_FILES = new Set(['LICENSE', 'CONTRIBUTING.md', 'CLAUDE.md'])
 
 function walkMd(dir, base = ROOT) {
   if (!fs.existsSync(dir)) return []
@@ -102,6 +102,7 @@ Structural map of \`w4h-docs\` for agents and humans. **Index only** — not a s
 | ADR index | \`dev/ADR README.md\` |
 | Roles / ACL | \`dev/ADR-004-acl-roles.md\` |
 | Quick start (users) | \`quick-start.md\` |
+| Docs screenshots / fake users | \`dev/docs-fixtures.md\` |
 | Guides | \`guide/\` |
 
 ADRs in tree: **${adrs.length}**. Prefer MVP + relevant ADR before inventing product rules.

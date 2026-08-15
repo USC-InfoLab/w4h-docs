@@ -34,7 +34,7 @@ There is no database service. PostgreSQL is external, matching Flexible mode (se
 
 - Docker and Docker Compose
 - A reachable PostgreSQL instance, with credentials that can create schemas and tables
-- (Optional) the [`fft_approximate`](https://github.com/USC-InfoLab/fft_approximate) extension installed on that Postgres instance, if you plan to use approximate range queries. This is installed on the database directly and is not part of this Docker stack.
+- (Optional) the [`fft_approximate`](https://github.com/USC-InfoLab/fft_approximate) extension on that Postgres instance, if you plan to use approximate range queries. Install it on the database host (Linux, macOS, or Windows); see that repository’s README. It is not part of this Docker stack.
 
 ---
 
@@ -138,4 +138,4 @@ This should work out of the box. If it does not, check the `api` service logs fo
 - **Spark-enabled deployment** (Dep-02 / M6). This guide covers the standalone, non-Spark deployment only.
 - **TRE mode.** Not part of this deployment. See ADR-006.
 - **Notebook versioning.** Managed by you or your team, outside the platform.
-- **Installing `fft_approximate`.** A prerequisite on your Postgres instance, not part of this Docker stack.
+- **Installing `fft_approximate`.** A prerequisite on your Postgres instance (Linux, macOS, or Windows), not part of this Docker stack. Follow the [fft_approximate README](https://github.com/USC-InfoLab/fft_approximate).

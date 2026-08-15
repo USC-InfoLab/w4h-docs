@@ -12,12 +12,12 @@ This directory contains ADRs for the W4H wearables toolkit. Each file captures t
 |---|---|---|
 | [ADR-001](ADR-001-schema-per-trial.md) | Schema-per-trial isolation | Accepted |
 | [ADR-002](ADR-002-cross-trial-sharing.md) | Cross-trial / cross-team dataset sharing via w4h_global | Accepted |
-| [ADR-003](ADR-003-dataset-table-model.md) | One physical table per signal type | Accepted |
+| [ADR-003](ADR-003-dataset-table-model.md) | Physical signal tables + platform mapping registry (`w4h`) | Accepted |
 | [ADR-004](ADR-004-acl-roles.md) | Three-tier access control model (Super / Team / Project user) | Accepted |
 | [ADR-005](ADR-005-connection-pooling.md) | PgBouncer transaction-mode pooling | Draft |
 | [ADR-006](ADR-006-trusted-research-environment.md) | Trusted Research Environment (TRE) model | Draft |
 | [ADR-007](ADR-007-authentication-model.md) | Authentication model: human users and service accounts | Accepted |
-| [ADR-008](ADR-008-geomts-data-model.md) | GeoMTS as the unifying wearable data abstraction | Draft |
+| [ADR-008](ADR-008-geomts-data-model.md) | GeoMTS as the unifying wearable data abstraction (roles via mapping) | Accepted |
 | [ADR-009](ADR-009-redcap-integration.md) | REDCap as the primary data integration target for MVP | Draft |
 | [ADR-010](ADR-010-soft-delete-no-hard-deletion.md) | Soft-delete only: no hard deletion of users, teams, or datasets | Accepted |
 | [ADR-011](ADR-011-hipaa-audit-logging.md) | HIPAA audit logging model | Draft |
