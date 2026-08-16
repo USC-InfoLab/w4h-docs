@@ -13,7 +13,7 @@ updated_at: 2026-08-11T00:00:00.000Z
 This guide covers the standalone (non-Spark) Docker deployment of the W4H Toolkit. It runs the app, the api, and a preconfigured sample notebook against your own external PostgreSQL instance. See [ADR-015]({{APP_URL}}/docs/ADR-015-docker-deployment-packaging) for the packaging decisions behind this setup.
 
 <div class="alert alert-info">
-  <strong>Status:</strong> This guide describes the planned setup per ADR-015. Exact commands and image tags will be filled in once the prototype is built and validated.
+  <strong>Status:</strong> Prototype in <code>w4h-docker</code> — build from sibling repos or use published images when Dep-04 lands.
 </div>
 
 ---
@@ -40,45 +40,53 @@ There is no database service. PostgreSQL is external, matching Flexible mode (se
 
 ## 1. Get the deployment files
 
-```
-TBD: clone the deployment repository and its published compose file
-```
+Clone the `w4h-docker` repository alongside `w4h-api`, `w4h-app`, and `w4h-docs`, or use a published compose file when registry images are available.
 
 ---
 
-## 2. Configure your environment
+## 2. Start the stack
 
-Copy `.env.example` to `.env` and fill in your values.
+```bash
+cd w4h-docker
+docker compose build
+docker compose up -d
+```
+
+No database credentials are required before startup. Optional: copy `.env.example` → `.env` to change `APP_PORT` or public URLs.
+
+---
+
+## 3. Connect PostgreSQL (web UI)
+
+Open the app at **`http://127.0.0.1:5180`** (default). Avoid `localhost:5173` if another dev server uses that port on your machine.
+
+Enter your external PostgreSQL host, port, database name, user, and password. The API tests the connection, creates the `w4h` schema if needed, imports platform docs, and saves settings to a persisted file on the host (`w4h-docker/data/.env`).
+
+If PostgreSQL runs on the same machine as Docker (not in a container), use **`host.docker.internal`** as the host — not `localhost`.
+
+`TOKEN_SECRET` is generated automatically on first successful database setup.
+
+Optional compose `.env` overrides:
 
 | Variable | Purpose |
 |---|---|
-| `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USER`, `DB_PASSWORD` | Your external PostgreSQL connection |
-| `TOKEN_SECRET` | Signs web session tokens |
-| `PORT` | Port the `api` service listens on internally |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Email for invitations and password resets |
-| `BCRYPT_ROUNDS` | Password hashing cost (default 12) |
+| `APP_PORT` | Host port for the web UI (default `5173`) |
+| `APP_URL`, `API_PUBLIC_URL` | Public URLs for invites and docs placeholders |
+| `SMTP_*` | Outbound email (or configure later in Platform Admin → Settings) |
+
+You do not set `W4H_API_KEY` before first login. Generate it from the UI after setup (Step 5).
 
 <div class="alert alert-warning">
-  <strong>Do not commit your <code>.env</code> file.</strong> Add it to <code>.gitignore</code> before making any changes to this deployment under your own version control.
+  <strong>Do not commit <code>w4h-docker/data/.env</code>.</strong> It holds database credentials after UI setup.
 </div>
 
-You do not set `W4H_API_KEY` here. You generate it from the web UI after your first login (Step 5).
-
 ---
 
-## 3. Start the stack
+## 4. Create the Super admin
 
-```
-TBD: docker compose up -d
-```
+After the database connects, the UI prompts for the initial Super admin account. See [Quick Start]({{APP_URL}}/docs/quick-start) for the full first-login flow.
 
-On first start, the `api` service waits for Postgres, creates the schema, and imports the documentation you are reading now. This also happens on every later restart, so an updated image never leaves you looking at stale docs.
-
----
-
-## 4. First-time platform setup
-
-Open the app in your browser. A fresh install walks you through connecting to Postgres and creating the Super admin account. See [Quick Start]({{APP_URL}}/docs/quick-start) for the full first-login flow.
+On every later `api` restart (once configured), the service waits for Postgres, ensures schema, and re-imports docs from the image.
 
 ---
 
@@ -91,12 +99,14 @@ Log in, then go to **Profile → API keys → Generate new key**. Copy the key i
 ## 6. Run the sample notebook
 
 1. Find the Jupyter URL and token in the `notebooks` service logs:
+
+   ```bash
+   docker compose logs notebooks
    ```
-   TBD: docker compose logs notebooks
-   ```
+
 2. Open the sample notebook.
-3. Paste your API key where the first cell asks for it. The key is read from an environment variable, not stored in the notebook file.
-4. Run the notebook to see a first query against your own data.
+3. Set `W4H_API_KEY` in compose `.env` and restart `notebooks`, or paste the key where the notebook expects it via environment variable — not hardcoded in the file.
+4. Run the notebook to query the API.
 
 Any further changes you make to this notebook, or new notebooks you add, are yours to manage. W4H does not version or track notebook content.
 
@@ -121,7 +131,11 @@ The docs you see in the app are imported into Postgres from this repository at c
 
 **`api` keeps restarting / never becomes healthy**
 
-Check that your `.env` database credentials are correct and that Postgres is reachable from the container network.
+Usually a startup failure after database was configured — check `docker compose logs api` and Postgres reachability from the container.
+
+**Cannot connect to Postgres during setup wizard**
+
+Use `host.docker.internal` when Postgres is on the Docker host. Verify firewall and `pg_hba.conf`.
 
 **Docs look outdated after pulling a new image**
 
