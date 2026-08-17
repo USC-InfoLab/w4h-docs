@@ -1,25 +1,23 @@
 ---
 title: 🆕 What's New!
-description: Highlights from the latest W4H Toolkit release — screenshots and walkthroughs for researchers and operators.
+description: Highlights from W4H Toolkit 0.3.0 — 🧗 Peña Roja.
 updated_by: nocera@usc.edu
-updated_at: 2026-07-23T14:50:00.000Z
+updated_at: 2026-08-17T18:00:00.000Z
 ---
 
 <p class="lead">
-  Welcome to the <strong>July 2026</strong> update of the W4H Toolkit.
-  Below are the changes we think you'll notice most — with screenshots and short animations from the live app.
+  Welcome to <strong>🧗 Peña Roja</strong> — W4H Toolkit <strong>0.3.0</strong> (August 2026).
+  App and API share this version. Below are the changes you will notice most.
 </p>
 
 **Highlights**
 
-- [Sign in with email code](#sign-in-with-email-code) — passwordless one-time codes over SMTP
-- [Platform Admin shell & setup](#platform-admin-shell--setup) — Super admin home, SMTP, first team, invite PI
-- [Discoverable datasets](#discoverable-datasets) — browse what other teams publish without getting access yet
-- [About & Report an issue](#about--report-an-issue) — version info and feedback from your account menu
-- [Usage dashboard](#usage-dashboard) — adoption and study metrics for operators
-- [HIPAA audit log viewer](#hipaa-audit-log-viewer) — compliance ledger (separate from Usage)
-- [Setting up projects](#setting-up-projects) — multi-dataset projects, shares, dual-hat linking
-- [PHI-safe AI chat (design)](#phi-safe-ai-chat-design) — accepted architecture for the upcoming assistant
+- [PHI-safe AI chat](#phi-safe-ai-chat) — docked assistant with a default egress filter
+- [Contributions catalog](#contributions-catalog) — browse tools; no project notebook registry
+- [Sample Fitbit CSV](#sample-fitbit-csv) — paired sample package + importer
+- [Project dataset overview](#project-dataset-overview) — selected-dataset stats in the workspace
+- [Roles in the UI](#roles-in-the-ui) — Super admin · Admin · User
+- [Docker deployment](#docker-deployment) — standalone Compose stack against your Postgres
 
 > Tip: click any image to enlarge it in the docs browser.
 >
@@ -27,191 +25,100 @@ updated_at: 2026-07-23T14:50:00.000Z
 
 ---
 
-## Sign in with email code
+## PHI-safe AI chat
 
-Prefer not to type a password? On the sign-in page, choose **Login with email code**.
+The in-app assistant from [ADR-014]({{APP_URL}}/docs/ADR-014-ai-assistant-claude) is in this release — not design-only.
 
-![Password sign-in with email-code link](media/whats-new/login-password.png)
+Open it from the chat icon in the top nav, or with **⌘J** / **Ctrl+J**. The panel docks beside the page. It sends **page context** (shell, route, team/project names), not table rows.
 
-Enter your account email and click **Send code**. W4H emails a one-time 6-digit code (SMTP must be configured — see [Platform Admin shell & setup](#platform-admin-shell--setup)).
+- Default **PHI-safe (strict)** egress filter so raw wearable rows and obvious identifiers stay out of Claude prompts
+- Modes: **Help**, **Import**, **IRB**, **Analytics**
+- **Team** Anthropic key (lab pays) and optional Super admin **provisioned** platform key with a monthly token quota
+- Keys stay **masked**; the browser never holds the secret
 
-![Sign in with email code — enter email](media/whats-new/login-code-email.png)
-
-Then enter the code from your inbox to finish signing in.
-
-![Sign in with email code — enter verification code](media/whats-new/login-code-verify.png)
-
-![Flow: password login → email code → verify](media/whats-new/login-code-flow.gif)
-
-*Animation: password screen → request code → enter code.*
-
-You can always return to password sign-in with **← Back to password sign in**.
+**Permissive** mode is not PHI-safe. Guide: [PHI-safe AI chat]({{APP_URL}}/docs/ai-chat).
 
 ---
 
-## Platform Admin shell & setup
+## Contributions catalog
 
-**Super admins** always work in the **Platform Admin** shell (`W4H Toolkit Admin`) — there is no toggle into the researcher app shell. Use it to bootstrap the platform, not to run individual trials.
+W4H does **not** register project-owned notebooks. Browse **Contributions** (`/contributions`) instead — a catalog of tools (publisher, kind, language, git README). Super admins curate listings in Platform Admin.
 
-### Welcome setup guide
+First-party listings include **w4h-sample-fitbit-csv**, **w4h-sample-fitbit-csv-importer**, **w4h-load-json**, and **fft_approximate** (external Postgres extension — install on the database; W4H does not vendor it).
 
-On first visit (or when no teams exist yet), Platform Admin home shows a short checklist:
-
-1. **Settings → SMTP** — invitations and login codes
-2. **Teams → Add Team** — the PI's initial team
-3. **Users → Invite** — invite the PI as **Team admin** on that team
-4. The Team admin then creates projects, datasets, and further teams in the **app shell**
-
-![Platform Admin home with setup guide](media/whats-new/admin-setup-guide.png)
-
-### SMTP (required for email)
-
-Configure the mailer under **Settings** so invites and email codes work.
-
-![Settings — SMTP configuration](media/whats-new/admin-settings-smtp.png)
-
-### Create the initial team
-
-![Add Team form](media/whats-new/admin-teams-add.png)
-
-### Invite the PI as Team admin
-
-![Invite User form](media/whats-new/admin-users-invite.png)
-
-![Setup walkthrough: home → SMTP → Add Team → Invite](media/whats-new/admin-setup-flow.gif)
-
-*Animation: setup guide → SMTP → Add Team → Invite User.*
-
-After onboard, the PI self-serves further trials. Super admin does **not** approve each study. See [Setting Up Projects]({{APP_URL}}/docs/setting-up-projects).
+Put your own analysis repo links in **project pages**. See [Contributions]({{APP_URL}}/docs/sample-packages) and [ADR-018]({{APP_URL}}/docs/ADR-018-contributions-catalog).
 
 ---
 
-## Discoverable datasets
+## Sample Fitbit CSV
 
-In the **app shell** (Team admin), open **Datasets**. Other teams can **see** datasets you mark as discoverable (name, description, owning team) under **Others** — without being able to link or query them until you **share**.
+Paired repos ([ADR-016]({{APP_URL}}/docs/ADR-016-paired-sample-importer-repos)):
 
-Super admins can open the same catalog from **Datasets** in Platform Admin (all teams).
-
-Use the catalog filters to focus your work:
-
-| Filter | What you see |
+| Repo | What it is |
 |---|---|
-| **Mine** | Datasets your team owns |
-| **Others** | Discoverable peer datasets (metadata only) |
-| **Shared** | Datasets explicitly shared with your team (linkable) |
-| **All** | The combined list |
+| `w4h-sample-fitbit-csv` | Synthetic Fitbit CSV package + `manifest.yaml` |
+| `w4h-sample-fitbit-csv-importer` | Notebook + CLI that loads via the **W4H API** (not direct Postgres) |
+
+Use a personal `W4H_API_KEY` in local `.env` only. Do not commit credentials or real PHI.
+
+---
+
+## Project dataset overview
+
+Dataset stats and overview always appear in the context of a **selected dataset** in the project workspace (master–detail). Summaries use cached metadata — the UI does not run live full-table `COUNT(*)` scans.
+
+GeoMTS remains a **role mapping** over physical tables (`w4h.tables`), not a forced rename to `subject_id` / `ts` / `lat` / `lon`. See [ADR-003]({{APP_URL}}/docs/ADR-003-dataset-table-model) and [ADR-008]({{APP_URL}}/docs/ADR-008-geomts-data-model).
 
 ![Dataset catalog with Mine / Others / Shared filters](media/whats-new/datasets-catalog.png)
 
-![Switching dataset catalog filters](media/whats-new/datasets-filters.gif)
-
-*Animation: switching All → Mine → Others → Shared.*
-
-Discoverability is **not** a share. To let another team use a dataset in a project, open the dataset and manage **Shares**.
+Discoverable vs shared is unchanged from July: **Others** is metadata only until you **share**. [Setting Up Projects]({{APP_URL}}/docs/setting-up-projects).
 
 ---
 
-## About & Report an issue
+## Roles in the UI
 
-Open your **account menu** (avatar) for product info and feedback.
+Labels are **Super admin** · **Admin** · **User**. There is no “Project admin” in the product UI.
 
-### About
-
-See the product name, app version, SC-CTSI funding, investigators, and links to the public GitHub repositories.
-
-![About W4H modal](media/whats-new/about-modal.png)
-
-![Opening About from the account menu](media/whats-new/about-menu.gif)
-
-*Animation: account menu → About.*
-
-### Report an issue
-
-**App-shell** users (Team admins / members) can email platform administrators (`HELP_EMAIL`) from **Report an issue** in the account menu. Super admins receive those reports in Platform Admin and do not see the report form themselves.
-
-**Please do not include PHI** or identifiable study data. Technical contributors may prefer [GitHub Issues](https://github.com/USC-InfoLab/w4h-docs/issues){target="_blank"} for docs/code (still no PHI).
-
----
-
-## Usage dashboard
-
-Platform operators get a **Usage** page at `/admin/usage` for SC-CTSI study metrics: adoption (UI logins, sessions, page views), API key hygiene, latency, and related sections.
-
-This is **not** the HIPAA audit log — it answers "is the platform being used?" not "who accessed which PHI?"
-
-![Usage dashboard](media/whats-new/usage-dashboard.png)
-
-![Changing the Usage dashboard period](media/whats-new/usage-period.gif)
-
-*Animation: changing the reporting period (7 / 30 / 90 / 14 days).*
-
-Platform Admin **home** stays a thin snapshot with deep links into Usage and Audit:
+- **Super admin** stays in the Platform Admin shell
+- **Admins** (team admins) and **Users** work in the app shell
+- Project membership is still `owner` / `editor` / `viewer` under the hood
 
 ![Platform Admin home](media/whats-new/admin-home.png)
 
----
-
-## HIPAA audit log viewer
-
-Super admins can browse the compliance **audit log** at `/admin/audit-log` — filters for period, action, and resource type, plus search.
-
-![HIPAA audit log viewer](media/whats-new/audit-log.png)
-
-Use **Audit** for compliance review; use **Usage** for adoption and study metrics. Details: [HIPAA Compliance]({{APP_URL}}/docs/hipaa-compliance) · [ADR-011]({{APP_URL}}/docs/ADR-011-hipaa-audit-logging).
+Welcome guides: [Super admin]({{APP_URL}}/docs/welcome-super-admin) · [Admin]({{APP_URL}}/docs/welcome-admin) · [User]({{APP_URL}}/docs/welcome-user).
 
 ---
 
-## Setting up projects
+## Docker deployment
 
-New guide for Team admins: create projects, link multiple datasets (owned, shared, or dual-hat), and understand share vs discoverable.
-
-![Setting Up Projects guide in Help](media/whats-new/docs-guide.png)
-
-Read: [Setting Up Projects]({{APP_URL}}/docs/setting-up-projects).
-
----
-
-## PHI-safe AI chat (design)
-
-We accepted [ADR-014]({{APP_URL}}/docs/ADR-014-ai-assistant-claude) for an in-app **PHI-safe AI chat** (Claude):
-
-- Cursor-like multi-chat threads
-- **Team-paid** Anthropic keys (team pays) + optional Super admin platform key
-- Context chips for the page you're on
-- Default **PHI-safe (strict)** egress filter so ePHI does not leave the platform by accident
-
-Implementation is in progress — this release documents the decision so teams can plan keys and policy.
+Prototype Compose packaging in `w4h-docker` runs the app, API, and a convenience Jupyter service against **your** PostgreSQL (no bundled database). See [Docker Deployment]({{APP_URL}}/docs/docker-deployment) and [ADR-015]({{APP_URL}}/docs/ADR-015-docker-deployment-packaging).
 
 ---
 
 ## Also in this release
 
-### Brand & UI
-- USC **Cardinal + Gold** brand layer across the app
-- Super admin **UI kit** at `/admin/style-guide`
-- [ADR-013]({{APP_URL}}/docs/ADR-013-brand-theming-white-label) — CSS tokens now; white-label later
+### About
+Account menu **About** now shows this release name with the version (**🧗 Peña Roja 0.3.0**).
 
-### Roles & access
-- Per-team roles (`team_admin` / `member`) with dual-hat membership
-- Project roles simplified to **owner** / **editor** / **viewer**
-- Super admin always works in **Platform Admin** (no app-shell toggle)
+![About W4H modal](media/whats-new/about-modal.png)
 
-### Docs browser
-- Mobile **Menu** + TOC for small screens
-- Cleaner titles and ADR ordering
+### Docs & Help
+- [PHI-safe AI chat]({{APP_URL}}/docs/ai-chat) and [Contributions]({{APP_URL}}/docs/sample-packages) guides
+- Monthly archive: July notes moved to [Release notes — July 2026]({{APP_URL}}/docs/2026-07)
 
 ### For developers
-Architecture and requirements live in [MVP]({{APP_URL}}/docs/mvp) (v0.16) and the [ADR index]({{APP_URL}}/docs/ADR-README).
+Architecture and requirements: [MVP]({{APP_URL}}/docs/mvp) and the [ADR index]({{APP_URL}}/docs/ADR-README). After deploy, **refresh Help** from Platform Admin so this page is imported.
 
 ---
 
 ## Previous releases
 
-Older months are archived (same idea as VS Code’s versioned Updates pages) so this page stays focused on the **current** month:
+Older months are archived (same idea as VS Code’s versioned Updates pages) so this page stays focused on the **current** release:
 
 | Release | Notes |
 |---|---|
-| **July 2026** | This page |
+| **August 2026 — 🧗 Peña Roja 0.3.0** | This page |
+| [July 2026]({{APP_URL}}/docs/2026-07) | Email code login, Platform Admin setup, discoverable datasets, Usage, audit log |
 | [June 2026]({{APP_URL}}/docs/2026-06) | Projects rename, ACL, notebook keys, email login codes |
 | [Earlier 2026]({{APP_URL}}/docs/earlier-2026) | May Projects hub, March–April auth, initial platform |
 

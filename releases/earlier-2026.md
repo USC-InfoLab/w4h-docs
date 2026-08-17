@@ -47,4 +47,4 @@ Archive of **March–May 2026** and the initial platform. For the latest release
 
 ---
 
-[← What's New (latest)]({{APP_URL}}/docs/whats-new) · [← June 2026]({{APP_URL}}/docs/2026-06)
+[← What's New (latest)]({{APP_URL}}/docs/whats-new) · [← July 2026]({{APP_URL}}/docs/2026-07) · [← June 2026]({{APP_URL}}/docs/2026-06)

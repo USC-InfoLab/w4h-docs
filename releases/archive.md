@@ -2,7 +2,7 @@
 title: Release notes archive
 description: Monthly W4H Toolkit release notes — current month on What's New, older months here.
 updated_by: nocera@usc.edu
-updated_at: 2026-07-23T17:00:00.000Z
+updated_at: 2026-08-17T18:00:00.000Z
 sort_order: 10
 ---
 
@@ -10,7 +10,8 @@ Like [VS Code Updates](https://code.visualstudio.com/updates){target="_blank"}, 
 
 | Release | Page |
 |---|---|
-| **July 2026 (current)** | [What's New]({{APP_URL}}/docs/whats-new) |
+| **August 2026 — 🧗 Peña Roja (current)** | [What's New]({{APP_URL}}/docs/whats-new) |
+| July 2026 | [Release notes — July 2026]({{APP_URL}}/docs/2026-07) |
 | June 2026 | [Release notes — June 2026]({{APP_URL}}/docs/2026-06) |
 | March–May 2026 & earlier | [Earlier 2026]({{APP_URL}}/docs/earlier-2026) |
 
