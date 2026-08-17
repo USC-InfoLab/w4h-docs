@@ -70,9 +70,12 @@ Optional compose `.env` overrides:
 
 | Variable | Purpose |
 |---|---|
-| `APP_PORT` | Host port for the web UI (default `5173`) |
+| `APP_PORT` | Host port for the web UI (default `5180`) |
 | `APP_URL`, `API_PUBLIC_URL` | Public URLs for invites and docs placeholders |
 | `SMTP_*` | Outbound email (or configure later in Platform Admin → Settings) |
+| `W4H_API_KEY` | Personal API key for the preloaded importer notebook (after Step 5) |
+| `W4H_DATASET_ID` | Catalog dataset id the importer targets (default `sample-fitbit-csv`) |
+| `VITE_JUPYTER_URL` | URL baked into the app for **Managed JupyterLab** (default `http://127.0.0.1:8888`) |
 
 You do not set `W4H_API_KEY` before first login. Generate it from the UI after setup (Step 5).
 
@@ -98,15 +101,19 @@ Log in, then go to **Profile → API keys → Generate new key**. Copy the key i
 
 ## 6. Run the sample notebook
 
+The `notebooks` service starts with the stack. It preloads the **w4h-sample-fitbit-csv-importer** contribution (same listing as in-app **Contributions**).
+
 1. Find the Jupyter URL and token in the `notebooks` service logs:
 
    ```bash
    docker compose logs notebooks
    ```
 
-2. Open `import_fitbit_csv.ipynb` (the **w4h-sample-fitbit-csv-importer** contribution, plus the paired sample CSVs baked into the image).
-3. Set `W4H_API_KEY` in compose `.env` and restart `notebooks`. Create the target dataset in the UI first (default id `sample-fitbit-csv`, overridable with `W4H_DATASET_ID`).
+2. Open `import_fitbit_csv.ipynb` at that URL (append the `token` query parameter from the logs).
+3. Set `W4H_API_KEY` in compose `.env` and `docker compose restart notebooks`. Create the target dataset in the UI first (default id `sample-fitbit-csv`, overridable with `W4H_DATASET_ID`).
 4. Run the notebook to ingest via the API. Do not hardcode the key in a cell.
+
+The project workspace **Managed JupyterLab** link uses `VITE_JUPYTER_URL` (default `http://127.0.0.1:8888`). You still need the token from the logs to authenticate.
 
 Further notebooks you add are yours. W4H does not version or track project notebook content ([ADR-018]({{APP_URL}}/docs/ADR-018-contributions-catalog)). This Compose service is not managed JupyterHub (TRE, [ADR-006]({{APP_URL}}/docs/ADR-006-trusted-research-environment)).
 
