@@ -25,6 +25,9 @@ This directory contains ADRs for the W4H wearables toolkit. Each file captures t
 | [ADR-013](ADR-013-brand-theming-white-label.md) | Brand theming: CSS tokens now, white-label / multi-brand later | Accepted |
 | [ADR-014](ADR-014-ai-assistant-claude.md) | PHI-safe AI chat (Claude): team keys, Cursor-like UX, egress filter | Accepted |
 | [ADR-015](ADR-015-docker-deployment-packaging.md) | Docker deployment packaging (standalone, non-Spark) | Draft |
+| [ADR-016](ADR-016-paired-sample-importer-repos.md) | Paired sample and importer git repositories | Draft |
+| [ADR-017](ADR-017-community-package-registry.md) | Community package registry (Samples sandbox) | Draft |
+| [ADR-018](ADR-018-contributions-catalog.md) | Contributions catalog; no project notebook registry | Accepted |
 
 ## What is an ADR?
 

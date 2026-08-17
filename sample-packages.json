@@ -1,0 +1,4 @@
+{
+  "moved_to": "registry/packages.json",
+  "note": "The curated package index lives at registry/packages.json (ADR-017). This file is a pointer only."
+}

@@ -55,7 +55,7 @@ Product name in the UI: **PHI-safe AI chat** (badge / mode label when the egress
 - Per thread: **rename**, **pin**, **delete**, resume history, streaming replies.
 - **Context chips** (visible, removable before send): shell (admin | app), route, role, active team/project/dataset (ids + names), current Help doc slug / project-doc title when relevant.
 - Persistent **PHI-safe** indicator when `ai_phi_filter = strict` (default); clear warning when permissive.
-- **Modes** (same substrate): Help · Ops (admin) · Analysis (code) · IRB draft — map to AI-03…AI-08; research tools AI-09…AI-12 attach as guided flows later, not separate apps.
+- **Modes** (same substrate): Help · Import · IRB · Analytics (API `analysis`) — map to AI-03…AI-08; research tools AI-09…AI-12 attach as guided flows later, not separate apps. Help is product how-to; Analytics is methods and notebook code for data already in W4H.
 - Chats are **private to the user** (no share-thread in MVP).
 
 ### 3. Context packing (docs / domain / shell aware)
@@ -130,3 +130,6 @@ See MVP §13.1 (AI-01a…AI-02c, AI-13…AI-16). AI-05…AI-12 remain modes/skil
 |------|--------|
 | 2026-07-22 | Initial draft — Claude provider, team + platform keys, Cursor-like multi-chat, strict PHI egress filter, CTSI pilot notes. |
 | 2026-07-22 | **Accepted.** Named default **PHI-safe AI chat**; UI badge / settings labels; filter remains default ON. |
+| 2026-08-16 | Implementation: team BYOK + Super admin provisioned platform key with **per-team monthly token quota**; Help / Import / IRB / Process modes. Streaming and open-in-tab remain follow-ups (AI-01a). |
+| 2026-08-16 | System prompt: **role-based answers** (Super admin · Admin · User) and **Markdown links** to Help / project pages / Contributions from live indexes only. |
+| 2026-08-16 | Chat mode **Process** renamed **Analytics** (Help = platform how-to; Analytics = methods/code). |

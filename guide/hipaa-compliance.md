@@ -157,7 +157,9 @@ The **"Enable anonymous usage data"** toggle in **Settings → Usage Tracking** 
 
 ## PHI-safe AI chat
 
-The optional in-app assistant ([ADR-014]({{APP_URL}}/docs/ADR-014-ai-assistant-claude)) is labeled **PHI-safe AI chat** when the egress filter is in its default **strict** mode.
+User-facing explanation, blocked patterns, and a demo script: [PHI-safe AI chat]({{APP_URL}}/docs/ai-chat). Design: [ADR-014]({{APP_URL}}/docs/ADR-014-ai-assistant-claude).
+
+The optional in-app assistant is labeled **PHI-safe AI chat** when the egress filter is in its default **strict** mode.
 
 | Mode | Who sets it | Behavior |
 |------|-------------|----------|

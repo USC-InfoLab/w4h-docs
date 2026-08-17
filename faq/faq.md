@@ -7,7 +7,7 @@ updated_at: 2026-07-22T00:00:00.000Z
 
 ## What is W4H?
 
-W4H is a toolkit for managing wearable health data workflows for clinical research — projects, datasets, notebooks, and documentation.
+W4H is a toolkit for managing wearable health data workflows for clinical research — projects, datasets, contributions, and documentation.
 
 ## How do I get started?
 

@@ -2,10 +2,10 @@
 title: Docker Deployment
 description: Run W4H standalone (non-Spark) with Docker Compose. app, api, and a preconfigured sample notebook, against your own external PostgreSQL.
 card_title: Docker Deployment
-is_feature_card: true
+is_feature_card: false
 sort_order: 1
 updated_by: limbasiabb@gmail.com
-updated_at: 2026-08-11T00:00:00.000Z
+updated_at: 2026-08-16T00:00:00.000Z
 ---
 
 ## Overview
@@ -24,7 +24,7 @@ This guide covers the standalone (non-Spark) Docker deployment of the W4H Toolki
 |---|---|---|
 | `app` | Web UI | The port you publish in `.env` |
 | `api` | Data API, auth, docs, audit log | Internal only, via `app` |
-| `notebooks` | Preconfigured Jupyter with one sample notebook | `127.0.0.1` by default, token-protected |
+| `notebooks` | Convenience Jupyter preloaded with the **w4h-sample-fitbit-csv-importer** contribution | `127.0.0.1` by default, token-protected |
 
 There is no database service. PostgreSQL is external, matching Flexible mode (see [ADR-006]({{APP_URL}}/docs/ADR-006-trusted-research-environment)).
 
@@ -40,7 +40,7 @@ There is no database service. PostgreSQL is external, matching Flexible mode (se
 
 ## 1. Get the deployment files
 
-Clone the `w4h-docker` repository alongside `w4h-api`, `w4h-app`, and `w4h-docs`, or use a published compose file when registry images are available.
+Clone the `w4h-docker` repository alongside `w4h-api`, `w4h-app`, `w4h-docs`, `w4h-sample-fitbit-csv`, and `w4h-sample-fitbit-csv-importer`, or use a published compose file when registry images are available.
 
 ---
 
@@ -104,11 +104,11 @@ Log in, then go to **Profile → API keys → Generate new key**. Copy the key i
    docker compose logs notebooks
    ```
 
-2. Open the sample notebook.
-3. Set `W4H_API_KEY` in compose `.env` and restart `notebooks`, or paste the key where the notebook expects it via environment variable — not hardcoded in the file.
-4. Run the notebook to query the API.
+2. Open `import_fitbit_csv.ipynb` (the **w4h-sample-fitbit-csv-importer** contribution, plus the paired sample CSVs baked into the image).
+3. Set `W4H_API_KEY` in compose `.env` and restart `notebooks`. Create the target dataset in the UI first (default id `sample-fitbit-csv`, overridable with `W4H_DATASET_ID`).
+4. Run the notebook to ingest via the API. Do not hardcode the key in a cell.
 
-Any further changes you make to this notebook, or new notebooks you add, are yours to manage. W4H does not version or track notebook content.
+Further notebooks you add are yours. W4H does not version or track project notebook content ([ADR-018]({{APP_URL}}/docs/ADR-018-contributions-catalog)). This Compose service is not managed JupyterHub (TRE, [ADR-006]({{APP_URL}}/docs/ADR-006-trusted-research-environment)).
 
 ---
 

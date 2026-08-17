@@ -4,7 +4,8 @@ description: Get started with the W4H Toolkit — platform setup, projects, and 
 is_feature_card: true
 card_title: ⚡️ Quick Start
 action_label: Get started
-sort_order: 0
+card_order: 5
+sort_order: 3
 ---
 
 ## About the W4H Toolkit
@@ -13,10 +14,11 @@ The **W4H Toolkit** is a research platform for ingesting, organizing, and analyz
 
 At a glance, the platform provides:
 
-- **Projects** — scoped workspaces for a study or analysis effort, with members, datasets, notebooks, and documentation
-- **Datasets** — registered collections of wearable signal tables, managed by platform admins
-- **Notebooks** — tracked analysis workflows (Jupyter, VS Code, RStudio) linked to a project repository
+- **Projects** — scoped workspaces for a study or analysis effort, with members, datasets, and documentation
+- **Contributions** — curated tools (notebooks, CLI, scripts, Postgres extensions) with publisher and git README
+- **Datasets** — ingested collections of wearable signal tables (research catalogs; plus the Samples sandbox demos)
 - **Docs** — this documentation browser, initialized from the `w4h-docs` source repository
+- **PHI-safe AI chat** — docked assistant (⌘J) for import, processing, and IRB questions; default filter keeps identifiers and raw rows out of Claude ([PHI-safe AI chat]({{APP_URL}}/docs/ai-chat))
 - **Audit logging** — an append-only record of privileged actions for HIPAA-aligned deployments ([HIPAA Compliance]({{APP_URL}}/docs/hipaa-compliance))
 
 For the full architectural picture — schema-per-trial isolation, dataset sharing, ACL, and deployment modes — see [Architecture]({{APP_URL}}/docs/architecture) and the [ADR index]({{APP_URL}}/docs/ADR-001-schema-per-trial).
@@ -28,10 +30,16 @@ For the full architectural picture — schema-per-trial isolation, dataset shari
 | Role | Shell | What you can do |
 |---|---|---|
 | **Super admin** | **Platform Admin** only (`W4H Toolkit Admin`) | Bootstrap the platform: SMTP, initial teams, invite Admins, audit, usage, settings. Does **not** run day-to-day trials. |
-| **Admin** | App shell (`W4H Toolkit`) | Own trials: teams, datasets, projects, members, shares. |
-| **User** | App shell | Work in assigned projects. |
+| **Admin** | App shell (`W4H Toolkit`) | Own trials: teams, dataset declarations, ingest via Contributions, projects, members, shares. |
+| **User** | App shell | Work in assigned projects: analytics on **loaded** datasets (tables present). Cannot add datasets or edit raw tables. |
 
 There is **no** “toggle Admin UI” for Super admins — they land in Platform Admin on login and stay there. Admins never enter Platform Admin. See [ADR-004]({{APP_URL}}/docs/ADR-004-acl-roles) and MVP §3.0 (onboarding).
+
+**Welcome checklists (next-step cards on Home and in Help):**
+
+- Super admin → [Welcome — Super admin]({{APP_URL}}/docs/welcome-super-admin)
+- Admin (PI) → [Welcome — Admin]({{APP_URL}}/docs/welcome-admin)
+- User → [Welcome — User]({{APP_URL}}/docs/welcome-user)
 
 ---
 
@@ -49,6 +57,7 @@ After login, finish these one-time configuration steps under **Settings** (`{{AP
 |---|---|---|
 | Verify database connection | Settings → Database | Confirm credentials are saved and the connection is healthy |
 | Configure SMTP (optional) | Settings → Mail Server | Required for password resets and user invitations — see [SMTP Configuration]({{APP_URL}}/docs/smpt-configuration) |
+| Optional Claude key | Settings → PHI-safe AI chat | Platform key + per-team monthly token quota for provisioned chat; teams may instead paste their own Anthropic key |
 | Refresh documentation | Settings → Documentation Management → **Refresh Docs** | Imports pages from the `w4h-docs` source repository into the platform |
 
 Then bootstrap the first PI:
@@ -66,41 +75,40 @@ For local development setup (cloning repos, `npm run dev`, environment variables
 
 ## 2. Create a project (Team admin)
 
-Projects are the central unit of work — every dataset link, notebook, and member assignment is scoped to a project ([ADR-001]({{APP_URL}}/docs/ADR-001-schema-per-trial)).
+Projects are the central unit of work — every dataset link and member assignment is scoped to a project ([ADR-001]({{APP_URL}}/docs/ADR-001-schema-per-trial)).
 
 For multi-dataset setups (owned datasets, inbound shares, dual-hat Team admins), see **[Setting Up Projects]({{APP_URL}}/docs/setting-up-projects)**.
 
 1. In the **app shell**, go to **Projects** and create a project (owning team required).
 2. Open the project → **Linked datasets** and add datasets.
-3. Open the project **workspace** for notebooks, members, and tokens.
+3. Open the project **workspace** for members, documentation, and tokens.
 
 In the workspace you can manage:
 
-- **Notebooks** — register analysis notebooks with repo URL, branch, and launcher (Jupyter, VS Code, RStudio)
-- **Project documentation** — private Markdown pages for this project (not platform Help)
+- **Project documentation** — private Markdown pages for this project (not platform Help). Use pages (and your own git repo) to point at analysis notebooks; W4H does not register them ([ADR-018]({{APP_URL}}/docs/ADR-018-contributions-catalog)).
 - **Members** — researchers and collaborators assigned to the project
 - **Database access tokens** — short-lived tokens for programmatic data access from scripts and notebooks
-- **Fine-grained ACL** — optional rules on top of member roles (dataset, notebook, doc permissions)
+- **Fine-grained ACL** — optional rules on top of member roles (dataset, doc permissions)
 
 ---
 
 ## 3. Register datasets (admin)
 
-Datasets are managed globally by admins, then linked to projects.
+Declaring a dataset (a name on the team or project) is not the same as loading it.
 
-1. Go to **Admin → Datasets**.
-2. Review imported datasets — each dataset has signal tables registered in a manifest (one physical table per signal type; see [ADR-003]({{APP_URL}}/docs/ADR-003-dataset-table-model)).
-3. Link datasets to the appropriate project from the project edit screen.
+1. Create or add the dataset on the **project** (declaration) or under **Datasets**.
+2. Ingest tables with an importer from [Contributions]({{APP_URL}}/contributions) into **your team** — not the Samples sandbox. Use your personal API key.
+3. Confirm **tables** on the dataset overview — that means it is loaded. Mapping details: [ADR-003]({{APP_URL}}/docs/ADR-003-dataset-table-model).
 
-Researchers only see datasets that are linked to projects they belong to.
+Researchers only see datasets that are linked to projects they belong to. **Users** do not ingest.
 
 ---
 
 ## 4. Invite users (admin)
 
 1. Configure **SMTP** and set **`APP_URL`** to your public app base URL (required for invitation links) — see [SMTP Configuration]({{APP_URL}}/docs/smpt-configuration).
-2. Go to **Admin → Users** and click **Invite User**.
-3. Enter email, optional name, role (`super_admin`, `team_admin`, or `project_user`), and team when required.
+2. Go to **Users** and click **Invite User**.
+3. Enter email, optional name, and role. **Admin** can ingest dataset tables. **User** can run analytics on loaded data.
 4. Click **Send Invite**. The invitee receives a **time-limited link** to set their own password and activate the account. Passwords are never sent by email.
 5. Pending invites can be **resent** or **revoked** from the user edit screen.
 
@@ -110,12 +118,19 @@ User accounts are never hard-deleted — they can be discontinued and resumed la
 
 ## 5. Run your first analysis (researcher)
 
-Once you are assigned to a project:
+You are enrolled in the **W4H Samples** sandbox (synthetic demos). Super admin seeds those datasets; you **re-run** notebooks — you do not re-ingest.
+
+1. Open **Contributions** (`{{APP_URL}}/contributions`) and search (for example, “CSV” or “fft”).
+2. Generate a **personal API key** (**Profile → API keys**). Do not use a shared team key.
+3. Open the listing’s git repo (README is rendered in-app and lives in the repo). Query the canonical sandbox dataset; skip write/`replace` cells unless you are Super admin seeding.
+4. For **your** trial data, open **Projects**, issue a project token or use your key on datasets linked to that project.
+
+Once you are assigned to a research project ([Welcome — User]({{APP_URL}}/docs/welcome-user)):
 
 1. Log in and open **Projects** (`{{APP_URL}}/projects`).
 2. Click your project to open the workspace.
 3. **Issue a project token** — in the *Database access* panel, click **Issue project token**. Copy the token immediately; it is shown once and expires after two days.
-4. **Open a notebook** — click a launcher button (Jupyter, VS Code, etc.) on a registered notebook, or connect from your local environment using the token.
+4. **Run analysis** — clone a [Contribution]({{APP_URL}}/contributions) or your team’s git repo and connect with the token. W4H does not host or track project notebooks.
 
 ### Flexible mode (default)
 
@@ -154,6 +169,9 @@ Documentation is organized into doc types — each type is a folder in the sourc
 
 **Guides** (this section) cover platform setup and policy:
 
+- [Welcome — Super admin]({{APP_URL}}/docs/welcome-super-admin) — platform bootstrap checklist
+- [Welcome — Admin]({{APP_URL}}/docs/welcome-admin) — trial next steps
+- [Welcome — User]({{APP_URL}}/docs/welcome-user) — what Users can and cannot do
 - [Quick Start]({{APP_URL}}/docs/quick-start) — you are here
 - [HIPAA Compliance]({{APP_URL}}/docs/hipaa-compliance) — security controls for regulated deployments
 - [SMTP Configuration]({{APP_URL}}/docs/smpt-configuration) — outbound email setup
@@ -167,8 +185,9 @@ Documentation is organized into doc types — each type is a folder in the sourc
 | I want to… | Go to… |
 |---|---|
 | Set up the database | Login page (first run) or Platform Admin → Settings → Database |
-| Onboard a PI | Platform Admin → Teams (initial team) → Users → Invite as Team admin |
-| Create a project | App shell → Projects (Team admin) |
+| Onboard a PI | Platform Admin → Teams (initial team) → Users → Invite as Team admin · [Welcome — Super admin]({{APP_URL}}/docs/welcome-super-admin) |
+| Create a project | App shell → Projects (Team admin) · [Welcome — Admin]({{APP_URL}}/docs/welcome-admin) |
+| Work in a project as User | App shell → Project / Contributions · [Welcome — User]({{APP_URL}}/docs/welcome-user) |
 | Manage datasets | App shell → Datasets (Team admin) |
 | Add a team member | App shell → Users → Invite (Team admin) |
 | Issue a data-access token | Project workspace → Database access |

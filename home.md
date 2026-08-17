@@ -9,7 +9,62 @@ updated_at: 2026-06-19T20:53:36.000Z
   <a href="{{APP_URL}}/docs/quick-start">⚡️ Quick Start</a> guide.
 </p>
 
-<p>The docs sidebar is organized by topic. Start with <strong>Guides</strong> for how the platform works, or <strong>Developer</strong> for architecture and ADRs.</p>
+<p>Start with the <strong>next-step cards</strong> for your role, then use <strong>Guides</strong> in the sidebar for detail. Open <strong>PHI-safe AI chat</strong> (<kbd>⌘J</kbd> / <kbd>Ctrl+J</kbd>) for import, processing, and IRB questions.</p>
+
+<h2>Welcome — next steps</h2>
+
+<p>Super admin bootstraps platform access. Admins (PIs) set up the trial in the app shell. Users work in assigned projects.</p>
+
+<div class="container-fluid px-0 mt-2 mb-4">
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <div class="fw-bold fs-5 mb-2">Super admin</div>
+          <p class="small text-muted">Platform Admin only — SMTP, first team, invite the PI. Not trial setup.</p>
+          <ol class="small mb-3">
+            <li>Settings → Mail Server</li>
+            <li>Teams → Add Team</li>
+            <li>Users → Invite as Team admin</li>
+            <li>Settings → Refresh Docs</li>
+          </ol>
+          <a class="btn btn-sm btn-primary" href="{{APP_URL}}/docs/welcome-super-admin">Open Super admin checklist</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <div class="fw-bold fs-5 mb-2">Admin</div>
+          <p class="small text-muted">App shell — projects, link datasets, adapt ingest notebooks, invite members. Super admin does not do this for you.</p>
+          <ol class="small mb-3">
+            <li>Projects → Add Project</li>
+            <li>Link datasets, then adapt an ingest notebook from Contributions</li>
+            <li>Invite Admins (ingest) and Users (analytics)</li>
+            <li>Chat icon in the nav, if chat is configured</li>
+          </ol>
+          <a class="btn btn-sm btn-primary" href="{{APP_URL}}/docs/welcome-admin">Open Admin guide</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <div class="fw-bold fs-5 mb-2">User</div>
+          <p class="small text-muted">Assigned projects only. Analyze loaded datasets. You cannot add datasets or edit raw tables.</p>
+          <ol class="small mb-3">
+            <li>Open your project</li>
+            <li>Confirm tables on the dataset overview (loaded)</li>
+            <li>Run analytics from Contributions</li>
+            <li>Chat icon in the nav, if chat is configured</li>
+          </ol>
+          <a class="btn btn-sm btn-primary" href="{{APP_URL}}/docs/welcome-user">Open User guide</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <h2>Key Concepts</h2>
 
@@ -18,7 +73,7 @@ updated_at: 2026-06-19T20:53:36.000Z
 <ul>
   <li><strong>Projects</strong> — scoped workspaces for a study or analysis effort (<a href="{{APP_URL}}/projects">Projects hub</a>)</li>
   <li><strong>Datasets</strong> — registered collections of wearable signal tables, linked to projects</li>
-  <li><strong>Notebooks</strong> — tracked analysis workflows (Jupyter, VS Code, RStudio)</li>
+  <li><strong>Contributions</strong> — curated notebooks, CLI, scripts, and Postgres extensions (<a href="{{APP_URL}}/contributions">catalog</a>)</li>
   <li><strong>Docs</strong> — this documentation browser, organized by topic below</li>
 </ul>
 
@@ -52,13 +107,13 @@ updated_at: 2026-06-19T20:53:36.000Z
     </tr>
     <tr>
       <td><strong>Examples</strong></td>
-      <td>Quick Start, HIPAA Compliance, SMTP Configuration</td>
-      <td>Import a dataset, issue a project token, run your first notebook</td>
+      <td>Welcome — Super admin / Welcome — Admin / Welcome — User, Quick Start, HIPAA Compliance, SMTP Configuration</td>
+      <td>Import a dataset, issue a project token, run a contribution notebook</td>
     </tr>
   </tbody>
 </table>
 
-<p>Not sure where to begin? Start with the <a href="{{APP_URL}}/docs/quick-start">Quick Start</a> guide — it covers platform setup end to end. Come back to the other guides when you need detail on a specific topic.</p>
+<p>Not sure where to begin? Use the <strong>Welcome</strong> cards above, or the <a href="{{APP_URL}}/docs/quick-start">Quick Start</a> for a longer tour.</p>
 
 <h2>Pick Your Learning Path</h2>
 
@@ -71,10 +126,12 @@ updated_at: 2026-06-19T20:53:36.000Z
         <div class="fw-bold fs-5 mb-2">📖 Read the guides</div>
         <p class="mb-2">Guides walk you through every aspect of the platform in full detail. Good starting points:</p>
         <ul class="mb-0">
-          <li><a href="{{APP_URL}}/docs/quick-start">Quick Start</a> — first-time setup and core workflows</li>
-          <li><a href="{{APP_URL}}/docs/setting-up-projects">Setting Up Projects</a> — multi-dataset projects, shares, dual-hat linking</li>
-          <li><a href="{{APP_URL}}/docs/hipaa-compliance">HIPAA Compliance</a> — audit logging, authentication, data handling</li>
-          <li><a href="{{APP_URL}}/docs/smpt-configuration">SMTP Configuration</a> — email for invitations and password resets</li>
+          <li><a href="{{APP_URL}}/docs/welcome-super-admin">Welcome — Super admin</a> — platform bootstrap checklist</li>
+          <li><a href="{{APP_URL}}/docs/welcome-admin">Welcome — Admin</a> — trial next steps</li>
+          <li><a href="{{APP_URL}}/docs/welcome-user">Welcome — User</a> — what Users can and cannot do</li>
+          <li><a href="{{APP_URL}}/docs/quick-start">Quick Start</a> — longer tour of core workflows</li>
+          <li><a href="{{APP_URL}}/docs/setting-up-projects">Setting Up Projects</a> — multi-dataset projects and shares</li>
+          <li><a href="{{APP_URL}}/docs/hipaa-compliance">HIPAA Compliance</a> — audit logging and data handling</li>
         </ul>
       </div>
     </div>

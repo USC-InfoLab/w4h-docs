@@ -66,7 +66,7 @@ Sharing applies to **datasets**, never to projects in MVP.
 
 1. Team admin B’s dataset list gains that row labeled **"Shared by [Team A]"** (S-05, D-07).
 2. B links it to a **Team B–owned** project for B’s own analysis — **or** A, having received a reciprocal share the other way, links both owned and inbound-shared datasets to an **Team A–owned** project.
-3. B does **not** see A’s project list or notebooks solely because of the share.
+3. B does **not** see A’s project list, project pages, or analysis repos solely because of the share.
 
 **Optional pull path (ADR-002 request/approve):** Team B may request access; Team A’s admin approves. Same end state: share agreement + linkable dataset for the recipient. Push is the default self-service for MVP; request/approve remains for formal dual control.
 

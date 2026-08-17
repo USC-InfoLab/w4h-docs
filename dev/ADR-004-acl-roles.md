@@ -70,7 +70,7 @@ Product UI on a project roster is **Admin** or **User**. Super admin is platform
 | UI label | Stored as | Typical use |
 |---|---|---|
 | **Admin** | `owner` | Manage the project (members, linked datasets, settings); at least one required |
-| **User** | `editor` (legacy `viewer` also shows as User) | Work in the project: analytics, notebooks, linked datasets |
+| **User** | `editor` (legacy `viewer` also shows as User) | Work in the project: analytics on linked datasets, project pages |
 
 These are **not** a platform tier. Legacy project membership `admin` maps to `owner`. Legacy `viewer` is treated as User in the UI.
 

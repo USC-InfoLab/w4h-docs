@@ -10,8 +10,12 @@ Agent instructions for the Wearables for Health (W4H) multi-repo workspace.
 | **w4h-app** | Vue 3 + Vite web UI |
 | **w4h-api** | Express API + PostgreSQL schema / ACL |
 | **w4h-utils** | Scripts, CLI helpers, utility notebooks |
-| **w4h-datasets** | Sample / synthetic CSV datasets |
-| **w4h-notebooks** | Example Jupyter workflows |
+| **w4h-datasets** | Legacy sample CSVs (migrating to `w4h-sample-*` repos) |
+| **w4h-sample-fitbit-csv** | Fitbit CSV sample package + manifest |
+| **w4h-sample-fitbit-csv-importer** | Fitbit CSV importer (notebook + CLI) |
+| **w4h-notebooks** | Index of sample notebooks (legacy); new tools are one repo per contribution |
+| **w4h-load-json** | First-party JSON ingest notebook |
+| **fft_approximate** | External Postgres extension (listed in Contributions) |
 
 Open these together via `w4h-repos.code-workspace` when changing cross-cutting behavior.
 
@@ -20,6 +24,7 @@ Open these together via `w4h-repos.code-workspace` when changing cross-cutting b
 - Product requirements & impl status: `dev/mvp.md`
 - Architecture & ADRs: `dev/architecture.md`, `dev/ADR-*.md`
 - User-facing setup: `quick-start.md`, `guide/`
+- Community **Contributions** catalog: `w4h.contributions` (in-app `/contributions`, ADR-018). Help is contribute-only.
 
 Prefer updating ADRs/MVP when changing roles, tenancy, datasets, or docs model — do not invent conflicting product rules in code comments alone.
 

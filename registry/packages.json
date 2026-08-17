@@ -1,0 +1,5 @@
+{
+  "deprecated": true,
+  "note": "Live catalog is w4h.contributions (ADR-018). This file is not the source of truth.",
+  "packages": []
+}

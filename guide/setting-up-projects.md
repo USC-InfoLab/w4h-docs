@@ -7,14 +7,16 @@ sort_order: 2
 is_feature_card: true
 card_title: Setting Up Projects
 action_label: Read the guide
+card_order: 4
 ---
 
 <p class="lead">
-  A <strong>project</strong> is a workspace for analysis (members, linked datasets, notebooks).
+  A <strong>project</strong> is a workspace for analysis (members, linked datasets, project pages).
   Datasets stay owned by a <strong>team</strong>; projects <em>link</em> them — they do not move ownership.
+  Analysis notebooks live in git; browse reusable tools under <a href="{{APP_URL}}/contributions">Contributions</a>.
 </p>
 
-This guide is for **Admins** (and Super admins reading for context). It covers single-team multi-dataset projects and cross-team setups via **shares**. Design details: [ADR-012]({{APP_URL}}/docs/ADR-012-project-dataset-linking).
+This guide is for **Admins** (and Super admins reading for context). First-week checklist: [Welcome — Admin]({{APP_URL}}/docs/welcome-admin). It covers single-team multi-dataset projects and cross-team setups via **shares**. Design details: [ADR-012]({{APP_URL}}/docs/ADR-012-project-dataset-linking).
 
 **Shells:** Admins work in the **app shell** (`W4H Toolkit`). Super admins stay in **Platform Admin** (`W4H Toolkit Admin`) for bootstrap only — they do not toggle into the app shell.
 
@@ -48,9 +50,11 @@ flowchart LR
 | Request platform access (new PI) | Prospective PI | Access request form (Draft T-16) |
 | Onboard PI | Super admin | Fulfill request → Team admin invite + **initial team** (Draft T-17) |
 | Create further teams / trials | Team admin (PI) | **Teams → Add Team** after onboard (Draft T-15) — Super admin does **not** approve each trial |
-| Create / own datasets | Team admin | **Datasets → Add Dataset** |
 | Create a project | Team admin | **Projects → Add Project** |
-| Link datasets | Team admin / project owner | Project **Linked datasets** |
+| Create / own datasets | Team admin | **Datasets → Add Dataset** (name/catalog). Tables appear after ingest. |
+| Ingest tables | Team admin / project Admin | [Contributions]({{APP_URL}}/contributions) — adapt an ingest notebook; use the importer CLI for cron / incremental sync |
+| Link datasets | Team admin / project owner | Project **Datasets** (declarations only — not ingest) |
+| Run analytics | Project User (or Admin) | Contributions analysis tools against **loaded** (tables present) datasets |
 | Share a dataset to another team | Owning Team admin | Dataset edit → **Shares** |
 
 ### Onboarding vs trial setup
@@ -66,9 +70,10 @@ Use this when all study datasets already belong to **one** team (the usual case)
 ### Steps
 
 1. Open **Projects → Add Project** and set the **owning team** to that team.
-2. Open the project → **Linked datasets**.
-3. **Add** each dataset you need (any number).
-4. Add **Members** from that team: **Admin** (manages the study) or **User** (works in it). Super admin is not assigned on a project.
+2. Open the project → **Datasets**.
+3. **Add** each dataset you need (any number). Linking does not load tables.
+4. Adapt an ingest notebook from Contributions for your export (CLI in the same repo for incremental updates). Tables on the dataset overview mean it is loaded.
+5. Add **Members** from that team: **Admin** (can ingest dataset tables) or **User** (can run analytics). Super admin is not assigned on a project.
 
 ```mermaid
 flowchart TD
@@ -76,8 +81,9 @@ flowchart TD
   CreateProj --> Link1[Link dataset D1]
   Link1 --> Link2[Link dataset D2]
   Link2 --> LinkN[Link dataset Dn…]
-  LinkN --> Members[Add project members]
-  Members --> Done([Ready for notebooks / analysis])
+  LinkN --> Ingest[Ingest tables via Contributions]
+  Ingest --> Members[Add project members]
+  Members --> Done([Ready for analysis])
 ```
 
 **Picker contents for Team T:** datasets owned by T, plus inbound shares to T, plus datasets you **admin** on your other teams (see Path C).
@@ -182,10 +188,11 @@ flowchart TD
 
 | Screen | What to do |
 |---|---|
+| **Contributions** | Ingest (Admins) or analytics (Users). Sandbox re-run is not a per-user ingest. |
 | **Datasets** | Filters **All / Mine / Others / Shared**. Create catalogs; set **Discoverable**; manage **Shares** on edit. |
 | **Projects → Add** | Name, description, **owning team**. |
-| **Project edit → Linked datasets** | Add/remove datasets; labels show This team / Shared by… / Your team · … |
-| **Project edit → Members** | Only users on the owning team. |
+| **Project edit → Datasets** | Add/remove **declarations**; labels show This team / Shared by… / Your team · … Ingest is via Contributions. |
+| **Project edit → Members** | **Admin** ingests tables; **User** runs analytics. Only users on the owning team. |
 | **Dataset edit → Shares** | Push share to another team; revoke. Overview: `/admin/datasets/shares`. |
 
 ---

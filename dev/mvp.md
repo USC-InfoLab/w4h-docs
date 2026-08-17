@@ -7,7 +7,7 @@ sort_order: 3
 ---
 **Protocol Version:** 1
 
-**Date Updated:** July 22, 2026
+**Date Updated:** August 16, 2026
 
 **Title:** W4H Toolkit — Validating and Promoting the W4H Toolkit
 
@@ -17,8 +17,13 @@ sort_order: 3
 
 **Funding:** SC CTSI Pilot Funding Program
 
-**Document Status:** Draft v0.16
+**Document Status:** Draft v0.19
 
+> **Changelog (v0.18 → v0.19):** **Contributions catalog** (ADR-018): drop `project_notebooks`; in-app catalog is `w4h.contributions` (publisher, kind, language, repo README). `fft_approximate` listed as an external Postgres extension. Ingest notebooks `w4h-load-csv` / `w4h-load-json`. D-14/D-25 retargeted; project workspace no longer tracks notebooks.
+> **Changelog (v0.17 → v0.18):** **PHI-safe AI chat** shipped (ADR-014): docked Cursor-like panel; team BYOK Anthropic keys; Super admin **provisioned** platform key with **per-team monthly token quota**; Help / Import / IRB / Process modes; strict PHI egress filter. AI-01…AI-04, AI-13…AI-16, AI-05…AI-08 (IRB drafting mode) marked in progress/done as applicable.
+>
+> **Changelog (v0.16 → v0.17):** **Community package registry** (ADR-017 Draft): in-app **Packages** browse/search (`registry/packages.json`); Help is contribute-by-PR, not a page per package. **W4H Samples** sandbox — Super admin seeds canonical demo datasets; members auto-enroll and re-run analysis with **personal** API keys (no shared team key; no per-user sample ingest). D-14/D-25 rewritten; D-28–D-30 added. ADR-016 listing decision points at ADR-017.
+>
 > **Changelog (v0.16 mapping clarification):** GeoMTS is a **role mapping** over physical tables (`w4h.tables` in platform schema), not forced column rename to `subject_id`/`ts`/`lat`/`lon`. ADR-003 / ADR-008 / architecture dataset model revised 2026-08-14. D-03 updated.
 >
 > **Changelog (v0.15 → v0.16):** **ADR-014 Accepted** — **PHI-safe AI chat** (Claude): Cursor-like multi-chat; **team-scoped API keys** (team pays) + optional Super admin **platform key**; context chips; default **PHI-safe (strict)** egress filter with team setting. Expanded MVP §13.1 (AI-01a…, AI-13…AI-16). CTSI pilot: assistant supports knowledge-transfer / usability without central LLM budget.
@@ -237,9 +242,15 @@ All datasets in the W4H Toolkit are interpreted using the **GeoMTS (Geospatial M
 | D-11 | Import datasets via **REDCap** (see §9). | `✅ Stable` | `🚩 Todo` |
 | D-12 | **Super admin** or **Team admin** (team membership role on the owning team) can create datasets and ingest data via the privileged path (catalog + signal-table DDL via `w4h_platform`). | `✅ Stable` | `🚩 Todo` |
 | D-13 | **Team members** who are not Team admin ingest data via **API key** only (no direct DB / DDL) when so authorized (project membership + key scope). | `✅ Stable` | `🚧 In progress` |
-| D-14 | Data ingestion notebooks available per dataset for script-based ETL pipelines. | `✅ Stable` | `🔁 In review` |
+| D-14 | Catalog first-party tools (ADR-018): paired **w4h-sample-fitbit-csv** + **w4h-sample-fitbit-csv-importer** (ADR-016), **w4h-load-json**, and listed **`fft_approximate`** Postgres extension (not vendored into the API). | `✅ Stable` | `🚧 In progress` |
 | D-15 | Ingestion logs stored with timestamp, user, row count, and status. | `✅ Stable` | `🚩 Todo` |
 | D-22 | **Ingest delegation (ACL/capability):** a Team admin may grant a team `member` permission to create/ingest datasets for that team **without** elevating them to `team_admin` (e.g. PI delegates wearable ETL to a student). This is finer-grained than per-team RBAC; exact grant model TBD (team capability flag vs resource ACL). | `⚠️ Draft` | `🚩 Todo` |
+| D-25 | **Contributions catalog** in `w4h.contributions` (ADR-018): publisher, one or more kinds (`notebook` \| `cli` \| `script` \| `postgres_extension`), language, git repo, README. Super admin CRUD; authenticated browse (`GET /contributions`). Help is contribute-only, not a page per tool. | `✅ Stable` | `🚧 In progress` |
+| D-26 | Importer repos support **incremental sync** (append/delta CSV) with documented cron path. | `✅ Stable` | `🚧 In progress` |
+| D-27 | Importer credentials via **environment / local `.env` only** — API keys never in git (ADR-007). | `✅ Stable` | `🚧 In progress` |
+| D-28 | **W4H Samples sandbox:** platform team owns one canonical ingested demo per curated sample. Auto-enroll all accounts as team `member` + sandbox project **viewer**. **Super admin only** seeds/replaces canonical tables. Members re-run analysis notebooks (read). Concurrent query OK; concurrent ingest not allowed. Synthetic data only. | `✅ Stable` | `🚧 In progress` |
+| D-29 | Contribute a package by **PR** to `registry/packages.json` (plus git repos). No in-app publish UI in MVP. | `✅ Stable` | `🚧 In progress` |
+| D-30 | Sandbox notebook access uses each user’s **personal API key** scoped by Samples project membership. No shared sample-team key in multi-user deployments. | `✅ Stable` | `🚩 Todo` |
 
 ### 6.3 API Key Data Access
 
@@ -412,7 +423,7 @@ Hierarchy and authoring match platform docs **within the project**: page types/g
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
 | Doc-08 | Project documentation pages are stored in a dedicated table separate from platform `docs`; each row has a `project_id` and is owned by that project only. | `✅ Stable` | `✅ Done` |
-| Doc-09 | Within a project, pages support the same hierarchy functionality as platform docs: typed groupings (doc types), sort order, sidebar nav, slug/title, Markdown/HTML/TOC, and Markdown editor with preview for create/edit. | `✅ Stable` | `🚩 Todo` |
+| Doc-09 | Within a project, pages support the same hierarchy functionality as platform docs: typed groupings (doc types), sort order, sidebar nav, slug/title, Markdown/HTML/TOC, and Markdown editor with preview for create/edit. | `✅ Stable` | `🚧 In progress` |
 | Doc-10 | Project pages may include protocol descriptions, data dictionaries, analysis notes, and similar project materials. | `✅ Stable` | `🚩 Todo` |
 | Doc-11 | **Default access from project membership:** any project member can **read, create, edit, reorder, and delete** project documentation pages from the project workspace (no Admin UI required). Super admin can manage pages for any project. | `✅ Stable` | `✅ Done` |
 | Doc-12 | **ACL:** Project ACL rules must support `resource_type = doc` with `view` / `edit` (and optional `resource_key` for a specific page). Defaults from Doc-11 apply when no ACL rule matches; explicit allow/deny rules may further restrict or grant access on a locked page. | `✅ Stable` | `🚧 In progress` |
@@ -441,19 +452,19 @@ See [ADR-014](ADR-014-ai-assistant-claude.md) (**Accepted**) for **PHI-safe AI c
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
-| AI-01 | Embedded **PHI-safe AI chat** accessible from any authenticated page (app shell and Platform Admin). Cursor-like docked panel; optional open-in-tab. Persistent **PHI-safe** badge when filter is strict. | `✅ Stable` | `🚩 Todo` |
-| AI-01a | Multi-chat per user: create threads, rename, pin, delete, resume history; streaming replies. | `✅ Stable` | `🚩 Todo` |
-| AI-01b | Chat history stored server-side, scoped to the owning user (no shared threads in MVP). | `✅ Stable` | `🚩 Todo` |
-| AI-02 | Context-aware: shell (admin vs app), route, user role, active team / project / dataset metadata. | `✅ Stable` | `🚩 Todo` |
-| AI-02a | Visible **context chips** (removable before send); docs-aware when viewing Help or project pages; domain primer (GeoMTS / trials). | `✅ Stable` | `🚩 Todo` |
-| AI-02b | **Claude** via server-side proxy. **Team Claude API key** configured by Team admin (team pays). Optional **platform Claude key** for Super admin Platform Admin use only. | `✅ Stable` | `🚩 Todo` |
-| AI-02c | Modes on one substrate: Help · Ops · Analysis · IRB (AI-05…AI-08 attach here; AI-09…AI-12 later). | `⚠️ Draft` | `🚩 Todo` |
-| AI-03 | Answers questions about platform features, schemas, and workflows; cites Help / project doc slugs when grounded. | `✅ Stable` | `🚩 Todo` |
-| AI-04 | Can generate notebook code snippets for common data tasks (filtering, plotting, aggregation) without pasting raw PHI rows. | `✅ Stable` | `🚩 Todo` |
-| AI-13 | **PHI-safe mode (default):** egress filter **strict** — allowlist metadata + docs; block subject IDs, raw timeseries, query cells; no row-fetch tools into prompts. UI label: **PHI-safe AI chat**. | `✅ Stable` | `🚩 Todo` |
-| AI-14 | Team (and platform) setting `ai_phi_filter`: **PHI-safe (strict)** (default) \| **Permissive** (confirmed paste / metadata only; still no bulk row injection). Permissive requires Team admin (or Super admin for platform key) and shows a warning (not PHI-safe). | `✅ Stable` | `🚩 Todo` |
-| AI-15 | Blocked sends recorded as `ai.chat_blocked` in `usage_events`; successful turns as `ai.chat`. PHI-class tool use under permissive mode also audited (ADR-011). | `✅ Stable` | `🚩 Todo` |
-| AI-16 | Rate/token budgets per team (and platform); Super admin may disable AI platform-wide. Empty state when no key for active context. | `✅ Stable` | `🚩 Todo` |
+| AI-01 | Embedded **PHI-safe AI chat** accessible from any authenticated page (app shell and Platform Admin). Cursor-like docked panel; optional open-in-tab. Persistent **PHI-safe** badge when filter is strict. | `✅ Stable` | `🚧 In progress` |
+| AI-01a | Multi-chat per user: create threads, rename, pin, delete, resume history; streaming replies. | `✅ Stable` | `🚧 In progress` |
+| AI-01b | Chat history stored server-side, scoped to the owning user (no shared threads in MVP). | `✅ Stable` | `✅ Done` |
+| AI-02 | Context-aware: shell (admin vs app), route, user role, active team / project / dataset metadata. | `✅ Stable` | `✅ Done` |
+| AI-02a | Visible **context chips** (removable before send); docs-aware when viewing Help or project pages; domain primer (GeoMTS / trials). | `✅ Stable` | `✅ Done` |
+| AI-02b | **Claude** via server-side proxy. **Team Claude API key** configured by Team admin (team pays). Optional **platform Claude key** for Super admin Platform Admin use only. | `✅ Stable` | `✅ Done` |
+| AI-02c | Modes on one substrate: Help · Ops · Analysis · IRB (AI-05…AI-08 attach here; AI-09…AI-12 later). | `⚠️ Draft` | `🚧 In progress` |
+| AI-03 | Answers questions about platform features, schemas, and workflows; cites Help / project doc slugs when grounded. | `✅ Stable` | `🚧 In progress` |
+| AI-04 | Can generate notebook code snippets for common data tasks (filtering, plotting, aggregation) without pasting raw PHI rows. | `✅ Stable` | `🚧 In progress` |
+| AI-13 | **PHI-safe mode (default):** egress filter **strict** — allowlist metadata + docs; block subject IDs, raw timeseries, query cells; no row-fetch tools into prompts. UI label: **PHI-safe AI chat**. | `✅ Stable` | `✅ Done` |
+| AI-14 | Team (and platform) setting `ai_phi_filter`: **PHI-safe (strict)** (default) \| **Permissive** (confirmed paste / metadata only; still no bulk row injection). Permissive requires Team admin (or Super admin for platform key) and shows a warning (not PHI-safe). | `✅ Stable` | `✅ Done` |
+| AI-15 | Blocked sends recorded as `ai.chat_blocked` in `usage_events`; successful turns as `ai.chat`. PHI-class tool use under permissive mode also audited (ADR-011). | `✅ Stable` | `✅ Done` |
+| AI-16 | Rate/token budgets per team (and platform); Super admin may disable AI platform-wide. Empty state when no key for active context. | `✅ Stable` | `✅ Done` |
 
 ### 13.2 IRB Grant Assistant
 
@@ -461,10 +472,10 @@ Modes / guided flows on the §13.1 substrate (ADR-014) — not separate chat pro
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
-| AI-05 | AI assistant guides researchers through drafting IRB submission documents. | `✅ Stable` | `🚩 Todo` |
-| AI-06 | Provides templates and guidance for wearable-specific IRB sections (data privacy, HIPAA considerations, device descriptions). | `✅ Stable` | `🚩 Todo` |
-| AI-07 | Pre-populates IRB fields from project metadata (PI name, team, dataset types, IRB protocol ID). | `✅ Stable` | `🚩 Todo` |
-| AI-08 | Generates a draft Data Management Plan (DMP) based on the project's dataset configuration. | `✅ Stable` | `🚩 Todo` |
+| AI-05 | AI assistant guides researchers through drafting IRB submission documents. | `✅ Stable` | `🚧 In progress` |
+| AI-06 | Provides templates and guidance for wearable-specific IRB sections (data privacy, HIPAA considerations, device descriptions). | `✅ Stable` | `🚧 In progress` |
+| AI-07 | Pre-populates IRB fields from project metadata (PI name, team, dataset types, IRB protocol ID). | `✅ Stable` | `🚧 In progress` |
+| AI-08 | Generates a draft Data Management Plan (DMP) based on the project's dataset configuration. | `✅ Stable` | `🚧 In progress` |
 
 ### 13.3 Research AI Tools
 

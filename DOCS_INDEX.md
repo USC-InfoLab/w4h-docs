@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-08-15
+- Generated: 2026-08-17
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -18,7 +18,7 @@ Structural map of `w4h-docs` for agents and humans. **Index only** — not a sub
 | Docs screenshots / fake users | `dev/docs-fixtures.md` |
 | Guides | `guide/` |
 
-ADRs in tree: **16**. Prefer MVP + relevant ADR before inventing product rules.
+ADRs in tree: **19**. Prefer MVP + relevant ADR before inventing product rules.
 
 ## Root
 
@@ -49,6 +49,9 @@ ADRs in tree: **16**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/ADR-013-brand-theming-white-label.md` | ADR-013 — Brand theming: CSS tokens now, white-label later |
 | `dev/ADR-014-ai-assistant-claude.md` | ADR-014 — PHI-safe AI chat (Claude), team keys |
 | `dev/ADR-015-docker-deployment-packaging.md` | ADR-015 — Docker deployment packaging (standalone, non-Spark) |
+| `dev/ADR-016-paired-sample-importer-repos.md` | ADR-016 — Paired sample and importer repositories |
+| `dev/ADR-017-community-package-registry.md` | ADR-017 — Community package registry |
+| `dev/ADR-018-contributions-catalog.md` | ADR-018 — Contributions catalog; no project notebook registry |
 | `dev/architecture.md` | Architecture |
 | `dev/developer-setup.md` | Developer Setup |
 | `dev/docs-fixtures.md` | Local docs fixtures |
@@ -59,10 +62,15 @@ ADRs in tree: **16**. Prefer MVP + relevant ADR before inventing product rules.
 
 | File | Title |
 |------|-------|
+| `guide/ai-chat.md` | PHI-safe AI chat |
 | `guide/docker-deployment.md` | Docker Deployment |
 | `guide/hipaa-compliance.md` | HIPAA Compliance |
+| `guide/sample-packages.md` | Contributions |
 | `guide/setting-up-projects.md` | Setting Up Projects |
 | `guide/smpt-configuration.md` | SMPT Configuration |
+| `guide/welcome-admin.md` | Welcome — Admin |
+| `guide/welcome-super-admin.md` | Welcome — Super admin |
+| `guide/welcome-user.md` | Welcome — User |
 
 ## `faq/`
 

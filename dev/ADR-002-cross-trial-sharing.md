@@ -73,7 +73,7 @@ Revocation drops the views and revokes the grants, and is logged in `w4h_app.aud
 
 - Does not create a co-owned project
 - Does not add the recipient Team admin to the owner's project membership
-- Does not expose the owner's notebooks, docs, or other private datasets
+- Does not expose the owner's analysis notebooks, project pages, or other private datasets
 
 ## Consequences
 
