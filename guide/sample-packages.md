@@ -24,6 +24,8 @@ Paired vendor sample + importer repos ([ADR-016]({{APP_URL}}/docs/ADR-016-paired
 
 MVP first-party listings: **w4h-sample-fitbit-csv**, **w4h-sample-fitbit-csv-importer**, **w4h-load-json**, and **fft_approximate** (external Postgres extension — install on your database; W4H does not vendor it).
 
+**Planned (M3, ADR-019):** **w4h-fitbit-wear-compliance** (device wear-time reports) and **w4h-compute-mets** (MET derivation from calories + weight) — both notebook **and CLI**, so an Admin can run them on cron, not only interactively. The Fitbit sample will gain `heart_rate` and `calories` signals so these tools have demo data. Also planned: **w4h-demo-approximate-queries**, a notebook showing `fft_approximate` approximate range queries against the sample dataset. RA task breakdown: [dev/analytics-contributions.md]({{APP_URL}}/docs/analytics-contributions).
+
 ## How to contribute
 
 MVP curation is Super admin (Platform Admin → Contributions). Community self-publish is later (M9). Until then:

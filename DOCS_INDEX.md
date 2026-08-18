@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-08-17
+- Generated: 2026-08-18
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -18,7 +18,7 @@ Structural map of `w4h-docs` for agents and humans. **Index only** — not a sub
 | Docs screenshots / fake users | `dev/docs-fixtures.md` |
 | Guides | `guide/` |
 
-ADRs in tree: **19**. Prefer MVP + relevant ADR before inventing product rules.
+ADRs in tree: **21**. Prefer MVP + relevant ADR before inventing product rules.
 
 ## Root
 
@@ -52,7 +52,11 @@ ADRs in tree: **19**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/ADR-016-paired-sample-importer-repos.md` | ADR-016 — Paired sample and importer repositories |
 | `dev/ADR-017-community-package-registry.md` | ADR-017 — Community package registry |
 | `dev/ADR-018-contributions-catalog.md` | ADR-018 — Contributions catalog; no project notebook registry |
+| `dev/ADR-019-mets-wear-compliance-analytics.md` | ADR-019 — METs and wear-compliance analytics (contributions + cohort dashboards) |
+| `dev/ADR-020-basic-dataset-stats-dashboard.md` | ADR-020 — Basic dataset statistics dashboard (Admin & User parity) |
+| `dev/analytics-contributions.md` | Analytics contributions — RA handoff (METs & wear compliance) |
 | `dev/architecture.md` | Architecture |
+| `dev/august-2026-release-plan.md` | August 2026 release plan — 0.3.0 Peña Roja |
 | `dev/developer-setup.md` | Developer Setup |
 | `dev/docs-fixtures.md` | Local docs fixtures |
 | `dev/mvp.md` | MVP |
@@ -83,5 +87,6 @@ ADRs in tree: **19**. Prefer MVP + relevant ADR before inventing product rules.
 | File | Title |
 |------|-------|
 | `releases/2026-06.md` | Release notes — June 2026 |
+| `releases/2026-07.md` | Release notes — July 2026 |
 | `releases/archive.md` | Release notes archive |
 | `releases/earlier-2026.md` | Release notes — earlier 2026 |

@@ -2,7 +2,7 @@
 title: ADR Readme
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-07-04T23:10:40.000Z
+updated_at: 2026-08-18T00:00:00.000Z
 sort_order: 4
 ---
 
@@ -28,6 +28,8 @@ This directory contains ADRs for the W4H wearables toolkit. Each file captures t
 | [ADR-016](ADR-016-paired-sample-importer-repos.md) | Paired sample and importer git repositories | Draft |
 | [ADR-017](ADR-017-community-package-registry.md) | Community package registry (Samples sandbox) | Draft |
 | [ADR-018](ADR-018-contributions-catalog.md) | Contributions catalog; no project notebook registry | Accepted |
+| [ADR-019](ADR-019-mets-wear-compliance-analytics.md) | METs and wear-compliance analytics (contributions + cohort dashboards) | Draft |
+| [ADR-020](ADR-020-basic-dataset-stats-dashboard.md) | Basic dataset statistics dashboard (Admin & User parity) | Draft |
 
 ## What is an ADR?
 

@@ -2,12 +2,12 @@
 title: MVP
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-07-20T00:00:00.000Z
+updated_at: 2026-08-18T00:00:00.000Z
 sort_order: 3
 ---
 **Protocol Version:** 1
 
-**Date Updated:** August 16, 2026
+**Date Updated:** August 18, 2026
 
 **Title:** W4H Toolkit — Validating and Promoting the W4H Toolkit
 
@@ -17,8 +17,10 @@ sort_order: 3
 
 **Funding:** SC CTSI Pilot Funding Program
 
-**Document Status:** Draft v0.19
+**Document Status:** Draft v0.21
 
+> **Changelog (v0.20 → v0.21):** Pulled a slice of M3 into **August 2026**: notebook **CLI automation** for `w4h-fitbit-wear-compliance` / `w4h-compute-mets` (parity with the Fitbit importer, ADR-019), new demo contribution **w4h-demo-approximate-queries**, and a vendor-agnostic **basic dataset stats card** (A-01) split out into new **ADR-020**. Assigned to Tracy (10h) and Bharghav (20h); see [dev/analytics-contributions.md](analytics-contributions.md#assignments-august-2026) for tasks and timeline. API cohort summary + wear/MET UI cards (WP4/WP5) remain **September (M3)**.
+> **Changelog (v0.19 → v0.20):** **METs & wear compliance** (ADR-019): two planned first-party Contributions (`w4h-fitbit-wear-compliance`, `w4h-compute-mets`); extend Fitbit sample with `heart_rate` + `calories`; basic cohort stats on project **Analytics** tab (A-01a, A-04a–c). Full chart library (A-02–A-03, A-05–A-06) stays deferred within M3. RA handoff: [dev/analytics-contributions.md](analytics-contributions.md).
 > **Changelog (v0.18 → v0.19):** **Contributions catalog** (ADR-018): drop `project_notebooks`; in-app catalog is `w4h.contributions` (publisher, kind, language, repo README). `fft_approximate` listed as an external Postgres extension. Ingest notebooks `w4h-load-csv` / `w4h-load-json`. D-14/D-25 retargeted; project workspace no longer tracks notebooks.
 > **Changelog (v0.17 → v0.18):** **PHI-safe AI chat** shipped (ADR-014): docked Cursor-like panel; team BYOK Anthropic keys; Super admin **provisioned** platform key with **per-team monthly token quota**; Help / Import / IRB / Process modes; strict PHI egress filter. AI-01…AI-04, AI-13…AI-16, AI-05…AI-08 (IRB drafting mode) marked in progress/done as applicable.
 >
@@ -242,7 +244,7 @@ All datasets in the W4H Toolkit are interpreted using the **GeoMTS (Geospatial M
 | D-11 | Import datasets via **REDCap** (see §9). | `✅ Stable` | `🚩 Todo` |
 | D-12 | **Super admin** or **Team admin** (team membership role on the owning team) can create datasets and ingest data via the privileged path (catalog + signal-table DDL via `w4h_platform`). | `✅ Stable` | `🚩 Todo` |
 | D-13 | **Team members** who are not Team admin ingest data via **API key** only (no direct DB / DDL) when so authorized (project membership + key scope). | `✅ Stable` | `🚧 In progress` |
-| D-14 | Catalog first-party tools (ADR-018): paired **w4h-sample-fitbit-csv** + **w4h-sample-fitbit-csv-importer** (ADR-016), **w4h-load-json**, and listed **`fft_approximate`** Postgres extension (not vendored into the API). | `✅ Stable` | `🚧 In progress` |
+| D-14 | Catalog first-party tools (ADR-018): paired **w4h-sample-fitbit-csv** + **w4h-sample-fitbit-csv-importer** (ADR-016), **w4h-load-json**, and listed **`fft_approximate`** Postgres extension (not vendored into the API). **In progress, August 2026 (ADR-019):** extend Fitbit sample with `heart_rate` + `calories`; catalog **w4h-fitbit-wear-compliance** and **w4h-compute-mets**, each with a CLI automation entry point (`kinds: notebook, cli`) mirroring the Fitbit importer; catalog demo notebook **w4h-demo-approximate-queries** for `fft_approximate`. | `✅ Stable` | `🚧 In progress` |
 | D-15 | Ingestion logs stored with timestamp, user, row count, and status. | `✅ Stable` | `🚩 Todo` |
 | D-22 | **Ingest delegation (ACL/capability):** a Team admin may grant a team `member` permission to create/ingest datasets for that team **without** elevating them to `team_admin` (e.g. PI delegates wearable ETL to a student). This is finer-grained than per-team RBAC; exact grant model TBD (team capability flag vs resource ACL). | `⚠️ Draft` | `🚩 Todo` |
 | D-25 | **Contributions catalog** in `w4h.contributions` (ADR-018): publisher, one or more kinds (`notebook` \| `cli` \| `script` \| `postgres_extension`), language, git repo, README. Super admin CRUD; authenticated browse (`GET /contributions`). Help is contribute-only, not a page per tool. | `✅ Stable` | `🚧 In progress` |
@@ -365,17 +367,21 @@ REDCap is the most widely used data capture platform in academic clinical trials
 
 ## 10. Analytics Dashboards
 
-Basic analytics dashboards allow researchers to understand the data available in their projects without writing code.
+Basic analytics dashboards allow researchers to understand the data available in their projects without writing code. **M3 (September 2026)** ships **basic cohort stat cards** on the project Analytics tab (A-01a, A-04a–c) plus **Contributions** notebooks for protocol-grade wear and MET reports (A-04). Full time-series chart library (A-02–A-03, A-05–A-06) remains later in M3. A slice of this — the vendor-agnostic **basic dataset stats card** ([ADR-020](ADR-020-basic-dataset-stats-dashboard.md)) and **Contributions** notebook automation tooling ([ADR-019](ADR-019-mets-wear-compliance-analytics.md)) — is pulled into **August 2026**, assigned to Tracy / Bharghav; see [analytics-contributions.md](analytics-contributions.md#assignments-august-2026) for the timeline. The API cohort-summary + wear/MET UI cards (WP4/WP5) stay on the September track.
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
-| A-01 | Per-project summary dashboard: subject count, date range, device types, dataset sizes. | `✅ Stable` | `🚧 In progress` |
+| A-01 | Per-project summary dashboard: subject count, date range, device types, dataset sizes. **Basic stats card:** [ADR-020](ADR-020-basic-dataset-stats-dashboard.md), in progress August 2026 (Tracy). | `✅ Stable` | `🚧 In progress` |
+| A-01a | **Analytics tab cohort overview** — cached wear/MET cohort stat cards when linked dataset has HR/calories/MET signals (Users + Admins). | `✅ Stable` | `🚩 Todo` |
 | A-02 | Signal-level visualization: time series plots for individual subjects or group averages. | `✅ Stable` | `🚩 Todo` |
 | A-03 | Comparative analytics: compare selected subjects against a control group. | `✅ Stable` | `🚩 Todo` |
-| A-04 | Compliance and wear-time metrics per subject and per dataset. | `✅ Stable` | `🚩 Todo` |
+| A-04 | **Wear compliance (Contributions)** — catalog notebook + CLI (`w4h-fitbit-wear-compliance`); per-subject protocol wear reports; port legacy `ComplianceAnalyzer`. CLI automation in progress August 2026 (Tracy). | `✅ Stable` | `🚧 In progress` |
+| A-04a | **Wear compliance (cohort)** — cached cohort wear stats on Analytics tab (% subjects meeting threshold, median daily wear %). | `✅ Stable` | `🚩 Todo` |
+| A-04b | **Wear compliance (subject filter)** — same stats scoped to selected subject(s) on Analytics tab. | `✅ Stable` | `🚩 Todo` |
+| A-04c | **METs cohort summary** — when `mets` or `mets_computed` exists, show mean MET-hours / simple cohort summary on Analytics tab. | `✅ Stable` | `🚩 Todo` |
 | A-05 | Outlier detection visualization for health metrics. | `✅ Stable` | `🚩 Todo` |
 | A-06 | Export dashboard views as PDF or PNG for reporting. | `✅ Stable` | `🚩 Todo` |
-| A-07 | Dashboard is accessible to all project members (Viewer and above). | `✅ Stable` | `🚩 Todo` |
+| A-07 | Dashboard cohort stats accessible to all project members (Viewer and above); Admins additionally get Contributions links for full notebook reports. | `✅ Stable` | `🚩 Todo` |
 
 ---
 
@@ -551,6 +557,7 @@ Modes / guided flows on the §13.1 substrate (ADR-014) — not separate chat pro
 | Hard user deletion / GDPR-style erasure | MVP only supports discontinue/resume; permanent erasure workflows are post-MVP. |
 | Community / outreach metrics on Usage page | GitHub stars/forks, workshop attendance stay external (M9); do not clutter `/admin/usage`. |
 | Wearable-augmented vs standard-of-care outcome deltas on Usage page | Protocol Wearable Value Quantification belongs in pilot analysis notebooks / reports, not admin KPIs. |
+| Device wear compliance and MET cohort stats on Usage page | Wear/MET **cohort summaries** belong on the project **Analytics** tab (A-01a, A-04a–c); detailed protocol reports in Contributions (A-04). Not admin Usage KPIs. |
 
 ---
 
@@ -560,7 +567,7 @@ Modes / guided flows on the §13.1 substrate (ADR-014) — not separate chat pro
 |---|-----------|-------------|--------|--------|----------|
 | M1 | Core Platform Foundation | Requirements, system architecture, authentication, user management, team management (multi-tenancy), project management, dataset management, RBAC, and core database schema | July 2026 | `🚧 In progress` | 75% |
 | M2 | Documentation system and data acquisition modules | Markdown editor with preview; CSV/JSON/database ingestion | July 2026 | `🚧 In progress` | 55% |
-| M3 | Analysis and visualization components | Reusable analytics and plotting library | August 2026 | `🚩 Todo` | 0% |
+| M3 | Analysis and visualization components | **Basic cohort dashboards** (A-01a, A-04a–c, A-07) + wear/MET **Contributions** (A-04); extend Fitbit sample; full chart library (A-02–A-03, A-05–A-06) later in M3 — [analytics-contributions.md](analytics-contributions.md) | September 2026 | `🚩 Todo` | 0% |
 | M4 | Modeling components and dashboard integration | Plug-and-play dashboard with model interface | September 2026 | `🚩 Todo` | 0% |
 | M5 | Docker deployment, standalone version | Containerized release without Spark support | October 2026 | `🚩 Todo` | 0% |
 | M6 | Docker deployment, Spark-enabled version | Scalable deployment with Spark support | November 2026 | `🚩 Todo` | 0% |
@@ -569,6 +576,8 @@ Modes / guided flows on the §13.1 substrate (ADR-014) — not separate chat pro
 | M9 | Community launch and dissemination | Open-source governance, documentation, tutorials, and public release | March 2027 | `🚩 Todo` | 0% |
 
 > **Note:** Full FHIR API endpoints remain out of scope for MVP (§16). M7 "HIPAA/FHIR checks" means compliance readiness checks toward interoperability; a FHIR API is post-MVP.
+>
+> **M3 deferral (August 2026):** Monthly release **0.3.0 Peña Roja** does not ship analytics dashboards. M3 target moved to **September 2026** — see [august-2026-release-plan.md](august-2026-release-plan.md).
 >
 > **Progress** column is manually updated for now; planned for automation via `::w4h-milestone-tracker` component once the task tracker directive is implemented.
 
@@ -582,7 +591,7 @@ gantt
     section 2026
     Core Platform Foundation         :active, m1, 2026-05-01, 2026-07-31
     Docs & Data Acquisition          :active, m2, 2026-07-01, 2026-07-31
-    Analytics & Visualization        :m3,     2026-08-01, 2026-08-31
+    Analytics & Visualization        :m3,     2026-09-01, 2026-09-30
     Modeling & Dashboard             :m4,     2026-09-01, 2026-09-30
     Docker Standalone                :m5,     2026-10-01, 2026-10-31
     Docker + Spark                   :m6,     2026-11-01, 2026-11-30
