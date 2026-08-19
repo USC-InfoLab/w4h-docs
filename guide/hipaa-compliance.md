@@ -157,7 +157,7 @@ The **"Enable anonymous usage data"** toggle in **Settings → Usage Tracking** 
 
 ## PHI-safe AI chat
 
-User-facing explanation, blocked patterns, and a demo script: [PHI-safe AI chat]({{APP_URL}}/docs/ai-chat). Design: [ADR-014]({{APP_URL}}/docs/ADR-014-ai-assistant-claude).
+User-facing explanation, blocked patterns, and a demo script: [PHI-safe AI chat](ai-chat.md). Design: [ADR-014](../dev/ADR-014-ai-assistant-claude.md).
 
 The optional in-app assistant is labeled **PHI-safe AI chat** when the egress filter is in its default **strict** mode.
 

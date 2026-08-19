@@ -13,7 +13,7 @@ sort_order: 0
   You self-serve projects, datasets, members, and further teams.
 </p>
 
-Projects in depth: [Setting Up Projects]({{APP_URL}}/docs/setting-up-projects). Platform overview: [Quick Start]({{APP_URL}}/docs/quick-start). Point researchers to [Welcome — User]({{APP_URL}}/docs/welcome-user).
+Projects in depth: [Setting Up Projects](setting-up-projects.md). Platform overview: [Quick Start](../quick-start.md). Point researchers to [Welcome — User](welcome-user.md).
 
 ---
 
@@ -24,7 +24,7 @@ Projects in depth: [Setting Up Projects]({{APP_URL}}/docs/setting-up-projects). 
 | **1. Create a project** | Projects → Add Project | Owning team required. Workspace for members, linked datasets, and project pages. |
 | **2. Link datasets, then load tables** | Project → Datasets, then [Contributions]({{APP_URL}}/contributions) | Linking does **not** load data. Adapt a notebook or deploy a CLI from a Contributions example against **your team**, with your **personal API key**. **Do not** re-ingest Super-admin sample datasets (read-only). Tables and stats show on the project overview when data is loaded. |
 | **3. Invite members** | Project → People | Invite any email. If they are already on the project, they are skipped. **Admin** can create/load datasets; **User** runs analysis on loaded tables. SMTP must work (ask Super admin if invites fail). |
-| **4. Chat, if available** | Chat icon in the nav (⌘J / Ctrl+J) | Setup, import, and IRB questions when a team or platform key is configured. If the panel says chat is not available, add a lab key under Team settings or ask Super admin. Do not paste rows or identifiers — [PHI-safe AI chat]({{APP_URL}}/docs/ai-chat). |
+| **4. Chat, if available** | Chat icon in the nav (⌘J / Ctrl+J) | Setup, import, and IRB questions when a team or platform key is configured. If the panel says chat is not available, add a lab key under Team settings or ask Super admin. Do not paste rows or identifiers — [PHI-safe AI chat](ai-chat.md). |
 
 Optional: **Teams → Add Team** for another trial tenancy. Super admin does not approve each new team.
 
@@ -53,4 +53,4 @@ API keys are **not** a separate home-page step. You need a personal key only whe
 
 ## Users on your project
 
-Point researchers to [Welcome — User]({{APP_URL}}/docs/welcome-user) and [Contributions]({{APP_URL}}/contributions). They work in assigned projects; they do not create teams, add datasets, or edit raw tables.
+Point researchers to [Welcome — User](welcome-user.md) and [Contributions]({{APP_URL}}/contributions). They work in assigned projects; they do not create teams, add datasets, or edit raw tables.

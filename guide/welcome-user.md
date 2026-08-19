@@ -13,7 +13,7 @@ sort_order: 0
   You analyze data that is already loaded. You do not set up the trial.
 </p>
 
-First analysis walkthrough: [Quick Start]({{APP_URL}}/docs/quick-start) §5. Catalog: [Contributions]({{APP_URL}}/contributions).
+First analysis walkthrough: [Quick Start](../quick-start.md) §5. Catalog: [Contributions]({{APP_URL}}/contributions).
 
 ---
 
@@ -24,7 +24,7 @@ First analysis walkthrough: [Quick Start]({{APP_URL}}/docs/quick-start) §5. Cat
 | **1. Open your project** | Project in the nav | Study info, members, and which datasets are **linked**. You cannot add datasets or edit raw tables. |
 | **2. Check loaded data** | Project → dataset overview | A dataset is **loaded** only when **tables** appear. No tables means it is not loaded yet — ask an Admin. |
 | **3. Run analytics** | [Contributions]({{APP_URL}}/contributions) | Analysis notebooks and CLI against loaded, linked datasets. Use your **personal API key** (Profile → API keys) or a project token. Never commit keys. |
-| **4. Chat, if available** | Chat icon in the nav (⌘J / Ctrl+J) | How-to questions when a team or platform key is configured. If the panel says chat is not available, ask an Admin. Do not paste rows or identifiers — [PHI-safe AI chat]({{APP_URL}}/docs/ai-chat). |
+| **4. Chat, if available** | Chat icon in the nav (⌘J / Ctrl+J) | How-to questions when a team or platform key is configured. If the panel says chat is not available, ask an Admin. Do not paste rows or identifiers — [PHI-safe AI chat](ai-chat.md). |
 
 Optional: project pages (private notes for this study — not platform Help).
 

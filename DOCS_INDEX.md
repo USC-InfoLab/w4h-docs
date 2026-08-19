@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-08-18
+- Generated: 2026-08-19
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -12,7 +12,7 @@ Structural map of `w4h-docs` for agents and humans. **Index only** — not a sub
 |------|------------|
 | Requirements / impl status | `dev/mvp.md` |
 | Architecture | `dev/architecture.md` |
-| ADR index | `dev/ADR README.md` |
+| ADR index | `dev/ADR-README.md` |
 | Roles / ACL | `dev/ADR-004-acl-roles.md` |
 | Quick start (users) | `quick-start.md` |
 | Docs screenshots / fake users | `dev/docs-fixtures.md` |
@@ -33,7 +33,6 @@ ADRs in tree: **21**. Prefer MVP + relevant ADR before inventing product rules.
 
 | File | Title |
 |------|-------|
-| `dev/ADR README.md` | ADR Readme |
 | `dev/ADR-001-schema-per-trial.md` | ADR-001 — Schema-per-trial isolation |
 | `dev/ADR-002-cross-trial-sharing.md` | ADR-002 — Cross-trial dataset sharing via w4h_global |
 | `dev/ADR-003-dataset-table-model.md` | ADR-003 — Physical signal tables + platform mapping registry |
@@ -54,6 +53,7 @@ ADRs in tree: **21**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/ADR-018-contributions-catalog.md` | ADR-018 — Contributions catalog; no project notebook registry |
 | `dev/ADR-019-mets-wear-compliance-analytics.md` | ADR-019 — METs and wear-compliance analytics (contributions + cohort dashboards) |
 | `dev/ADR-020-basic-dataset-stats-dashboard.md` | ADR-020 — Basic dataset statistics dashboard (Admin & User parity) |
+| `dev/ADR-README.md` | ADR Readme |
 | `dev/analytics-contributions.md` | Analytics contributions — RA handoff (METs & wear compliance) |
 | `dev/architecture.md` | Architecture |
 | `dev/august-2026-release-plan.md` | August 2026 release plan — 0.3.0 Peña Roja |

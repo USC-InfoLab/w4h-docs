@@ -69,7 +69,7 @@ function groupByTop(relPaths) {
 function main() {
   const files = walkMd(ROOT).filter((f) => f !== 'AGENTS.md' && f !== 'DOCS_INDEX.md')
   const generatedAt = new Date().toISOString().slice(0, 10)
-  const adrs = files.filter((f) => /\/ADR-?\d+/i.test(f) || /ADR README/i.test(f))
+  const adrs = files.filter((f) => /\/ADR-?\d+/i.test(f) || /ADR-README/i.test(f))
   const sections = []
 
   for (const [key, rels] of groupByTop(files)) {
@@ -99,7 +99,7 @@ Structural map of \`w4h-docs\` for agents and humans. **Index only** — not a s
 |------|------------|
 | Requirements / impl status | \`dev/mvp.md\` |
 | Architecture | \`dev/architecture.md\` |
-| ADR index | \`dev/ADR README.md\` |
+| ADR index | \`dev/ADR-README.md\` |
 | Roles / ACL | \`dev/ADR-004-acl-roles.md\` |
 | Quick start (users) | \`quick-start.md\` |
 | Docs screenshots / fake users | \`dev/docs-fixtures.md\` |

@@ -13,7 +13,7 @@ sort_order: 0
   After login you stay in <strong>Platform Admin</strong> (<code>W4H Toolkit Admin</code>).
 </p>
 
-Longer walkthrough: [Quick Start]({{APP_URL}}/docs/quick-start) §1. Roles: [ADR-004]({{APP_URL}}/docs/ADR-004-acl-roles). Onboarding model: MVP §3.0.
+Longer walkthrough: [Quick Start](../quick-start.md) §1. Roles: [ADR-004](../dev/ADR-004-acl-roles.md). Onboarding model: MVP §3.0.
 
 ---
 
@@ -21,15 +21,15 @@ Longer walkthrough: [Quick Start]({{APP_URL}}/docs/quick-start) §1. Roles: [ADR
 
 | Step | Where | Why |
 |---|---|---|
-| **1. SMTP** | Settings → Mail Server | Invitations and password resets. [SMTP Configuration]({{APP_URL}}/docs/smpt-configuration). Set **`APP_URL`** to the public app URL so invite links work. |
+| **1. SMTP** | Settings → Mail Server | Invitations and password resets. [SMTP Configuration](smpt-configuration.md). Set **`APP_URL`** to the public app URL so invite links work. |
 | **2. Initial team** | Teams → Add Team | The PI’s first tenancy. Super admin does **not** approve each later trial. |
 | **3. Invite Admin** | Users → Invite | Invite the PI as **Team admin** on that team. They get a time-limited link (password is never emailed). |
 | **4. Refresh Help** | Settings → Documentation Management → **Refresh Docs** | Pulls pages from `w4h-docs` (including this checklist). |
-| **5. Optional Claude** | Settings → PHI-safe AI chat | Platform key + per-team monthly quota, or leave teams to paste their own key. [PHI-safe AI chat]({{APP_URL}}/docs/ai-chat). |
-| **6. HIPAA checklist** | [HIPAA Compliance]({{APP_URL}}/docs/hipaa-compliance) | Audit log, TLS, backups, BAA — before real PHI. |
+| **5. Optional Claude** | Settings → PHI-safe AI chat | Platform key + per-team monthly quota, or leave teams to paste their own key. [PHI-safe AI chat](ai-chat.md). |
+| **6. HIPAA checklist** | [HIPAA Compliance](hipaa-compliance.md) | Audit log, TLS, backups, BAA — before real PHI. |
 | **7. Demonstration project** | Mark sample datasets **read-only** on Datasets → Edit, then Projects → Add Project → **Demonstration project** | Seeds a walkthrough project that **links those sample tables**. Teams query them; they do not re-ingest. |
 
-The Team admin then works in the **app shell**. Point them to [Welcome — Admin]({{APP_URL}}/docs/welcome-admin). Point project Users to [Welcome — User]({{APP_URL}}/docs/welcome-user).
+The Team admin then works in the **app shell**. Point them to [Welcome — Admin](welcome-admin.md). Point project Users to [Welcome — User](welcome-user.md).
 
 ---
 
@@ -41,7 +41,7 @@ On a fresh install the login page walks you through:
 2. **Create the Super admin account** — email and a strong password (12+ characters).
 3. **Log in** — Platform Admin home. Change password from the account menu → Profile if needed.
 
-Local development (clone, `npm run dev`): [Developer Setup]({{APP_URL}}/docs/developer-setup). Docker: [Docker Deployment]({{APP_URL}}/docs/docker-deployment).
+Local development (clone, `npm run dev`): [Developer Setup](../dev/developer-setup.md). Docker: [Docker Deployment](docker-deployment.md).
 
 ---
 
@@ -55,4 +55,4 @@ Local development (clone, `npm run dev`): [Developer Setup]({{APP_URL}}/docs/dev
 
 ## After bootstrap
 
-Platform Admin home shows health (database, SMTP, audit log), usage, and attention (pending invites, teams without an Admin). Use **Audit log** and **Usage** for ops; those are not the same ledger ([HIPAA Compliance]({{APP_URL}}/docs/hipaa-compliance)).
+Platform Admin home shows health (database, SMTP, audit log), usage, and attention (pending invites, teams without an Admin). Use **Audit log** and **Usage** for ops; those are not the same ledger ([HIPAA Compliance](hipaa-compliance.md)).

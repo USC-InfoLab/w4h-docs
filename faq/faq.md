@@ -11,7 +11,7 @@ W4H is a toolkit for managing wearable health data workflows for clinical resear
 
 ## How do I get started?
 
-See the [Quick Start]({{APP_URL}}/docs/quick-start) guide for step-by-step instructions.
+See the [Quick Start](../quick-start.md) guide for step-by-step instructions.
 
 ## Where can I find more documentation?
 

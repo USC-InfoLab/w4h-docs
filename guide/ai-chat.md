@@ -13,7 +13,7 @@ sort_order: 8
 
 Open it from the chat icon in the top nav, or with **⌘J** / **Ctrl+J**. The panel docks beside the page. It sends **page context** (shell, route, team/project names) — not table rows.
 
-Operators: see [HIPAA Compliance]({{APP_URL}}/docs/hipaa-compliance). Design: [ADR-014]({{APP_URL}}/docs/ADR-014-ai-assistant-claude).
+Operators: see [HIPAA Compliance](hipaa-compliance.md). Design: [ADR-014](../dev/ADR-014-ai-assistant-claude.md).
 
 ---
 

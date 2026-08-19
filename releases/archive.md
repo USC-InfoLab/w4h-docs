@@ -10,10 +10,10 @@ Like [VS Code Updates](https://code.visualstudio.com/updates){target="_blank"}, 
 
 | Release | Page |
 |---|---|
-| **August 2026 — 🧗 Peña Roja (current)** | [What's New]({{APP_URL}}/docs/whats-new) |
-| July 2026 | [Release notes — July 2026]({{APP_URL}}/docs/2026-07) |
-| June 2026 | [Release notes — June 2026]({{APP_URL}}/docs/2026-06) |
-| March–May 2026 & earlier | [Earlier 2026]({{APP_URL}}/docs/earlier-2026) |
+| **August 2026 — 🧗 Peña Roja (current)** | [What's New](../whats-new.md) |
+| July 2026 | [Release notes — July 2026](2026-07.md) |
+| June 2026 | [Release notes — June 2026](2026-06.md) |
+| March–May 2026 & earlier | [Earlier 2026](earlier-2026.md) |
 
 ## Authoring convention (monthly)
 

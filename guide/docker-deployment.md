@@ -10,7 +10,7 @@ updated_at: 2026-08-16T00:00:00.000Z
 
 ## Overview
 
-This guide covers the standalone (non-Spark) Docker deployment of the W4H Toolkit. It runs the app, the api, and a preconfigured sample notebook against your own external PostgreSQL instance. See [ADR-015]({{APP_URL}}/docs/ADR-015-docker-deployment-packaging) for the packaging decisions behind this setup.
+This guide covers the standalone (non-Spark) Docker deployment of the W4H Toolkit. It runs the app, the api, and a preconfigured sample notebook against your own external PostgreSQL instance. See [ADR-015](../dev/ADR-015-docker-deployment-packaging.md) for the packaging decisions behind this setup.
 
 <div class="alert alert-info">
   <strong>Status:</strong> Prototype in <code>w4h-docker</code> — build from sibling repos or use published images when Dep-04 lands.
@@ -26,7 +26,7 @@ This guide covers the standalone (non-Spark) Docker deployment of the W4H Toolki
 | `api` | Data API, auth, docs, audit log | Internal only, via `app` |
 | `notebooks` | Convenience Jupyter preloaded with the **w4h-sample-fitbit-csv-importer** contribution | `127.0.0.1` by default, token-protected |
 
-There is no database service. PostgreSQL is external, matching Flexible mode (see [ADR-006]({{APP_URL}}/docs/ADR-006-trusted-research-environment)).
+There is no database service. PostgreSQL is external, matching Flexible mode (see [ADR-006](../dev/ADR-006-trusted-research-environment.md)).
 
 ---
 
@@ -87,7 +87,7 @@ You do not set `W4H_API_KEY` before first login. Generate it from the UI after s
 
 ## 4. Create the Super admin
 
-After the database connects, the UI prompts for the initial Super admin account. See [Quick Start]({{APP_URL}}/docs/quick-start) for the full first-login flow.
+After the database connects, the UI prompts for the initial Super admin account. See [Quick Start](../quick-start.md) for the full first-login flow.
 
 On every later `api` restart (once configured), the service waits for Postgres, ensures schema, and re-imports docs from the image.
 
@@ -95,7 +95,7 @@ On every later `api` restart (once configured), the service waits for Postgres, 
 
 ## 5. Generate your personal API key
 
-Log in, then go to **Profile → API keys → Generate new key**. Copy the key immediately, it is shown once. See [ADR-007]({{APP_URL}}/docs/ADR-007-authentication-model) for how this key is scoped and secured.
+Log in, then go to **Profile → API keys → Generate new key**. Copy the key immediately, it is shown once. See [ADR-007](../dev/ADR-007-authentication-model.md) for how this key is scoped and secured.
 
 ---
 
@@ -115,7 +115,7 @@ The `notebooks` service starts with the stack. It preloads the **w4h-sample-fitb
 
 The project workspace **Managed JupyterLab** link uses `VITE_JUPYTER_URL` (default `http://127.0.0.1:8888`). You still need the token from the logs to authenticate.
 
-Further notebooks you add are yours. W4H does not version or track project notebook content ([ADR-018]({{APP_URL}}/docs/ADR-018-contributions-catalog)). This Compose service is not managed JupyterHub (TRE, [ADR-006]({{APP_URL}}/docs/ADR-006-trusted-research-environment)).
+Further notebooks you add are yours. W4H does not version or track project notebook content ([ADR-018](../dev/ADR-018-contributions-catalog.md)). This Compose service is not managed JupyterHub (TRE, [ADR-006](../dev/ADR-006-trusted-research-environment.md)).
 
 ---
 
@@ -130,7 +130,7 @@ The docs you see in the app are imported into Postgres from this repository at c
 - Your personal API key is scoped to your project memberships, has a configurable expiry, and is revoked immediately if your account is discontinued (ADR-007).
 - Never paste your API key into a cell that gets saved with output enabled, or hardcode it in a notebook. Use an environment variable.
 - The `notebooks` service keeps Jupyter's token authentication on and binds to `127.0.0.1` by default.
-- This deployment handles clinical data. Review [HIPAA Compliance]({{APP_URL}}/docs/hipaa-compliance) before going into production use.
+- This deployment handles clinical data. Review [HIPAA Compliance](hipaa-compliance.md) before going into production use.
 
 ---
 

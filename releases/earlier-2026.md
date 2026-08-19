@@ -6,7 +6,7 @@ updated_at: 2026-07-23T17:00:00.000Z
 sort_order: 30
 ---
 
-Archive of **March–May 2026** and the initial platform. For the latest release, see [What's New]({{APP_URL}}/docs/whats-new).
+Archive of **March–May 2026** and the initial platform. For the latest release, see [What's New](../whats-new.md).
 
 ## May 2026
 
@@ -47,4 +47,4 @@ Archive of **March–May 2026** and the initial platform. For the latest release
 
 ---
 
-[← What's New (latest)]({{APP_URL}}/docs/whats-new) · [← July 2026]({{APP_URL}}/docs/2026-07) · [← June 2026]({{APP_URL}}/docs/2026-06)
+[← What's New (latest)](../whats-new.md) · [← July 2026](2026-07.md) · [← June 2026](2026-06.md)

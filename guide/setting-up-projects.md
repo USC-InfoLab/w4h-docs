@@ -16,7 +16,7 @@ card_order: 4
   Analysis notebooks live in git; browse reusable tools under <a href="{{APP_URL}}/contributions">Contributions</a>.
 </p>
 
-This guide is for **Admins** (and Super admins reading for context). First-week checklist: [Welcome — Admin]({{APP_URL}}/docs/welcome-admin). It covers single-team multi-dataset projects and cross-team setups via **shares**. Design details: [ADR-012]({{APP_URL}}/docs/ADR-012-project-dataset-linking).
+This guide is for **Admins** (and Super admins reading for context). First-week checklist: [Welcome — Admin](welcome-admin.md). It covers single-team multi-dataset projects and cross-team setups via **shares**. Design details: [ADR-012](../dev/ADR-012-project-dataset-linking.md).
 
 **Shells:** Admins work in the **app shell** (`W4H Toolkit`). Super admins stay in **Platform Admin** (`W4H Toolkit Admin`) for bootstrap only — they do not toggle into the app shell.
 
@@ -203,15 +203,15 @@ flowchart TD
 |---|---|
 | Create a **new team** just to “hold” a multi-study model | Create a **project** on an existing team and link datasets (Path A/C) |
 | Expect the project picker to list every discoverable dataset | **Others** is metadata only; link requires ownership, share, or dual-hat admin |
-| Assume share opens the other team’s project | Share ≠ project access ([ADR-012]({{APP_URL}}/docs/ADR-012-project-dataset-linking)) |
+| Assume share opens the other team’s project | Share ≠ project access ([ADR-012](../dev/ADR-012-project-dataset-linking.md)) |
 | Link from the dataset page | Links are managed on the **project** |
 
 ---
 
 ## Related docs
 
-- [ADR-012 — Project–dataset linking]({{APP_URL}}/docs/ADR-012-project-dataset-linking)
-- [ADR-002 — Cross-trial sharing]({{APP_URL}}/docs/ADR-002-cross-trial-sharing)
-- [ADR-004 — Roles]({{APP_URL}}/docs/ADR-004-acl-roles)
-- [Quick Start]({{APP_URL}}/docs/quick-start)
+- [ADR-012 — Project–dataset linking](../dev/ADR-012-project-dataset-linking.md)
+- [ADR-002 — Cross-trial sharing](../dev/ADR-002-cross-trial-sharing.md)
+- [ADR-004 — Roles](../dev/ADR-004-acl-roles.md)
+- [Quick Start](../quick-start.md)
 - MVP requirements: Projects (P-*), Datasets (D-*), Sharing (S-*) in `dev/mvp.md`

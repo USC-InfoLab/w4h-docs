@@ -27,7 +27,7 @@ updated_at: 2026-08-17T18:00:00.000Z
 
 ## PHI-safe AI chat
 
-The in-app assistant from [ADR-014]({{APP_URL}}/docs/ADR-014-ai-assistant-claude) is in this release — not design-only.
+The in-app assistant from [ADR-014](dev/ADR-014-ai-assistant-claude.md) is in this release — not design-only.
 
 Open it from the chat icon in the top nav, or with **⌘J** / **Ctrl+J**. The panel docks beside the page. It sends **page context** (shell, route, team/project names), not table rows.
 
@@ -36,7 +36,7 @@ Open it from the chat icon in the top nav, or with **⌘J** / **Ctrl+J**. The pa
 - **Team** Anthropic key (lab pays) and optional Super admin **provisioned** platform key with a monthly token quota
 - Keys stay **masked**; the browser never holds the secret
 
-**Permissive** mode is not PHI-safe. Guide: [PHI-safe AI chat]({{APP_URL}}/docs/ai-chat).
+**Permissive** mode is not PHI-safe. Guide: [PHI-safe AI chat](guide/ai-chat.md).
 
 ---
 
@@ -46,13 +46,13 @@ W4H does **not** register project-owned notebooks. Browse **Contributions** (`/c
 
 First-party listings include **w4h-sample-fitbit-csv**, **w4h-sample-fitbit-csv-importer**, **w4h-load-json**, and **fft_approximate** (external Postgres extension — install on the database; W4H does not vendor it).
 
-Put your own analysis repo links in **project pages**. See [Contributions]({{APP_URL}}/docs/sample-packages) and [ADR-018]({{APP_URL}}/docs/ADR-018-contributions-catalog).
+Put your own analysis repo links in **project pages**. See [Contributions](guide/sample-packages.md) and [ADR-018](dev/ADR-018-contributions-catalog.md).
 
 ---
 
 ## Sample Fitbit CSV
 
-Paired repos ([ADR-016]({{APP_URL}}/docs/ADR-016-paired-sample-importer-repos)):
+Paired repos ([ADR-016](dev/ADR-016-paired-sample-importer-repos.md)):
 
 | Repo | What it is |
 |---|---|
@@ -67,11 +67,11 @@ Use a personal `W4H_API_KEY` in local `.env` only. Do not commit credentials or 
 
 Dataset stats and overview always appear in the context of a **selected dataset** in the project workspace (master–detail). Summaries use cached metadata — the UI does not run live full-table `COUNT(*)` scans.
 
-GeoMTS remains a **role mapping** over physical tables (`w4h.tables`), not a forced rename to `subject_id` / `ts` / `lat` / `lon`. See [ADR-003]({{APP_URL}}/docs/ADR-003-dataset-table-model) and [ADR-008]({{APP_URL}}/docs/ADR-008-geomts-data-model).
+GeoMTS remains a **role mapping** over physical tables (`w4h.tables`), not a forced rename to `subject_id` / `ts` / `lat` / `lon`. See [ADR-003](dev/ADR-003-dataset-table-model.md) and [ADR-008](dev/ADR-008-geomts-data-model.md).
 
 ![Dataset catalog with Mine / Others / Shared filters](media/whats-new/datasets-catalog.png)
 
-Discoverable vs shared is unchanged from July: **Others** is metadata only until you **share**. [Setting Up Projects]({{APP_URL}}/docs/setting-up-projects).
+Discoverable vs shared is unchanged from July: **Others** is metadata only until you **share**. [Setting Up Projects](guide/setting-up-projects.md).
 
 ---
 
@@ -85,13 +85,13 @@ Labels are **Super admin** · **Admin** · **User**. There is no “Project admi
 
 ![Platform Admin home](media/whats-new/admin-home.png)
 
-Welcome guides: [Super admin]({{APP_URL}}/docs/welcome-super-admin) · [Admin]({{APP_URL}}/docs/welcome-admin) · [User]({{APP_URL}}/docs/welcome-user).
+Welcome guides: [Super admin](guide/welcome-super-admin.md) · [Admin](guide/welcome-admin.md) · [User](guide/welcome-user.md).
 
 ---
 
 ## Docker deployment
 
-Prototype Compose packaging in `w4h-docker` runs the app, API, and a convenience Jupyter service against **your** PostgreSQL (no bundled database). See [Docker Deployment]({{APP_URL}}/docs/docker-deployment) and [ADR-015]({{APP_URL}}/docs/ADR-015-docker-deployment-packaging).
+Prototype Compose packaging in `w4h-docker` runs the app, API, and a convenience Jupyter service against **your** PostgreSQL (no bundled database). See [Docker Deployment](guide/docker-deployment.md) and [ADR-015](dev/ADR-015-docker-deployment-packaging.md).
 
 ---
 
@@ -103,11 +103,11 @@ Account menu **About** now shows this release name with the version (**🧗 Peñ
 ![About W4H modal](media/whats-new/about-modal.png)
 
 ### Docs & Help
-- [PHI-safe AI chat]({{APP_URL}}/docs/ai-chat) and [Contributions]({{APP_URL}}/docs/sample-packages) guides
-- Monthly archive: July notes moved to [Release notes — July 2026]({{APP_URL}}/docs/2026-07)
+- [PHI-safe AI chat](guide/ai-chat.md) and [Contributions](guide/sample-packages.md) guides
+- Monthly archive: July notes moved to [Release notes — July 2026](releases/2026-07.md)
 
 ### For developers
-Architecture and requirements: [MVP]({{APP_URL}}/docs/mvp) and the [ADR index]({{APP_URL}}/docs/ADR-README). After deploy, **refresh Help** from Platform Admin so this page is imported.
+Architecture and requirements: [MVP](dev/mvp.md) and the [ADR index](dev/ADR-README.md). After deploy, **refresh Help** from Platform Admin so this page is imported.
 
 ---
 
@@ -118,8 +118,8 @@ Older months are archived (same idea as VS Code’s versioned Updates pages) so 
 | Release | Notes |
 |---|---|
 | **August 2026 — 🧗 Peña Roja 0.3.0** | This page |
-| [July 2026]({{APP_URL}}/docs/2026-07) | Email code login, Platform Admin setup, discoverable datasets, Usage, audit log |
-| [June 2026]({{APP_URL}}/docs/2026-06) | Projects rename, ACL, notebook keys, email login codes |
-| [Earlier 2026]({{APP_URL}}/docs/earlier-2026) | May Projects hub, March–April auth, initial platform |
+| [July 2026](releases/2026-07.md) | Email code login, Platform Admin setup, discoverable datasets, Usage, audit log |
+| [June 2026](releases/2026-06.md) | Projects rename, ACL, notebook keys, email login codes |
+| [Earlier 2026](releases/earlier-2026.md) | May Projects hub, March–April auth, initial platform |
 
-Full index: [Release notes archive]({{APP_URL}}/docs/archive) (under **releases** in the sidebar).
+Full index: [Release notes archive](releases/archive.md) (under **releases** in the sidebar).
