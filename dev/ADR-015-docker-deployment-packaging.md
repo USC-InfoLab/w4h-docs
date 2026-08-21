@@ -110,3 +110,4 @@ Recommendation: GitHub Container Registry (`ghcr.io`), tied to existing org GitH
 | Date | Change |
 |---|---|
 | 2026-08-11 | Initial draft. |
+| 2026-08-12 | Local prototype built and validated end to end against a real Postgres: cold start (schema, docs import, setup wizard, personal API key, sample notebook run), docs resync after an `api` rebuild, and restart/`down`+`up` resilience all pass. Found and fixed two pre-existing `w4h-api` bugs surfaced by this: the `/` route's unguarded `git rev-parse` (crashes the process on Node 22 in a container with no `.git` dir) and `lib/docs-mermaid-render.js` reading the wrong result shape from `mermaid-isomorphic`, which silently failed every diagram render. Status stays Draft pending review. |
