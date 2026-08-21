@@ -2,7 +2,7 @@
 title: "ADR-015 — Docker deployment packaging (standalone, non-Spark)"
 description: Containerized distribution of the Flexible-mode stack (app, api, notebooks) via Docker Compose, with PostgreSQL external.
 updated_by: limbasiabb@gmail.com
-updated_at: 2026-08-11T00:00:00.000Z
+updated_at: 2026-08-16T00:00:00.000Z
 ---
 **Status:** Draft  
 **Date:** 2026-08-11  
@@ -66,10 +66,10 @@ Four services, one Compose file, no database container. PostgreSQL is external, 
 
 ### Notebooks
 
-- The `notebooks` service is a plain Python and Jupyter image with one notebook preloaded, built against the current GeoMTS/project-token data model. The notebooks in `w4h-notebooks` today target the old flat schema and do not run against this API, so this is a new notebook, not a copy.
+- The `notebooks` service is a plain Python and Jupyter image that **preloads the w4h-sample-fitbit-csv-importer contribution** (and the paired `w4h-sample-fitbit-csv` package) ([ADR-016](ADR-016-paired-sample-importer-repos.md), [ADR-018](ADR-018-contributions-catalog.md)). Do not copy legacy `w4h-notebooks` loaders or a hand-rolled sample notebook that is not in the catalog.
 - It ships enabled by default, as part of the base `docker compose up`, not behind an opt-in profile.
 - It reads `W4H_API_KEY` from an environment variable in its first cell. The key is never hardcoded in the `.ipynb` file.
-- Further edits to the notebook, or new notebooks the user adds, are the user's or team's own responsibility. The platform does not version or track notebook content.
+- Further edits to the notebook, or new notebooks the user adds, are the user's or team's own responsibility. The platform does **not** version or track project notebook content ([ADR-018](ADR-018-contributions-catalog.md)). This Compose service is not a project notebook registry.
 
 **Relationship to ADR-006:** Flexible mode's stated footprint is "W4H API + PostgreSQL + authentication. No JupyterHub, no egress review infrastructure," with the notebook environment listed as "Researcher's own (local, HPC, cloud)." This ADR reads that as ruling out centrally administered, multi-tenant notebook infrastructure (JupyterHub provisioning and mediating sessions across a team), which remains a TRE-mode concern. The `notebooks` service here is single-tenant: one container, one researcher, no cross-user orchestration, no session mediation by the platform. It is a convenience artifact of the distribution, comparable to handing a researcher a laptop that arrives with Jupyter and one example already installed, not managed infrastructure the platform operates on the researcher's behalf. This ADR does not edit ADR-006. It records this scoped reading for the `notebooks` service defined here.
 
@@ -109,5 +109,6 @@ Recommendation: GitHub Container Registry (`ghcr.io`), tied to existing org GitH
 
 | Date | Change |
 |---|---|
-| 2026-08-11 | Initial draft. |
+| 2026-08-16 | `notebooks` image preloads the catalog importer contribution, not a generic sample notebook. |
 | 2026-08-12 | Local prototype built and validated end to end against a real Postgres: cold start (schema, docs import, setup wizard, personal API key, sample notebook run), docs resync after an `api` rebuild, and restart/`down`+`up` resilience all pass. Found and fixed two pre-existing `w4h-api` bugs surfaced by this: the `/` route's unguarded `git rev-parse` (crashes the process on Node 22 in a container with no `.git` dir) and `lib/docs-mermaid-render.js` reading the wrong result shape from `mermaid-isomorphic`, which silently failed every diagram render. Status stays Draft pending review. |
+| 2026-08-11 | Initial draft. |
