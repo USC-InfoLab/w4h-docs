@@ -2,18 +2,19 @@
 title: ADR-008 — GeoMTS as the unifying wearable data abstraction
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-08-14T00:00:00.000Z
+updated_at: 2026-08-21T00:00:00.000Z
 ---
 **Status:** Accepted  
 **Date:** 2026-07-04  
-**Revised:** 2026-08-14  
+**Revised:** 2026-08-21  
 **Deciders:** W4H architecture team  
 **Principal investigator:** Cyrus Shahabi, PhD (USC InfoLab)  
-**Relates to:** [ADR-003](ADR-003-dataset-table-model.md) (physical tables + `w4h` mapping registry)  
+**Relates to:** [ADR-003](ADR-003-dataset-table-model.md) (physical tables + `w4h` mapping registry), [ADR-016](ADR-016-paired-sample-importer-repos.md) (sample/importer pairing)  
 **References:**
 - Hajisafi et al., *Wearables for Health (W4H) Toolkit for Acquisition, Storage, Analysis and Visualization of Data from Various Wearable Devices*, IEEE ICDE 2024 (Demo)
 - Nocera et al., *Multi-Context Graph Neural Networks for Enhanced Multivariate Time-Series Analysis in Healthcare*, NIH Special Track at ISMB 2024
 - USC InfoLab W4H project: https://infolab.usc.edu/projects/W4H/
+- `w4h-icde-demo` (Streamlit prototype behind the ICDE demo paper) — architecturally unrelated to the current stack (direct Postgres/PostGIS, no schema isolation, no mapping registry; see [ADR-021](ADR-021-cohort-control-group-comparison.md)), but its **data model precedent** is directly relevant — see below.
 
 ---
 
@@ -96,7 +97,28 @@ Example — table that already has geo columns under other names:
 }
 ```
 
-There is **no** separate side table whose purpose is only to store lat/lon/ts encodings of every row. GeoMTS is the interpretation layer; rows stay in the signal tables.
+There is **no** separate side table whose purpose is only to *mirror* lat/lon/ts encodings that already exist on other rows. GeoMTS is the interpretation layer; rows stay in the signal tables.
+
+### Location as its own signal, not a universal column
+
+Location is not added to every signal table. When a dataset has geospatial context, it is modeled as one or more **geo-typed signals in their own right**, joined to other signals by `subject` + `time` — never as lat/lon columns bolted onto `heart_rate`, `calories`, etc.
+
+Two tiers, both ordinary GeoMTS signals under the additive/provenance model:
+
+1. **Raw geo signal** (observed) — e.g. `gps_track`: `(subject, time, lat, lon)`, ingested as-is from a device. This is the `gps_track` example above.
+2. **Derived place-context signal** — e.g. `place_context`: `(subject, time_start, time_end, place_type, confidence)`, produced by a downstream job (stay-point clustering + POI typing) over a raw geo signal. Location may be exact GPS, an approximated centroid (city/neighborhood), or a qualified semantic tag (a recurring visit pattern inferred as "the park", "a bar") — each is a `place_context` row with its own confidence, not a fact bolted onto the raw trace. Per D-04/D-05, this is a new derived dataset/table with provenance back to the source `gps_track`; the original trace is never overwritten.
+
+Any signal (e.g. `heart_rate`) gets location by joining to `gps_track` or `place_context` on `subject` + overlapping `time`/`time_start..time_end` — the same "join logically on mapped subject + time" pattern already used for cross-device analysis, not a physical merge.
+
+### Precedent: the ICDE demo prototype
+
+The `w4h-icde-demo` prototype (pre-dates the current stack) already used this shape, which is direct precedent for the decision above:
+
+- `conf/config.yaml` mapping declares a generic `(user_id, timestamp, value)` role triple for `tables.time_series` (`heart_rate`, `calories`, `steps`, `sleep`, `spo2`, …) and a **separate `tables.geo: [locations]` category** — geo was never a column on the time-series tables.
+- `viz.py` reads that `locations` table via `geopandas.read_postgis` as a PostGIS `POINT` geometry keyed by subject + timestamp, filtered by date range, and joins it to the other series by subject + time to build trajectory/GeoJSON map layers.
+- The prototype's flattened `synthetic_timeseries_data.csv` (with `latitude`/`longitude` columns wide-joined onto every row) is a **StreamSim input artifact for the real-time demo**, not the canonical DB schema — the actual database kept geo separate, consistent with the model above.
+
+Nothing in the prototype implements the derived `place_context` tier (habit/pattern-detected semantic location) — that is new work extending the precedent, not something carried over.
 
 ### What GeoMTS enables
 
@@ -117,7 +139,8 @@ Original signal data is not overwritten in place for derived products. Derived s
 - Device-type independence without forcing a universal physical column layout
 - ML/viz reuse against GeoMTS **roles** resolved via mapping
 - Optional geospatial context without null-filled lat/lon on every table
-- Aligns with USC InfoLab GeoMTS research while matching how teams already name fields
+- Raw geo (`gps_track`) and derived place-context signals compose via the same subject+time join as any other cross-signal analysis, with provenance back to the source trace
+- Aligns with USC InfoLab GeoMTS research while matching how teams already name fields; matches the `w4h-icde-demo` prototype's own separation of `time_series` vs. `geo` tables
 
 **Negative / risks:**
 - Every analysis path must consult mapping (cannot hard-code `subject_id` / `ts`)

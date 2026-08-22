@@ -11,27 +11,38 @@ Curated tools live in **Contributions** (`{{APP_URL}}/contributions`) — a mark
 
 **Who does what**
 
-- **Admins** link or create datasets on a project, then load tables by adapting a notebook or deploying a CLI from a Contributions example. Sample datasets on a demonstration project are read-only (Super admin seeds them). Loaded means tables and stats show on the overview.
+- **Admins** link or create datasets on a project, then load tables. If the contribution is marked **runnable** (currently the Fitbit CSV importer), click **Run import…** on the dataset panel and pick **Update** (add missing rows) or **Full re-import** (truncate and reload) — no notebook or CLI needed ([ADR-022](../dev/ADR-022-in-app-contribution-run-trigger.md)). Otherwise, load tables by adapting a notebook or deploying a CLI from a Contributions example. Sample datasets on a demonstration project are read-only (Super admin seeds them). Loaded means tables and stats show on the overview.
 - **Users** see the same overview, docs, analytics, and Jupyter tools. They run analysis against loaded tables. They cannot invite people or create/load team datasets.
 
 Search for tasks such as “load CSV” or “approximate query”. Each listing points at **one git repo**. The README is rendered on the catalog detail page.
 
 **W4H Samples sandbox:** you are a member of the Samples team. Super admin seeds canonical demo datasets. Use your **personal API key** and re-run contribution notebooks against that data. Do not re-ingest into the sandbox. Ingest into **your team’s** catalog when you need write/ETL practice ([ADR-017](../dev/ADR-017-community-package-registry.md)).
 
-Paired vendor sample + importer repos ([ADR-016](../dev/ADR-016-paired-sample-importer-repos.md)) are listed as separate contributions (one repo each).
+Paired vendor sample + importer repos ([ADR-016](../dev/ADR-016-paired-sample-importer-repos.md)) are listed as separate contributions (one repo each). Two first-party pairs ship today — they differ on whether they carry a geo signal:
+
+| Pair | Geo signal? | In-app **Run import…** |
+|---|---|---|
+| **w4h-sample-fitbit-csv** + importer | No — `geo: null` on every signal | Yes (Fitbit importer only; [ADR-022](../dev/ADR-022-in-app-contribution-run-trigger.md)) |
+| **w4h-sample-icde-demo-csv** + importer | Yes — `gps_track` (lat/lon, WGS84) | Notebook / CLI only |
+
+The ICDE demo pair is trimmed synthetic data from the ICDE 2024 prototype (`w4h-icde-demo`); it exercises the geo branch of GeoMTS mapping ([ADR-008](../dev/ADR-008-geomts-data-model.md)).
 
 **Credentials:** API keys live in local `.env` only — never in git or notebook outputs.
 
-MVP first-party listings: **w4h-sample-fitbit-csv**, **w4h-sample-fitbit-csv-importer**, **w4h-load-json**, and **fft_approximate** (external Postgres extension — install on your database; W4H does not vendor it).
+MVP first-party listings also include **w4h-load-json** and **fft_approximate** (external Postgres extension — install on your database; W4H does not vendor it).
 
 **Planned (M3, ADR-019):** **w4h-fitbit-wear-compliance** (device wear-time reports) and **w4h-compute-mets** (MET derivation from calories + weight) — both notebook **and CLI**, so an Admin can run them on cron, not only interactively. The Fitbit sample will gain `heart_rate` and `calories` signals so these tools have demo data. Also planned: **w4h-demo-approximate-queries**, a notebook showing `fft_approximate` approximate range queries against the sample dataset. RA task breakdown: [dev/analytics-contributions.md](../dev/analytics-contributions.md).
 
 ## How to contribute
 
-MVP curation is Super admin (Platform Admin → Contributions). Community self-publish is later (M9). Until then:
+MVP curation is Super admin ([Platform Admin → Contributions](/admin/contributions)). Community self-publish is later (M9) — the flow below is for admin-curated, first-party contributions. Until then:
 
 1. Create **one git repo** that does one job, with a README (publisher, language, how to run, no secrets).
-2. Ask a Super admin to add a `w4h.contributions` row (`slug`, `publisher`, `kind` / `kinds`, `language`, `repo_url`, `docs_path`). Importers that ship a notebook and a CLI should list both kinds.
+2. Ask a Super admin to add a `w4h.contributions` row. On the Contributions admin page, paste the repo URL and click **Fetch repo info** to auto-fill `slug`, `publisher`, `title`, `summary`, `kind` / `kinds`, and `language` from the README and, for sample-data repos, `manifest.yaml` — the form also flags manifest sanity-check errors/warnings (missing columns, a `geomts_mapping` value with no matching column, etc.) before saving. Manual entry of all fields still works if you skip this step. Importers that ship a notebook and a CLI should list both kinds.
 3. For vendor samples, follow ADR-016 naming (`w4h-sample-<vendor>-<format>` and a separate importer repo).
+
+**Dataset vs. importer — which do I catalog first?** No order is enforced — the two rows are independent. But publish the **sample-data repo first** (or make sure it's public before anyone runs the importer): the in-app **Run import…** flow ([ADR-022](../dev/ADR-022-in-app-contribution-run-trigger.md)) resolves the paired data repo automatically by the ADR-016 naming convention and fails to clone it if it isn't there yet.
+
+The manifest sanity check covers admin-curated first-party contributions only — it isn't a community self-publish validator (that's M9, future work).
 
 Project workspaces do **not** register your team’s analysis notebooks. Put repo links in **project documentation**.

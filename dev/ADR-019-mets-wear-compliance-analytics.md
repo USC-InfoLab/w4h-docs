@@ -26,7 +26,7 @@ W4H already has **legacy prototype code** for wear compliance in the `w4h-notebo
 
 There is **no production MET derivation code** in catalog repos. A historical formula used in early demos: `METs ≈ calories / (weight_kg × 0.25)` per interval (product must document interval length and missing-weight handling).
 
-The Fitbit sample package ([ADR-016](ADR-016-paired-sample-importer-repos.md)) currently ships **subjects + weight only**. Wear compliance needs **heart_rate**; METs needs **calories** (+ weight). Without extending the sample, new contributions have nothing to run against in Docker demo or W4H Samples sandbox.
+The Fitbit sample package ([ADR-016](ADR-016-paired-sample-importer-repos.md)) now ships all four signals (`subjects`, `weight`, `heart_rate`, `calories` — WP1 done, see [analytics-contributions.md](analytics-contributions.md#wp1--extend-fitbit-sample-prerequisite)). Wear compliance needs **heart_rate**; METs needs **calories** (+ weight).
 
 The project **Analytics** tab is a placeholder ([`ProjectHub.vue`](../../w4h-app/src/components/project/ProjectHub.vue)). MVP **A-02–A-07** (full chart library) remains deferred; stakeholders still need a **basic cohort summary** (“show me these stats for this cohort”) for Users and Admins on loaded datasets.
 
@@ -104,5 +104,6 @@ Super admin adds rows to `w4h.contributions` (seed in `w4h-api/data/schema.sql` 
 
 | Date | Change |
 |------|--------|
+| 2026-08-20 | WP1 done: `w4h-sample-fitbit-csv` now ships `heart_rate` + `calories` signals (synthetic CSVs copied from legacy `w4h-datasets`, `manifest.yaml` GeoMTS mapping added); importer's existing `test_manifest.py` (4-signal assertion) passes. |
 | 2026-08-18 | Added third contribution `w4h-demo-approximate-queries`; made CLI automation (`kinds: notebook, cli`) explicit for the wear-compliance and METs repos, mirroring the Fitbit importer. Assigned to Tracy / Bharghav for August — see [analytics-contributions.md](analytics-contributions.md#assignments-august-2026). General (non-Fitbit-specific) dataset stats split out to [ADR-020](ADR-020-basic-dataset-stats-dashboard.md). |
 | 2026-08-17 | Initial draft — contributions + cohort dashboard scope for M3 (September 2026). |

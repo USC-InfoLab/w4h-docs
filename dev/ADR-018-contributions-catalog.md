@@ -47,8 +47,8 @@ The platform holds **metadata pointers** only — not `.ipynb` blobs or extensio
 | `slug` | Stable id (`publisher` + name, unique) |
 | `publisher` | VS Code-style publisher string (not a required user FK) |
 | `title`, `summary` | Listing copy |
-| `kind`, `kinds` | One or more of `notebook` \| `cli` \| `script` \| `postgres_extension`. Importers that ship a notebook and a CLI list both. `kind` is the primary (first) value. |
-| `language` | `python` \| `r` \| `sql` \| `other` |
+| `kind`, `kinds` | One or more of `notebook` \| `cli` \| `script` \| `postgres_extension` \| `dataset`. Importers that ship a notebook and a CLI list both; ADR-016 sample-data repos (manifest.yaml + CSV/JSON, no code) are `dataset`, not `script`. `kind` is the primary (first) value. |
+| `language` | `python` \| `r` \| `sql` \| `csv` \| `json` \| `other`. For `dataset` rows this is the sample's file format (manifest.yaml's `format` field), not a programming language. |
 | `repo_url`, `repo_ref`, `docs_path` | Git location; default docs `README.md` |
 | `status` | `draft` \| `published` \| `deprecated` |
 
@@ -65,9 +65,11 @@ Each catalog row points at **one** repository that does **one** job. First-party
 | Slug | Kind | Language | Repo |
 |---|---|---|---|
 | `fft-approximate` | `postgres_extension` | `sql` | existing `fft_approximate` |
-| `w4h-sample-fitbit-csv` | `script` | `other` | `w4h-sample-fitbit-csv` (ADR-016 sample) |
+| `w4h-sample-fitbit-csv` | `dataset` | `csv` | `w4h-sample-fitbit-csv` (ADR-016 sample) |
 | `w4h-sample-fitbit-csv-importer` | `notebook` + `cli` | `python` | `w4h-sample-fitbit-csv-importer` (ADR-016: notebook to adapt; CLI for incremental/cron) |
 | `w4h-load-json` | `notebook` | `python` | `w4h-load-json` |
+| `w4h-sample-icde-demo-csv` | `dataset` | `csv` | `w4h-sample-icde-demo-csv` (ADR-016 sample; adds a `gps_track` geo signal) |
+| `w4h-sample-icde-demo-csv-importer` | `notebook` + `cli` | `python` | `w4h-sample-icde-demo-csv-importer` (ADR-016: notebook to adapt; CLI for incremental/cron) |
 
 `w4h-notebooks` is an **index**, not the catalog source of truth and not a monorepo for new tools.
 
@@ -96,6 +98,8 @@ The Compose `notebooks` service remains a **single-user convenience image**, not
 
 | Date | Change |
 |------|--------|
+| 2026-08-21 | Added `dataset` kind (and `csv`/`json` language values) for ADR-016 sample-data repos, which were wrongly classified as `script`/`other`; fixed `w4h-sample-fitbit-csv` and cataloged the previously-missing `w4h-sample-icde-demo-csv` pair. |
+| 2026-08-21 | Contributions admin page gets a **Fetch repo info** action (`POST /contributions/inspect`): given a repo URL, it auto-fills the catalog row from the README and, for sample-data repos, `manifest.yaml`, and runs a minimal manifest sanity check (required fields, unusual column types, `geomts_mapping.values[].source` not matching a column) shown as errors/warnings before save. Manual entry is unchanged and unblocked by validation. Scoped to Super-admin curation of first-party contributions — not a community self-publish validator (still M9). |
 | 2026-08-16 | Docker convenience Jupyter preloads `w4h-sample-fitbit-csv-importer` (not a generic sample). |
 | 2026-08-16 | Accepted. Numbered ADR-018 because ADR-016/017 were already assigned. |
 | 2026-08-16 | CSV ingest listing uses ADR-016 names (`w4h-sample-fitbit-csv` + `-importer`), not `w4h-load-csv`. |
