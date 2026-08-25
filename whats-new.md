@@ -2,7 +2,7 @@
 title: 🆕 What's New!
 description: Highlights from W4H Toolkit 0.3.0 — 🧗 Peña Roja.
 updated_by: nocera@usc.edu
-updated_at: 2026-08-17T18:00:00.000Z
+updated_at: 2026-08-19T00:00:00.000Z
 ---
 
 <p class="lead">
@@ -14,10 +14,10 @@ updated_at: 2026-08-17T18:00:00.000Z
 
 - [PHI-safe AI chat](#phi-safe-ai-chat) — docked assistant with a default egress filter
 - [Contributions catalog](#contributions-catalog) — browse tools; no project notebook registry
-- [Sample Fitbit CSV](#sample-fitbit-csv) — paired sample package + importer
+- [Sample CSV packages](#sample-csv-packages) — Fitbit + ICDE demo pairs
 - [Project dataset overview](#project-dataset-overview) — selected-dataset stats in the workspace
 - [Roles in the UI](#roles-in-the-ui) — Super admin · Admin · User
-- [Docker deployment](#docker-deployment) — standalone Compose stack against your Postgres
+- [Docker deployment](#docker-deployment) — standalone Compose stack, configured entirely through the Admin UI setup wizard
 
 > Tip: click any image to enlarge it in the docs browser.
 >
@@ -44,20 +44,22 @@ Open it from the chat icon in the top nav, or with **⌘J** / **Ctrl+J**. The pa
 
 W4H does **not** register project-owned notebooks. Browse **Contributions** (`/contributions`) instead — a catalog of tools (publisher, kind, language, git README). Super admins curate listings in Platform Admin.
 
-First-party listings include **w4h-sample-fitbit-csv**, **w4h-sample-fitbit-csv-importer**, **w4h-load-json**, and **fft_approximate** (external Postgres extension — install on the database; W4H does not vendor it).
+First-party listings include the two paired CSV samples below, plus **w4h-load-json** and **fft_approximate** (external Postgres extension — install on the database; W4H does not vendor it).
 
 Put your own analysis repo links in **project pages**. See [Contributions](guide/sample-packages.md) and [ADR-018](dev/ADR-018-contributions-catalog.md).
 
 ---
 
-## Sample Fitbit CSV
+## Sample CSV packages
 
-Paired repos ([ADR-016](dev/ADR-016-paired-sample-importer-repos.md)):
+Two paired sample + importer repos ([ADR-016](dev/ADR-016-paired-sample-importer-repos.md)) — one git repo per contribution row:
 
-| Repo | What it is |
-|---|---|
-| `w4h-sample-fitbit-csv` | Synthetic Fitbit CSV package + `manifest.yaml` |
-| `w4h-sample-fitbit-csv-importer` | Notebook + CLI that loads via the **W4H API** (not direct Postgres) |
+| Pair | What it is | Geo? |
+|---|---|---|
+| **w4h-sample-fitbit-csv** | Synthetic Fitbit-style CSV + `manifest.yaml` | No — real Fitbit exports have no GPS |
+| **w4h-sample-fitbit-csv-importer** | Notebook + CLI via the **W4H API** (not direct Postgres); **runnable** in-app (**Run import…**) | — |
+| **w4h-sample-icde-demo-csv** | Synthetic ICDE 2024 demo CSV + `manifest.yaml`; includes `gps_track` | Yes — exercises geo GeoMTS mapping ([ADR-008](dev/ADR-008-geomts-data-model.md)) |
+| **w4h-sample-icde-demo-csv-importer** | Notebook + CLI for the ICDE demo sample (notebook/CLI only — not in-app runnable yet) | — |
 
 Use a personal `W4H_API_KEY` in local `.env` only. Do not commit credentials or real PHI.
 
@@ -92,6 +94,14 @@ Welcome guides: [Super admin](guide/welcome-super-admin.md) · [Admin](guide/wel
 ## Docker deployment
 
 Prototype Compose packaging in `w4h-docker` runs the app, API, and a convenience Jupyter service against **your** PostgreSQL (no bundled database). See [Docker Deployment](guide/docker-deployment.md) and [ADR-015](dev/ADR-015-docker-deployment-packaging.md).
+
+**Setup is Admin UI–driven, not manual SQL or config-file editing.** `docker compose up` starts the stack with no database credentials required; everything after that happens in the browser:
+
+1. Open the app and enter your Postgres host, port, and credentials in the **setup wizard** — it tests the connection, auto-creates the `w4h` schema, and generates `TOKEN_SECRET` for you.
+2. Create the initial **Super admin** account.
+3. Configure outbound email under **Settings → Mail Server** and send a test message.
+
+With Postgres and SMTP credentials already on hand, that whole in-app portion — schema bootstrap through a working test email — takes **under 5 minutes**.
 
 ---
 

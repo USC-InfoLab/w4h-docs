@@ -2,7 +2,7 @@
 title: "August 2026 release plan — 0.3.0 Peña Roja"
 description: Internal checklist for the August 2026 monthly release — public repos, Docker prototype, scope vs MVP milestones M3/M5/M9, and naming conventions.
 updated_by: nocera@usc.edu
-updated_at: 2026-08-18T00:00:00.000Z
+updated_at: 2026-08-19T00:00:00.000Z
 sort_order: 4
 ---
 
@@ -105,6 +105,42 @@ RAs ran the [ADR-019](ADR-019-mets-wear-compliance-analytics.md) notebooks end t
 4. **Jupyter Lab in `w4h-docker`** — same `notebooks` service / token flow as the importer; confirms the Docker prototype can run all three notebooks, not only the shipped importer.
 
 **Not covered by this smoke test:** API cohort summary (WP4), Analytics tab cards (WP5), catalog seeding (WP6) — those stay **M3 / September**.
+
+### Friday demo — Aug 21, 2026
+
+Builds directly on the smoke test above into a ~10-minute presenter walkthrough. Also tracked as [MVP §17.1](mvp.md#171-demo-checkpoint-friday-august-21-2026); this section is the operator/presenter detail, MVP owns the compact status entry.
+
+**What's real vs. planned:**
+
+| Capability | Today | Planned |
+|---|---|---|
+| Multitenancy | Schema-per-trial isolation, core platform (M1) | — |
+| Data ingestion | Fitbit CSV via personal API key + importer notebook (D-14) | Ingestion UI (D-09–D-11), still `🚩 Todo` |
+| API key provisioning | **Shipped 2026-08-19** — auto-issued at account creation ([D-16a](mvp.md#63-api-key-data-access), `✅ Done`), bootstrap and invite acceptance both covered | — |
+| Cohort analytics | Wear-compliance + METs **notebooks**, smoke-tested manually above (ADR-019) | Dashboard cards A-04a–c (Sept/M3); basic-stats card ADR-020 (~Aug 28, Tracy) |
+| Control-group comparison | Not built — echoes the original ICDE prototype's control-group view | **[ADR-021](ADR-021-cohort-control-group-comparison.md) opened** (Draft), not August-scoped |
+| Outlier detection / real-time streaming (StreamSim) / trajectory maps | Not built, not scoped | Same ICDE-prototype lineage as control-group comparison — stay unscoped; open an ADR only if pilot users or the community actually ask |
+| PHI-safe AI chat | Context-aware, egress-filtered, audited (ADR-014) | Modes AI-05–AI-12 (IRB drafting, sample-size calc, etc.) still in progress/Todo |
+| Project documentation (translation layer) | Any project member authors/edits protocol notes, data dictionaries, analysis write-ups in-workspace (Doc-08, Doc-11, Doc-14 all `✅ Done`) | Export/import (Doc-13), cross-links to platform Help (Doc-15) still `🚩 Todo` |
+
+**Agenda (~10 min):**
+
+1. **Local deploy, multitenancy & platform setup (2 min)** — Run the in-app setup wizard against an already-provisioned Postgres instance: DB connect (auto-creates the `w4h` schema, generates `TOKEN_SECRET`), create the Super admin, configure SMTP under Settings → Mail Server and send a test email. Estimate **~5 minutes** end to end for this wizard portion alone (Postgres + SMTP credentials assumed already on hand — this is not docker build/pull time). Call out schema-per-trial isolation (ADR-001): a second trial's schema is a hard DB-level boundary, not an application-layer check. Log in as Super admin and open the **What's New** page: make the point that this is itself a feature — any team can publish their own What's New entries to showcase newly added capabilities on their deployment (a new Contributions notebook, a new sample dataset, or another community contribution), not just track W4H's own monthly releases.
+2. **Data ingestion (1.5 min)** — The personal API key already exists — auto-issued when the Super admin/user account was created in segment 1 (D-16a, shipped 2026-08-19), no manual "Generate new key" click needed. Run the Fitbit CSV importer notebook against the sample data, per [Docker Deployment](../guide/docker-deployment.md) §6. No direct DB/DDL access (D-13).
+3. **Cohort analytics — wear compliance + METs (3 min)** — Lead with the **cohort-level output**, not the mechanics: pull up `subjects_total`, `subjects_compliant`, `median_daily_wear_pct`, `cohort_mean_mets`, `cohort_met_hours_per_day` and frame it as "this becomes a no-code, WYSIWYG dashboard card once these metric definitions are validated" (same notebook-first → dashboard sequencing as ADR-019/ADR-020/ADR-021). *Then* reveal how it's computed today: run `w4h-fitbit-wear-compliance` and `w4h-compute-mets` in Jupyter Lab against the imported sample, showing the `METs ≈ calories / (weight_kg × 0.25)` derivation. Value-add point: the platform's job is to turn things researchers do often into a reusable, accessible component — first a notebook/CLI, later a dashboard card — instead of every team re-deriving it ad hoc. **Reach goal (not committed for Friday):** compute these cohort statistics using the `fft_approximate` extension for approximate-query performance at scale, echoing the planned `w4h-demo-approximate-queries` contribution and ADR-020's approximate-row-count precedent.
+4. **Platform value — beyond the chat (2 min)** — The PHI-safe chat is one example, not the only one. Open it in the same project; show the context chips (team/project/dataset, no raw rows), ask a question that would require row data, and show the block + the resulting `ai.chat_blocked` audit event — a bare Claude session has no team/project context, no egress filter, and nothing audited. Then broaden — the throughline across all of these is turning ad hoc, one-off work into audited, reusable, accessible capability:
+   - **Community-developed tooling** — the wear-compliance/METs notebooks (segment 3) are Contributions any team can adopt as-is; CLI entry points add recurring/incremental ingestion on a documented cron path (D-26), not just one-off notebook runs.
+   - **Community-curated sample datasets** — the paired sample+importer repo pattern behind `w4h-sample-fitbit-csv` ([ADR-016](ADR-016-paired-sample-importer-repos.md)) is designed for any contributor to publish a new vendor/format pair (`w4h-sample-<vendor>-<format>`), discoverable in Contributions the same way as the first-party one.
+   - **Project documentation as a translation layer** (segment 5) — the RA's plain-language write-up is read directly by the PI/physician in-workspace, no separate wiki or Slack thread.
+   - **IRB-curated support** — project IRB protocol metadata (P-10, `✅ Done`) feeds an **IRB Grant Assistant** chat mode drafting wearable-specific IRB sections and a Data Management Plan (AI-05–AI-08, `🚧 In progress`); IRB access reports for compliance review (H-09) are still `🚩 Todo`.
+   - **Schema-per-trial multitenancy** (segment 1) — a hard DB-level boundary (ADR-001), not an application-layer check.
+   - **What's New as a showcase mechanism** (segment 1) — the same docs system that ships platform release notes lets any team announce what they've added locally.
+   - **Self-host for free** — bring your own already-provisioned Postgres, no W4H-managed service and no vendor lock-in (see [Free deployment?](#free-deployment) below).
+
+   Candor: a capable researcher could derive the same METs formula with Claude alone — the platform's edge is governance and reuse, not an analytical result Claude alone couldn't produce.
+5. **Access for non-AI/ML experts (1.5 min)** — Two beats: (a) the RA-built Contributions catalog entries just run (notebook + CLI) let a clinician/User rerun cohort or METs analysis without touching code; (b) open a project documentation page and show the RA's plain-language write-up (methodology, data dictionary, or results summary) — the PI/physician (Admin) reads and relies on that page directly in the workspace, no Jupyter needed. This is real, shipped functionality (Doc-08/Doc-11/Doc-14 `✅ Done`) — one of the stronger "already works" beats in the demo, not a roadmap item.
+
+**Not covered live:** real-time streaming ingestion (StreamSim) and geospatial trajectory maps — both carried over from the original ICDE prototype — plus outlier-detection charts (A-05) stay unscoped; open an ADR for any of these only if pilot users or the community actually ask. Control-group comparison is the one exception already promoted to a real design doc: [ADR-021](ADR-021-cohort-control-group-comparison.md) (Draft, not August-scoped).
 
 ### Free deployment?
 

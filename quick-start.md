@@ -15,7 +15,7 @@ The **W4H Toolkit** is a research platform for ingesting, organizing, and analyz
 At a glance, the platform provides:
 
 - **Projects** — scoped workspaces for a study or analysis effort, with members, datasets, and documentation
-- **Contributions** — curated tools (notebooks, CLI, scripts, Postgres extensions) with publisher and git README
+- **Contributions** — curated tools (notebooks, CLI, scripts, Postgres extensions) with publisher and git README; some importers are **runnable** in-app (**Run import…**) without a notebook or CLI ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md))
 - **Datasets** — ingested collections of wearable signal tables (research catalogs; plus the Samples sandbox demos)
 - **Docs** — this documentation browser, initialized from the `w4h-docs` source repository
 - **PHI-safe AI chat** — docked assistant (⌘J) for import, processing, and IRB questions; default filter keeps identifiers and raw rows out of Claude ([PHI-safe AI chat](guide/ai-chat.md))
@@ -97,10 +97,19 @@ In the workspace you can manage:
 Declaring a dataset (a name on the team or project) is not the same as loading it.
 
 1. Create or add the dataset on the **project** (declaration) or under **Datasets**.
-2. Ingest tables with an importer from [Contributions]({{APP_URL}}/contributions) into **your team** — not the Samples sandbox. Use your personal API key.
+2. Ingest tables: for a **runnable** contribution (currently only the **Fitbit CSV importer**), open the project workspace → **Datasets**, click **Run import…**, pick the contribution and target dataset, then choose **Update** (add missing rows; default) or **Full re-import** (truncate and reload) — it runs on your personal API key, no notebook or CLI needed ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)). For other importers — including the **ICDE demo CSV** pair (geo `gps_track` signal; [ADR-016](dev/ADR-016-paired-sample-importer-repos.md)) — adapt the notebook or run the CLI from [Contributions]({{APP_URL}}/contributions) into **your team** — not the Samples sandbox — using your personal API key.
 3. Confirm **tables** on the dataset overview — that means it is loaded. Mapping details: [ADR-003](dev/ADR-003-dataset-table-model.md).
 
 Researchers only see datasets that are linked to projects they belong to. **Users** do not ingest.
+
+**First-party sample pairs** (Contributions → search “Fitbit” or “ICDE”):
+
+| Pair | Geo signal? | In-app **Run import…** |
+|---|---|---|
+| **w4h-sample-fitbit-csv** + importer | No — Fitbit CSV exports have no GPS | Yes (Fitbit importer only) |
+| **w4h-sample-icde-demo-csv** + importer | Yes — `gps_track` (lat/lon) | Notebook / CLI only |
+
+Both are synthetic. Load into **your team** for ingest practice; do not re-ingest Super-admin **W4H Samples** sandbox datasets.
 
 ---
 
@@ -120,8 +129,8 @@ User accounts are never hard-deleted — they can be discontinued and resumed la
 
 You are enrolled in the **W4H Samples** sandbox (synthetic demos). Super admin seeds those datasets; you **re-run** notebooks — you do not re-ingest.
 
-1. Open **Contributions** (`{{APP_URL}}/contributions`) and search (for example, “CSV” or “fft”).
-2. Generate a **personal API key** (**Profile → API keys**). Do not use a shared team key.
+1. Open **Contributions** (`{{APP_URL}}/contributions`) and search (for example, “Fitbit”, “ICDE”, or “fft”).
+2. Your **personal API key** is issued automatically at account creation — reveal or rotate it under **Profile → API keys** when you run a notebook or CLI. Do not use a shared team key.
 3. Open the listing’s git repo (README is rendered in-app and lives in the repo). Query the canonical sandbox dataset; skip write/`replace` cells unless you are Super admin seeding.
 4. For **your** trial data, open **Projects**, issue a project token or use your key on datasets linked to that project.
 
@@ -189,6 +198,7 @@ Documentation is organized into doc types — each type is a folder in the sourc
 | Create a project | App shell → Projects (Team admin) · [Welcome — Admin](guide/welcome-admin.md) |
 | Work in a project as User | App shell → Project / Contributions · [Welcome — User](guide/welcome-user.md) |
 | Manage datasets | App shell → Datasets (Team admin) |
+| Load tables (runnable importer) | Project workspace → Datasets → **Run import…** ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)) |
 | Add a team member | App shell → Users → Invite (Team admin) |
 | Issue a data-access token | Project workspace → Database access |
 | Configure email | Platform Admin → Settings → Mail Server |

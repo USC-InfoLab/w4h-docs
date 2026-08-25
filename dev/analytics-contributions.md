@@ -51,7 +51,7 @@ Ship **device wear compliance** and **METs** analysis for Fitbit-style datasets:
 
 | Gap | Owner workstream |
 |-----|------------------|
-| No `heart_rate` / `calories` in Fitbit sample | WP1 |
+| ~~No `heart_rate` / `calories` in Fitbit sample~~ | WP1 — done 2026-08-20 |
 | No catalog repo for wear compliance | WP2 |
 | No MET derivation code | WP3 |
 | Analytics tab is placeholder | WP5 |
@@ -66,17 +66,17 @@ Ship **device wear compliance** and **METs** analysis for Fitbit-style datasets:
 
 ## Work packages (assign to RAs)
 
-### WP1 — Extend Fitbit sample (prerequisite)
+### WP1 — Extend Fitbit sample (prerequisite) — **Done (2026-08-20)**
 
 **Repos:** `w4h-sample-fitbit-csv`, `w4h-sample-fitbit-csv-importer`
 
-| Task | Acceptance criteria |
-|------|---------------------|
-| Add `data/fitbit_heart_rate.csv` | Synthetic rows for existing subject ids; columns documented in manifest |
-| Add `data/fitbit_calories.csv` | Same; include optional `mets` column on subset for WP3 validation |
-| Update `manifest.yaml` | `heart_rate` + `calories` signals with GeoMTS mapping (subject, time, values) |
-| Update importer | `_dedupe_columns_for_signal` for new slugs; `import_all` loads 4 signals |
-| Tests | `test_manifest.py` asserts 4 signals; CSV files exist |
+| Task | Acceptance criteria | Status |
+|------|---------------------|--------|
+| Add `data/fitbit_heart_rate.csv` | Synthetic rows for existing subject ids; columns documented in manifest | Done — copied from legacy `w4h-datasets/fitbit_heart_rate.csv` |
+| Add `data/fitbit_calories.csv` | Same; include optional `mets` column on subset for WP3 validation | Done — copied from legacy `w4h-datasets/fitbit_calories.csv`; `mets` present on all rows |
+| Update `manifest.yaml` | `heart_rate` + `calories` signals with GeoMTS mapping (subject, time, values) | Done |
+| Update importer | `_dedupe_columns_for_signal` for new slugs; `import_all` loads 4 signals | Already implemented in importer repo — no change needed |
+| Tests | `test_manifest.py` asserts 4 signals; CSV files exist | Passing (`test_manifest_loads`, `test_signal_slugs`, `test_dedupe_columns_for_four_signals`) |
 
 **Reference manifest signals:** existing `subjects`, `weight` in [`w4h-sample-fitbit-csv/manifest.yaml`](../../w4h-sample-fitbit-csv/manifest.yaml).
 

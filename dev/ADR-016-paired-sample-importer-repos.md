@@ -1,8 +1,8 @@
 ---
 title: "ADR-016 — Paired sample and importer repositories"
 description: Vendor sample data and import tooling as separate paired git repos; discovery is the Contributions catalog (ADR-018).
-updated_by: limbasiabb@gmail.com
-updated_at: 2026-08-16T00:00:00.000Z
+updated_by: nocera@usc.edu
+updated_at: 2026-08-21T00:00:00.000Z
 ---
 
 **Status:** Draft  
@@ -31,7 +31,18 @@ Researchers and admins should adapt **concrete** import notebooks per vendor; au
 | Sample data + vendor manifest | `w4h-sample-<vendor>-<format>` | `w4h-sample-fitbit-csv` |
 | Importer (notebook + CLI + tests) | `<sample-repo-name>-importer` | `w4h-sample-fitbit-csv-importer` |
 
-Sample repos hold CSV/JSON files and `manifest.yaml` (column types, Fitbit API doc links, GeoMTS mapping hints). Importer repos call the W4H API with a personal API key.
+Sample repos hold CSV/JSON files and `manifest.yaml` (column types, vendor API doc links, per-signal GeoMTS mapping — see [ADR-008](ADR-008-geomts-data-model.md)). Importer repos call the W4H API with a personal API key.
+
+### Multiple sample datasets, with and without location
+
+There is more than one paired sample/importer set, and they intentionally differ on whether they carry geo signals — this exercises both branches of the GeoMTS mapping (`geo: null` vs. a real geo-typed signal, [ADR-008](ADR-008-geomts-data-model.md)):
+
+| Package | Vendor/source | Geo signal? | Notes |
+|---------|---------------|-------------|-------|
+| `w4h-sample-fitbit-csv` | Fitbit-style CSV export | No — `geo: null` on every signal | Original pair; per-signal tables (`heart_rate`, `calories`, `weight`, …), no GPS in Fitbit CSV exports |
+| `w4h-sample-icde-demo-csv` | `w4h-icde-demo` synthetic dataset | Yes — `gps_track` (raw) | Ported from the ICDE demo prototype precedent (ADR-008); exercises the geo-typed-signal path end to end through `/import/csv-batch` |
+
+Each package sets its own `manifest.yaml.vendor` slug and passes it as `table_prefix` in the import payload (see Import mechanics) so physical tables stay distinguishable across vendors in the same dataset-scoped schema, instead of colliding on generic signal names.
 
 ### Listing sample packages
 
@@ -44,6 +55,7 @@ API keys are read from **environment or local `.env`** in the importer repo. Key
 ### Import mechanics
 
 - Importers use `POST /datasets/:id/import/csv-batch` (chunked rows, API key). Against **W4H Samples** canonical datasets, only Super admin may `replace`/`append` (ADR-017). Team-admin ingest applies to the caller’s own team catalogs.
+- Payload carries `signal`, `table_prefix`, `columns`, `mapping` (GeoMTS role mapping, stored as-is in `w4h.tables.mapping_json`), `mode`, `dedupe_columns`, `rows`. `table_prefix` (e.g. `fitbit`, `icde_demo`) namespaces the physical table so multiple vendors in the same dataset-scoped schema don't collide on a shared signal slug (e.g. `heart_rate`) — the endpoint no longer hardcodes a vendor prefix.
 - Physical tables live in dataset-scoped schemas; metadata and mapping register in `w4h.tables` (ADR-003).
 - CLI supports **initial import** (`replace` / `append`) and **sync** (append with dedupe) for cron jobs.
 
@@ -71,3 +83,5 @@ API keys are read from **environment or local `.env`** in the importer repo. Key
 | 2026-08-16 | Initial draft. |
 | 2026-08-16 | Listing moved to Packages registry (ADR-017); Help is contribute-only. |
 | 2026-08-16 | Listing is Contributions catalog (ADR-018); one repo per contribution. |
+| 2026-08-21 | Added second sample/importer pair (`w4h-sample-icde-demo-csv`, with a `gps_track` geo signal) alongside `w4h-sample-fitbit-csv` (no geo) to exercise both branches of the ADR-008 mapping. Fixed `/import/csv-batch` hardcoding `fitbit_` as the physical table prefix; payload now carries an explicit `table_prefix`. |
+| 2026-08-21 | Contributions admin's **Fetch repo info** ([ADR-018](ADR-018-contributions-catalog.md)) applies this pairing convention a second place: inspecting a `<sample-repo>-importer` repo without its own `manifest.yaml` now probes the paired `<sample-repo>`'s `manifest.yaml` directly on GitHub (same `owner/<slug>` convention `contribution-runner.js`'s `pairedDataSlugFor()` uses at run time, but resolved from the repo URL rather than the catalog, since the paired row may not be cataloged yet) and surfaces it as a "paired sample-data repo detected" note. |

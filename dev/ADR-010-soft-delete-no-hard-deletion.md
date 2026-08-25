@@ -73,6 +73,8 @@ Retention enforcement: a PostgreSQL rule or trigger prevents deletion. Long-term
 
 Archiving a dataset or project makes it invisible in the default UI and prevents new data ingestion or analysis runs. It does not delete data. Archived datasets remain queryable by Super admins and Team admins for audit and IRB reporting purposes. Sharing agreements on archived datasets are automatically revoked.
 
+Archiving a **project** does not cascade to its datasets: `project_datasets` links and any `dataset_shares` scoped to that project stay exactly as they were. Unarchiving the project restores it with no further action needed. This is the opposite direction from the dataset-archive case above (a dataset archiving revokes *that dataset's own* shares) — the two are independent, and a project archiving never touches dataset or share records.
+
 ## Consequences
 
 **Positive:**

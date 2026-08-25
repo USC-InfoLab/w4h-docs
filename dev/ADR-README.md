@@ -2,7 +2,7 @@
 title: ADR Readme
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-08-18T00:00:00.000Z
+updated_at: 2026-08-19T00:00:00.000Z
 sort_order: 4
 ---
 
@@ -32,6 +32,8 @@ A **dataset** is a catalog row (`w4h.datasets`) plus its own PostgreSQL schema (
 | [ADR-018](ADR-018-contributions-catalog.md) | Contributions catalog; no project notebook registry | Accepted |
 | [ADR-019](ADR-019-mets-wear-compliance-analytics.md) | METs and wear-compliance analytics (contributions + cohort dashboards) | Draft |
 | [ADR-020](ADR-020-basic-dataset-stats-dashboard.md) | Basic dataset statistics dashboard (Admin & User parity) | Draft |
+| [ADR-021](ADR-021-cohort-control-group-comparison.md) | Cohort control-group comparison analytics | Draft |
+| [ADR-022](ADR-022-in-app-contribution-run-trigger.md) | In-app run trigger for runnable catalog contributions | Draft |
 
 ## What is an ADR?
 

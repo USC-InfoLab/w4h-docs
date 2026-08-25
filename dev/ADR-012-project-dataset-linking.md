@@ -104,7 +104,7 @@ Not visible to: Team B  (share alone does not grant project membership)
 |---|---|
 | `/admin/datasets` (team scoped) | Filters **All** / **Mine** / **Others** / **Shared**. Mine = owned; Shared = inbound shares (linkable); Others = peer **Discoverable** metadata only. Share from dataset edit. |
 | `/admin/datasets/shares` | Active inbound/outbound agreements; revoke |
-| Project edit / workspace | Link picker = linkable set (owned ∪ shared-to-this-team [∪ project-specific shares]); never show discoverable-only peer datasets |
+| Project edit / workspace | Link picker = linkable set (owned ∪ shared-to-this-team [∪ project-specific shares]); never show discoverable-only peer datasets. Also includes an inline **create new catalog dataset** control (Team admin / project `owner`) — creating a dataset does not require leaving the project workspace for `/admin/datasets`. That page remains reachable from here for cross-project/team-wide catalog work (rename, Discoverable toggle, shares). |
 | Project list | Owning-team projects only (+ Super admin global) |
 
 ## Consequences

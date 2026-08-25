@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-08-19
+- Generated: 2026-08-20
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -18,7 +18,7 @@ Structural map of `w4h-docs` for agents and humans. **Index only** — not a sub
 | Docs screenshots / fake users | `dev/docs-fixtures.md` |
 | Guides | `guide/` |
 
-ADRs in tree: **21**. Prefer MVP + relevant ADR before inventing product rules.
+ADRs in tree: **23**. Prefer MVP + relevant ADR before inventing product rules.
 
 ## Root
 
@@ -53,6 +53,8 @@ ADRs in tree: **21**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/ADR-018-contributions-catalog.md` | ADR-018 — Contributions catalog; no project notebook registry |
 | `dev/ADR-019-mets-wear-compliance-analytics.md` | ADR-019 — METs and wear-compliance analytics (contributions + cohort dashboards) |
 | `dev/ADR-020-basic-dataset-stats-dashboard.md` | ADR-020 — Basic dataset statistics dashboard (Admin & User parity) |
+| `dev/ADR-021-cohort-control-group-comparison.md` | ADR-021 — Cohort control-group comparison analytics |
+| `dev/ADR-022-in-app-contribution-run-trigger.md` | ADR-022 — In-app run trigger for runnable catalog contributions |
 | `dev/ADR-README.md` | ADR Readme |
 | `dev/analytics-contributions.md` | Analytics contributions — RA handoff (METs & wear compliance) |
 | `dev/architecture.md` | Architecture |

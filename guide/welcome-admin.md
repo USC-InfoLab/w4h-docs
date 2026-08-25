@@ -1,6 +1,6 @@
 ---
 title: Welcome — Admin
-description: After Super admin onboards you — create projects, link datasets, adapt ingest notebooks, invite members, and use chat when it is available.
+description: After Super admin onboards you — create projects, link datasets, load data, invite members, and use chat when it is available.
 card_title: Welcome — Admin
 action_label: Next steps
 is_feature_card: true
@@ -22,7 +22,7 @@ Projects in depth: [Setting Up Projects](setting-up-projects.md). Platform overv
 | Step | Where | Why |
 |---|---|---|
 | **1. Create a project** | Projects → Add Project | Owning team required. Workspace for members, linked datasets, and project pages. |
-| **2. Link datasets, then load tables** | Project → Datasets, then [Contributions]({{APP_URL}}/contributions) | Linking does **not** load data. Adapt a notebook or deploy a CLI from a Contributions example against **your team**, with your **personal API key**. **Do not** re-ingest Super-admin sample datasets (read-only). Tables and stats show on the project overview when data is loaded. |
+| **2. Link datasets, then load tables** | Project → Datasets → **Run import…** | Linking does **not** load data. For a **runnable** contribution (currently the Fitbit CSV importer), click **Run import…** and pick **Update** or **Full re-import** — runs on your personal API key, no notebook or CLI needed. Otherwise adapt a notebook or deploy a CLI from [Contributions]({{APP_URL}}/contributions) against **your team**. **Do not** re-ingest Super-admin sample datasets (read-only). Tables and stats show on the project overview when data is loaded. |
 | **3. Invite members** | Project → People | Invite any email. If they are already on the project, they are skipped. **Admin** can create/load datasets; **User** runs analysis on loaded tables. SMTP must work (ask Super admin if invites fail). |
 | **4. Chat, if available** | Chat icon in the nav (⌘J / Ctrl+J) | Setup, import, and IRB questions when a team or platform key is configured. If the panel says chat is not available, add a lab key under Team settings or ask Super admin. Do not paste rows or identifiers — [PHI-safe AI chat](ai-chat.md). |
 

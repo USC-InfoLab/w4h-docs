@@ -52,7 +52,7 @@ flowchart LR
 | Create further teams / trials | Team admin (PI) | **Teams → Add Team** after onboard (Draft T-15) — Super admin does **not** approve each trial |
 | Create a project | Team admin | **Projects → Add Project** |
 | Create / own datasets | Team admin | **Datasets → Add Dataset** (name/catalog). Tables appear after ingest. |
-| Ingest tables | Team admin / project Admin | [Contributions]({{APP_URL}}/contributions) — adapt an ingest notebook; use the importer CLI for cron / incremental sync |
+| Ingest tables | Team admin / project Admin | For a **runnable** contribution: **Run import…** on the dataset panel (Update / Full re-import, [ADR-022](../dev/ADR-022-in-app-contribution-run-trigger.md)). Otherwise [Contributions]({{APP_URL}}/contributions) — adapt an ingest notebook; use the importer CLI for cron / incremental sync |
 | Link datasets | Team admin / project owner | Project **Datasets** (declarations only — not ingest) |
 | Run analytics | Project User (or Admin) | Contributions analysis tools against **loaded** (tables present) datasets |
 | Share a dataset to another team | Owning Team admin | Dataset edit → **Shares** |
