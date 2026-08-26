@@ -16,6 +16,7 @@ updated_at: 2026-08-19T00:00:00.000Z
 - [Contributions catalog](#contributions-catalog) — browse tools; no project notebook registry
 - [Sample CSV packages](#sample-csv-packages) — Fitbit + ICDE demo pairs
 - [Project dataset overview](#project-dataset-overview) — selected-dataset stats in the workspace
+- [Cohort comparison](#cohort-comparison) — selected subjects vs a control group on the Analytics tab
 - [Roles in the UI](#roles-in-the-ui) — Super admin · Admin · User
 - [Docker deployment](#docker-deployment) — standalone Compose stack, configured entirely through the Admin UI setup wizard
 
@@ -59,7 +60,7 @@ Two paired sample + importer repos ([ADR-016](dev/ADR-016-paired-sample-importer
 | **w4h-sample-fitbit-csv** | Synthetic Fitbit-style CSV + `manifest.yaml` | No — real Fitbit exports have no GPS |
 | **w4h-sample-fitbit-csv-importer** | Notebook + CLI via the **W4H API** (not direct Postgres); **runnable** in-app (**Run import…**) | — |
 | **w4h-sample-icde-demo-csv** | Synthetic ICDE 2024 demo CSV + `manifest.yaml`; includes `gps_track` | Yes — exercises geo GeoMTS mapping ([ADR-008](dev/ADR-008-geomts-data-model.md)) |
-| **w4h-sample-icde-demo-csv-importer** | Notebook + CLI for the ICDE demo sample (notebook/CLI only — not in-app runnable yet) | — |
+| **w4h-sample-icde-demo-csv-importer** | Notebook + CLI for the ICDE demo sample; **runnable** in-app (**Run import…**) | — |
 
 Use a personal `W4H_API_KEY` in local `.env` only. Do not commit credentials or real PHI.
 
@@ -74,6 +75,14 @@ GeoMTS remains a **role mapping** over physical tables (`w4h.tables`), not a for
 ![Dataset catalog with Mine / Others / Shared filters](media/whats-new/datasets-catalog.png)
 
 Discoverable vs shared is unchanged from July: **Others** is metadata only until you **share**. [Setting Up Projects](guide/setting-up-projects.md).
+
+---
+
+## Cohort comparison
+
+Once a dataset has mapped heart rate / calories (and METs if you have run compute-METs), the project **Analytics** tab can run the ICDE demo’s offline comparison: pick subject IDs, a control group (entire dataset, everyone else, or specific IDs), a date range, and optional time-of-day windows.
+
+Results show selected-vs-control KPI deltas, downsampled time series (heart rate includes a control ±2σ band), and comparison bars. This is a **filter-based** split, not a matched cohort. Age/height sliders, maps, and real-time streaming are not in this slice. [ADR-021](dev/ADR-021-cohort-control-group-comparison.md).
 
 ---
 

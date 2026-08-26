@@ -15,7 +15,7 @@ The **W4H Toolkit** is a research platform for ingesting, organizing, and analyz
 At a glance, the platform provides:
 
 - **Projects** — scoped workspaces for a study or analysis effort, with members, datasets, and documentation
-- **Contributions** — curated tools (notebooks, CLI, scripts, Postgres extensions) with publisher and git README; some importers are **runnable** in-app (**Run import…**) without a notebook or CLI ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md))
+- **Contributions** — curated tools (notebooks, CLI, scripts, SQL modules, Postgres extensions) with publisher and git README; importers use **Run import…** in the dataset **overview** pane; runnable SQL jobs use **Run analysis…** on the Analytics tab — both via `POST /contributions/:slug/run` ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md), [ADR-023](dev/ADR-023-sql-analytics-contributions.md)). Notebooks may also call `POST /datasets/:id/contributions/:slug/sql` for a direct sync result.
 - **Datasets** — ingested collections of wearable signal tables (research catalogs; plus the Samples sandbox demos)
 - **Docs** — this documentation browser, initialized from the `w4h-docs` source repository
 - **PHI-safe AI chat** — docked assistant (⌘J) for import, processing, and IRB questions; default filter keeps identifiers and raw rows out of Claude ([PHI-safe AI chat](guide/ai-chat.md))
@@ -97,7 +97,7 @@ In the workspace you can manage:
 Declaring a dataset (a name on the team or project) is not the same as loading it.
 
 1. Create or add the dataset on the **project** (declaration) or under **Datasets**.
-2. Ingest tables: for a **runnable** contribution (currently only the **Fitbit CSV importer**), open the project workspace → **Datasets**, click **Run import…**, pick the contribution and target dataset, then choose **Update** (add missing rows; default) or **Full re-import** (truncate and reload) — it runs on your personal API key, no notebook or CLI needed ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)). For other importers — including the **ICDE demo CSV** pair (geo `gps_track` signal; [ADR-016](dev/ADR-016-paired-sample-importer-repos.md)) — adapt the notebook or run the CLI from [Contributions]({{APP_URL}}/contributions) into **your team** — not the Samples sandbox — using your personal API key.
+2. Ingest tables: for a **runnable** contribution (the **Fitbit CSV importer** or **ICDE demo CSV importer**), open the project workspace → **Datasets**, select the **target catalog row**, then click **Run import…**. That loads a copy of the sample into **that row’s own schema** — it does not truncate a sibling dataset that already has the sample. If the sample is already loaded on the project, **Link … instead** (do not run again). On a first load, pick **Sample / importer** (Fitbit or ICDE). On a re-run of a loaded dataset, choose **Update** or **Full** (**Full** truncates tables in this dataset only). It runs on your personal API key, no notebook or CLI needed ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)). For other importers, adapt the notebook or run the CLI from [Contributions]({{APP_URL}}/contributions) into **your team** — not the Samples sandbox — using your personal API key.
 3. Confirm **tables** on the dataset overview — that means it is loaded. Mapping details: [ADR-003](dev/ADR-003-dataset-table-model.md).
 
 Researchers only see datasets that are linked to projects they belong to. **Users** do not ingest.
@@ -106,8 +106,8 @@ Researchers only see datasets that are linked to projects they belong to. **User
 
 | Pair | Geo signal? | In-app **Run import…** |
 |---|---|---|
-| **w4h-sample-fitbit-csv** + importer | No — Fitbit CSV exports have no GPS | Yes (Fitbit importer only) |
-| **w4h-sample-icde-demo-csv** + importer | Yes — `gps_track` (lat/lon) | Notebook / CLI only |
+| **w4h-sample-fitbit-csv** + importer | No — Fitbit CSV exports have no GPS | Yes |
+| **w4h-sample-icde-demo-csv** + importer | Yes — `gps_track` (lat/lon) | Yes |
 
 Both are synthetic. Load into **your team** for ingest practice; do not re-ingest Super-admin **W4H Samples** sandbox datasets.
 
@@ -198,7 +198,7 @@ Documentation is organized into doc types — each type is a folder in the sourc
 | Create a project | App shell → Projects (Team admin) · [Welcome — Admin](guide/welcome-admin.md) |
 | Work in a project as User | App shell → Project / Contributions · [Welcome — User](guide/welcome-user.md) |
 | Manage datasets | App shell → Datasets (Team admin) |
-| Load tables (runnable importer) | Project workspace → Datasets → **Run import…** ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)) |
+| Load tables (runnable importer) | Project workspace → Datasets → select dataset → **Run import…** in overview ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)) |
 | Add a team member | App shell → Users → Invite (Team admin) |
 | Issue a data-access token | Project workspace → Database access |
 | Configure email | Platform Admin → Settings → Mail Server |

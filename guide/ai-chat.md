@@ -43,7 +43,7 @@ The filter is **heuristic defense-in-depth**. Your organisation remains the cove
 | Mode | Use for |
 |------|---------|
 | **Help** | How to **use W4H** for your role: which screen, who can invite, where API keys live. Links into Help. Not methods or notebook code. |
-| **Import** | Getting files **into** W4H: Contributions, CSV/JSON ingest, GeoMTS mapping |
+| **Import** | Getting files **into** W4H: Contributions, CSV/JSON ingest, GeoMTS mapping. Planned ingest assistant ([ADR-024](../dev/ADR-024-ingest-assistant.md)): the **app** chooses files and sends a **PHI-obscured** profile (not raw rows); output is a runnable package you can edit. |
 | **IRB** | Wearable privacy language, HIPAA-aligned access, draft DMP from project metadata |
 | **Analytics** | How to **analyze data already in W4H**: derived metrics (e.g. energy expenditure), filter / plot / aggregate snippets **without pasting PHI** |
 
@@ -56,7 +56,7 @@ The API resolves the UI role from the signed-in user and the active team (not fr
 | UI role | Who | How the assistant should answer |
 |---------|-----|----------------------------------|
 | **Super admin** | Platform role Super admin | Platform Admin: SMTP, first team, invite Team admins, audit, usage, settings, Contributions catalog CRUD. Not day-to-day PI trial work. |
-| **Admin** | Team admin on the active team | App shell: create projects, link datasets, invite members, share datasets, team AI key. Not Platform Admin. |
+| **Admin** | Team admin on the active team | App shell: create projects, link datasets, invite members, share datasets, lab AI key on Project → People. Not Platform Admin. |
 | **User** | Everyone else in the app shell | Work in assigned projects: linked datasets, project pages, personal API key / project token, browse Contributions. Point “create / invite / ingest” tasks to an Admin. |
 
 If a task needs a higher role, the assistant should say **who** can do it instead of inventing a button that user cannot see.
@@ -73,7 +73,7 @@ Claude calls are proxied by the API.
 
 | Source | Who configures | When it is used |
 |--------|----------------|-----------------|
-| **Team (lab) key** | Team admin → **Team settings**, or Super admin → Settings → Lab Anthropic key | App-shell chat for that team (the lab pays Anthropic). Member usage is listed on the same page. |
+| **Team (lab) key** | Admin → **Project → People**, or Super admin → Settings → Lab Anthropic key | App-shell chat for that team (the lab pays Anthropic). Member usage is listed on the same page. |
 | **Provisioned platform key** | Super admin → Settings | Platform Admin chat, and labs with **no** team key, until the **monthly token quota** is used |
 
 The saved key is shown as a **masked prefix** (not an empty `sk-ant-…` field). Replace to paste a new key; the full secret is never returned.
@@ -91,6 +91,7 @@ In **PHI-safe (strict)** (the default `ai_phi_filter`):
 - Route, role, team/project **names**
 - Dataset **name**, schema **column names/types**, subject **counts**, aggregate date ranges
 - Help / docs text and your question, if it passes the scan
+- **Ingest assistant (planned):** an app-built file **profile** after PHI obscuring — headers, types, sizes, redacted preview tokens — not source identifiers or GPS tracks ([ADR-024](../dev/ADR-024-ingest-assistant.md))
 
 **Must not go to Claude**
 
@@ -161,4 +162,4 @@ If chat is empty (“not available”), configure a team or platform key first; 
 - Copied table cells, CSV snippets, notebook outputs, or GPS traces from a study
 - Screenshots of identifiable dashboards
 
-Ask about **how** to import, map, or analyze; run those steps in the app, contribution notebooks, or your own git repo — not by pasting the data into the assistant.
+Ask about **how** to import, map, or analyze; run those steps in the app, contribution notebooks, or your own git repo — not by pasting the data into the assistant. The planned ingest assistant samples files in the browser and obscures preview cells before Claude sees them; the downloadable package is what you edit if mapping is wrong.

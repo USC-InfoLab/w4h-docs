@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-08-20
+- Generated: 2026-08-26
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -18,7 +18,7 @@ Structural map of `w4h-docs` for agents and humans. **Index only** — not a sub
 | Docs screenshots / fake users | `dev/docs-fixtures.md` |
 | Guides | `guide/` |
 
-ADRs in tree: **23**. Prefer MVP + relevant ADR before inventing product rules.
+ADRs in tree: **25**. Prefer MVP + relevant ADR before inventing product rules.
 
 ## Root
 
@@ -55,8 +55,11 @@ ADRs in tree: **23**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/ADR-020-basic-dataset-stats-dashboard.md` | ADR-020 — Basic dataset statistics dashboard (Admin & User parity) |
 | `dev/ADR-021-cohort-control-group-comparison.md` | ADR-021 — Cohort control-group comparison analytics |
 | `dev/ADR-022-in-app-contribution-run-trigger.md` | ADR-022 — In-app run trigger for runnable catalog contributions |
+| `dev/ADR-023-sql-analytics-contributions.md` | ADR-023 — SQL analytics contributions (YAML-bound SQL via the API) |
+| `dev/ADR-024-ingest-assistant.md` | ADR-024 — Ingest assistant: obscured file profiles, csv-batch, generated runnable package |
 | `dev/ADR-README.md` | ADR Readme |
 | `dev/analytics-contributions.md` | Analytics contributions — RA handoff (METs & wear compliance) |
+| `dev/analytics-sql-engine-options.md` | Analytics SQL engine — options memo |
 | `dev/architecture.md` | Architecture |
 | `dev/august-2026-release-plan.md` | August 2026 release plan — 0.3.0 Peña Roja |
 | `dev/developer-setup.md` | Developer Setup |

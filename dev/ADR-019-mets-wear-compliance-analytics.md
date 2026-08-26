@@ -2,12 +2,12 @@
 title: "ADR-019 — METs and wear-compliance analytics (contributions + cohort dashboards)"
 description: First-party Contributions for device wear reporting and MET derivation, plus basic in-app cohort stats on the project Analytics tab (M3).
 updated_by: nocera@usc.edu
-updated_at: 2026-08-17T00:00:00.000Z
+updated_at: 2026-08-23T00:00:00.000Z
 ---
 
 **Status:** Draft  
 **Date:** 2026-08-17  
-**Relates to:** ADR-003 (table model), ADR-008 (GeoMTS), ADR-016 (paired sample/importer), ADR-018 (contributions catalog), ADR-020 (basic dataset stats dashboard), MVP §6.2 (D-14), MVP §10 (A-01, A-04)  
+**Relates to:** ADR-003 (table model), ADR-008 (GeoMTS), ADR-016 (paired sample/importer), ADR-018 (contributions catalog), ADR-020 (basic dataset stats dashboard), ADR-023 (SQL analytics contributions), MVP §6.2 (D-14, D-34), MVP §10 (A-01, A-04)  
 **References:**
 - [dev/analytics-contributions.md](analytics-contributions.md) — RA task breakdown, assignments, timeline
 - [ADR-020](ADR-020-basic-dataset-stats-dashboard.md) — general (non-Fitbit-specific) dataset stats card, split out of this ADR's Analytics tab scope
@@ -44,7 +44,7 @@ The project **Analytics** tab is a placeholder ([`ProjectHub.vue`](../../w4h-app
 | `w4h-compute-mets` | `w4h-compute-mets` | `notebook`, `cli` | Derive MET time series from calories + weight; optional write-back as derived signal |
 | `w4h-demo-approximate-queries` | `w4h-demo-approximate-queries` | `notebook` | Demonstrates `fft_approximate` approximate range-aggregate queries against the Fitbit sample dataset |
 
-Publisher: `usc-infolab`. Do **not** add new tools to legacy `w4h-notebooks` ([ADR-018](ADR-018-contributions-catalog.md)).
+Publisher: `usc-infolab`. Do **not** add new tools to legacy `w4h-notebooks` ([ADR-018](ADR-018-contributions-catalog.md)). Platform-side METS **SQL** is a separate planned contribution `w4h-sql-compute-mets` (`kind: sql`) — [ADR-023](ADR-023-sql-analytics-contributions.md). Do not rewrite this pandas repo.
 
 Each repo: `pyproject.toml`, tests, `.env.example`, README (protocol assumptions), notebook. Read ingested data via **project db-token + SQL** against mapped tables (`w4h.tables`) until a read/query API exists. Credentials via `W4H_API_KEY` in local `.env` only ([ADR-007](ADR-007-authentication-model.md)).
 
@@ -67,7 +67,7 @@ Replace the Analytics tab placeholder with **cached cohort stat cards** when a l
 
 **Role parity:** Viewers and Admins see the same cohort stats. Admins additionally get a link to Contributions for full notebook reports.
 
-**Implementation:** extend cached `datasets.summary` JSON with optional `wear_compliance` and `mets_summary`; bounded recompute via `POST /datasets/:id/summary/refresh` (Team admin+). Port logic from `ComplianceAnalyzer` and METs module into `w4h-api/lib/` (copy acceptable for MVP). **No live full-table `COUNT(*)` on list endpoints** (MVP / AGENTS).
+**Implementation:** extend cached `datasets.summary` JSON with optional `wear_compliance` and `mets_summary`; bounded recompute via `POST /datasets/:id/summary/refresh` (Team admin+). Platform-side METS cache/cards **read** a derived `mets_computed` table or a YAML SQL report ([ADR-023](ADR-023-sql-analytics-contributions.md)) — do **not** port the MET formula into `w4h-api/lib/` as the long-term owner. Wear-compliance may still start from a port of `ComplianceAnalyzer` until it has its own SQL manifest. **No live full-table `COUNT(*)` on list endpoints** (MVP / AGENTS). The pandas contribution `w4h-compute-mets` (`kinds: notebook, cli`) stays; the API job is a **separate** planned repo `w4h-sql-compute-mets` (`kind: sql`).
 
 **Defer unchanged:** A-02 time-series plots, A-03 comparisons, A-05 outliers, A-06 PDF export.
 
@@ -104,6 +104,7 @@ Super admin adds rows to `w4h.contributions` (seed in `w4h-api/data/schema.sql` 
 
 | Date | Change |
 |------|--------|
+| 2026-08-23 | Platform METS path is YAML-bound SQL via the API ([ADR-023](ADR-023-sql-analytics-contributions.md), planned `w4h-sql-compute-mets`). This ADR’s pandas `w4h-compute-mets` notebook/CLI is unchanged. Analytics cards read engine output; do not own the formula in `w4h-api/lib`. |
 | 2026-08-20 | WP1 done: `w4h-sample-fitbit-csv` now ships `heart_rate` + `calories` signals (synthetic CSVs copied from legacy `w4h-datasets`, `manifest.yaml` GeoMTS mapping added); importer's existing `test_manifest.py` (4-signal assertion) passes. |
 | 2026-08-18 | Added third contribution `w4h-demo-approximate-queries`; made CLI automation (`kinds: notebook, cli`) explicit for the wear-compliance and METs repos, mirroring the Fitbit importer. Assigned to Tracy / Bharghav for August — see [analytics-contributions.md](analytics-contributions.md#assignments-august-2026). General (non-Fitbit-specific) dataset stats split out to [ADR-020](ADR-020-basic-dataset-stats-dashboard.md). |
 | 2026-08-17 | Initial draft — contributions + cohort dashboard scope for M3 (September 2026). |

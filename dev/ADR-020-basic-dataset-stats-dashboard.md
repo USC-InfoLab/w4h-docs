@@ -2,12 +2,12 @@
 title: "ADR-020 — Basic dataset statistics dashboard (Admin & User parity)"
 description: General, vendor-agnostic dataset stats card on the project Analytics tab — subject count, date range, device types, dataset size — split out from the Fitbit-specific wear/MET dashboards in ADR-019.
 updated_by: nocera@usc.edu
-updated_at: 2026-08-18T00:00:00.000Z
+updated_at: 2026-08-23T00:00:00.000Z
 ---
 
 **Status:** Draft
 **Date:** 2026-08-18
-**Relates to:** ADR-003 (table model), ADR-008 (GeoMTS), ADR-019 (METs and wear-compliance analytics), MVP §6.1 (D-02), MVP §10 (A-01, A-07)
+**Relates to:** ADR-003 (table model), ADR-008 (GeoMTS), ADR-019 (METs and wear-compliance analytics), ADR-023 (SQL analytics contributions), MVP §6.1 (D-02), MVP §10 (A-01, A-07)
 **References:**
 - [dev/analytics-contributions.md](analytics-contributions.md) — assignments, timeline
 - [ADR-019](ADR-019-mets-wear-compliance-analytics.md) — wear/MET cohort cards (Fitbit-shaped signals only)
@@ -53,7 +53,7 @@ Extend the same `datasets.summary` jsonb column ADR-019 introduced, under a new 
 }
 ```
 
-`w4h-api/lib/` gains a small `dataset-basic-stats.js` (or extends ADR-019's cohort-summary module) — bounded queries only, no unindexed full-table `COUNT(*)` on list endpoints (MVP / AGENTS). Row counts may use an approximate estimator (e.g. `pg_class.reltuples`, or `fft_approximate`-style approximation when the extension is installed) rather than an exact scan; exactness is not required for a dashboard card.
+Prefer a YAML SQL manifest on the shared engine ([ADR-023](ADR-023-sql-analytics-contributions.md)) over a third bespoke `lib/dataset-*.js` formula owner. A small `dataset-basic-stats.js` (or an ADR-019 cohort-summary extension) is acceptable only as a stopgap. Bounded queries only, no unindexed full-table `COUNT(*)` on list endpoints (MVP / AGENTS). Row counts may use an approximate estimator (e.g. `pg_class.reltuples`, or `fft_approximate`-style approximation when the extension is installed) rather than an exact scan; exactness is not required for a dashboard card.
 
 ### 3. Role parity
 
@@ -90,4 +90,5 @@ This ADR ships **independently** of ADR-019's WP4 (API cohort summary) and WP5 (
 
 | Date | Change |
 |------|--------|
+| 2026-08-23 | Prefer an [ADR-023](ADR-023-sql-analytics-contributions.md) YAML SQL manifest over a long-lived bespoke JS module for `basic_stats`. |
 | 2026-08-18 | Initial draft — basic dataset stats card split out of ADR-019's Analytics tab scope. Assigned to Tracy for August 2026. |

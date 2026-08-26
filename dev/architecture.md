@@ -2,12 +2,12 @@
 title: Architecture
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-07-05T01:23:50.000Z
+updated_at: 2026-08-25T00:00:00.000Z
 sort_order: 2
 ---
 **Version:** 1.0  
 **Status:** Draft  
-**Last updated:** 2026-07-04
+**Last updated:** 2026-08-25
 
 ---
 
@@ -38,7 +38,7 @@ Platform-wide tables that are not trial-specific:
 - `app_docs` — platform-level documentation
 - `audit_log` — append-only HIPAA audit ledger: API/notebook PHI access, super-admin activity, auth and ACL-boundary events (see ADR-011)
 - `sharing_requests` — workflow table for dataset sharing approvals
-- `contributions` — curated catalog of community/first-party tools (publisher, kind, language, git repo, README path); not project-owned analysis notebooks (see ADR-018)
+- `contributions` — curated catalog of community/first-party tools (publisher, kind, language, git repo, README path); not project-owned analysis notebooks (see ADR-018). Kinds include notebooks, CLI, scripts, **SQL modules** ([ADR-023](ADR-023-sql-analytics-contributions.md)), sample datasets, and Postgres extensions.
 
 ### trial_\<id\> — per-trial schemas (target isolation)
 
@@ -66,7 +66,7 @@ No data flows here automatically. A project manager explicitly publishes a datas
 
 A **dataset** is a catalog row in `w4h.datasets` (owning team, metadata, optional `schema_def` intent, ingest status). It owns one or more **physical signal tables** in an isolation schema. **Table/field metadata and GeoMTS role mapping** are registered in **`w4h.tables`** — one source of truth in the platform schema ([ADR-003](ADR-003-dataset-table-model.md), [ADR-008](ADR-008-geomts-data-model.md)).
 
-This is **not** the community **Contributions** catalog. Contributions (`w4h.contributions`, [ADR-018](ADR-018-contributions-catalog.md)) lists curated **git** tools (notebooks, CLI, scripts, postgres extensions). Git sample repos are for tests and Super-admin seed of the **W4H Samples** sandbox. Ingested rows in `w4h.datasets` are research (or that one canonical sandbox copy). Help does not catalog each contribution.
+This is **not** the community **Contributions** catalog. Contributions (`w4h.contributions`, [ADR-018](ADR-018-contributions-catalog.md)) lists curated **git** tools (notebooks, CLI, scripts, SQL modules, postgres extensions). Git sample repos are for tests and Super-admin seed of the **W4H Samples** sandbox. Ingested rows in `w4h.datasets` are research (or that one canonical sandbox copy). Help does not catalog each contribution.
 
 | Concept | Implementation |
 |---|---|
@@ -86,6 +86,8 @@ w4h.tables.mapping →
   geo: null
   values: [{ source: value, name: heart_rate, type: integer }]
 ```
+
+**Ingest.** First-party sample importers (Fitbit / ICDE) write through `POST /datasets/:id/import/csv-batch`. The planned ingest assistant ([ADR-024](ADR-024-ingest-assistant.md)) uses the same API so a PI can load **their own files into their project**. That path is team-private until they explicitly submit importer + sample-data packages to Super admin (not a share, not a catalog row). W4H does not store generated notebooks ([ADR-018](ADR-018-contributions-catalog.md)).
 
 ---
 

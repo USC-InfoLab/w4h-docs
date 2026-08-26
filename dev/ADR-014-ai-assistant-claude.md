@@ -2,7 +2,7 @@
 title: "ADR-014 — PHI-safe AI chat (Claude), team keys"
 description: Cursor-like multi-chat; per-team Anthropic keys; platform admin key; PHI-safe mode by default
 updated_by: nocera@usc.edu
-updated_at: 2026-07-22T00:00:00.000Z
+updated_at: 2026-08-25T00:00:00.000Z
 ---
 # ADR-014 — PHI-safe AI chat (Claude): team-paid keys, context, egress filter
 
@@ -38,12 +38,12 @@ Product name in the UI: **PHI-safe AI chat** (badge / mode label when the egress
 
 | Key scope | Who configures | Who pays | Used when |
 |-----------|----------------|----------|-----------|
-| **Team Claude key** | Team admin (team settings) | That team / PI | Chat from app shell while acting in that team context |
+| **Team Claude key** | Admin → Project → People (lab key); Super admin → Settings or team edit | That team / PI | Chat from app shell while acting in that team context |
 | **Platform Claude key** | Super admin (Platform Admin → Settings) | Institution / platform ops (optional) | Platform Admin shell only (ops, docs authoring help, deployment Q&A) |
 
 - Keys are stored **server-side only** (encrypted or secrets store); UI shows prefix/last-four, never plaintext after save.
 - No global shared “W4H project” Anthropic key for end-user trial traffic in MVP — avoids surprise bills and clarifies BAA / data-processing responsibility per team.
-- If neither team nor platform key is configured for the active context, chat shows a clear empty state (link to settings); the rest of the app keeps working.
+- If neither team nor platform key is configured for the active context, chat shows a clear empty state (Admin: Project → People; Super admin: Settings); the rest of the app keeps working.
 - Model id (e.g. Claude Sonnet/Opus family) is configurable per key scope with a safe default; each message stores `model` + prompt-pack version for reproducibility (pilot reporting).
 
 **CTSI pilot reflection:** Team-scoped keys match how CTSI-affiliated labs already buy cloud AI: each trial tenancy opts in and pays. The optional Super admin key lets platform operators use the same UX for admin tasks without charging a PI’s key. Pilot evaluation (M8) can treat assistant-assisted task time as a Knowledge Transfer / Usability measure without requiring a central LLM budget.
@@ -133,3 +133,4 @@ See MVP §13.1 (AI-01a…AI-02c, AI-13…AI-16). AI-05…AI-12 remain modes/skil
 | 2026-08-16 | Implementation: team BYOK + Super admin provisioned platform key with **per-team monthly token quota**; Help / Import / IRB / Process modes. Streaming and open-in-tab remain follow-ups (AI-01a). |
 | 2026-08-16 | System prompt: **role-based answers** (Super admin · Admin · User) and **Markdown links** to Help / project pages / Contributions from live indexes only. |
 | 2026-08-16 | Chat mode **Process** renamed **Analytics** (Help = platform how-to; Analytics = methods/code). |
+| 2026-08-25 | Import mode may receive an **app-built, PHI-obscured file profile** (headers, types, sizes, redacted preview cells) as part of the ingest assistant ([ADR-024](ADR-024-ingest-assistant.md)). Claude still has no filesystem access and must not receive unredacted rows. |

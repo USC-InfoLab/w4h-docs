@@ -2,7 +2,7 @@
 title: "ADR-016 — Paired sample and importer repositories"
 description: Vendor sample data and import tooling as separate paired git repos; discovery is the Contributions catalog (ADR-018).
 updated_by: nocera@usc.edu
-updated_at: 2026-08-21T00:00:00.000Z
+updated_at: 2026-08-25T00:00:00.000Z
 ---
 
 **Status:** Draft  
@@ -72,7 +72,7 @@ API keys are read from **environment or local `.env`** in the importer repo. Key
 
 ## Alternatives not chosen
 
-- **Consolidated `w4h-ingest` + platform ingest catalog** — rejected for MVP (unknown device abstractions).
+- **Consolidated vendor-parser catalog** — rejected for MVP (unknown device abstractions). A later **mapping assistant + generic csv-batch client** that emits a downloadable runnable package is [ADR-024](ADR-024-ingest-assistant.md) (Draft) — that is not a parser framework and does not replace these paired sample repos.
 - **CLI-only** — rejected; notebook is primary learning surface.
 - **Direct Postgres in samples** — rejected (bypasses ACL, audit, mapping registry).
 
@@ -85,3 +85,4 @@ API keys are read from **environment or local `.env`** in the importer repo. Key
 | 2026-08-16 | Listing is Contributions catalog (ADR-018); one repo per contribution. |
 | 2026-08-21 | Added second sample/importer pair (`w4h-sample-icde-demo-csv`, with a `gps_track` geo signal) alongside `w4h-sample-fitbit-csv` (no geo) to exercise both branches of the ADR-008 mapping. Fixed `/import/csv-batch` hardcoding `fitbit_` as the physical table prefix; payload now carries an explicit `table_prefix`. |
 | 2026-08-21 | Contributions admin's **Fetch repo info** ([ADR-018](ADR-018-contributions-catalog.md)) applies this pairing convention a second place: inspecting a `<sample-repo>-importer` repo without its own `manifest.yaml` now probes the paired `<sample-repo>`'s `manifest.yaml` directly on GitHub (same `owner/<slug>` convention `contribution-runner.js`'s `pairedDataSlugFor()` uses at run time, but resolved from the repo URL rather than the catalog, since the paired row may not be cataloged yet) and surfaces it as a "paired sample-data repo detected" note. |
+| 2026-08-25 | Clarified the rejected alternative: no **vendor-parser** catalog. Private-file ingest via an obscured-profile assistant and a generated runnable package is [ADR-024](ADR-024-ingest-assistant.md), not a new sample pair per study. |

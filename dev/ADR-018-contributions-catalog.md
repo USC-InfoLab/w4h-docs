@@ -2,12 +2,12 @@
 title: "ADR-018 — Contributions catalog; no project notebook registry"
 description: Platform catalog of contributed tools (publisher, repo, docs). W4H does not track researchers’ project notebooks.
 updated_by: nocera@usc.edu
-updated_at: 2026-08-16T00:00:00.000Z
+updated_at: 2026-08-23T22:00:00.000Z
 ---
 
 **Status:** Accepted  
 **Date:** 2026-08-16  
-**Relates to:** ADR-006 (Flexible compute), ADR-007 (API keys), ADR-015 (Docker notebooks service), ADR-016 (paired sample/importer repos), ADR-017 (Samples sandbox)  
+**Relates to:** ADR-006 (Flexible compute), ADR-007 (API keys), ADR-015 (Docker notebooks service), ADR-016 (paired sample/importer repos), ADR-017 (Samples sandbox), ADR-023 (SQL analytics contributions)  
 **References:**
 - MVP §6.2 (D-14, D-25)
 - [guide/sample-packages.md](../guide/sample-packages.md)
@@ -47,8 +47,8 @@ The platform holds **metadata pointers** only — not `.ipynb` blobs or extensio
 | `slug` | Stable id (`publisher` + name, unique) |
 | `publisher` | VS Code-style publisher string (not a required user FK) |
 | `title`, `summary` | Listing copy |
-| `kind`, `kinds` | One or more of `notebook` \| `cli` \| `script` \| `postgres_extension` \| `dataset`. Importers that ship a notebook and a CLI list both; ADR-016 sample-data repos (manifest.yaml + CSV/JSON, no code) are `dataset`, not `script`. `kind` is the primary (first) value. |
-| `language` | `python` \| `r` \| `sql` \| `csv` \| `json` \| `other`. For `dataset` rows this is the sample's file format (manifest.yaml's `format` field), not a programming language. |
+| `kind`, `kinds` | One or more of `notebook` \| `cli` \| `script` \| `postgres_extension` \| `dataset` \| `sql`. Importers that ship a notebook and a CLI list both; ADR-016 sample-data repos (manifest.yaml + CSV/JSON, no code) are `dataset`, not `script`. `kind: sql` is a YAML-declared, parameterized SQL **job** the API binds and executes ([ADR-023](ADR-023-sql-analytics-contributions.md)) — distinct from `postgres_extension` (`CREATE EXTENSION` on the institution’s Postgres). `kind` is the primary (first) value. |
+| `language` | `python` \| `r` \| `sql` \| `csv` \| `json` \| `other`. For `dataset` rows this is the sample's file format (manifest.yaml's `format` field), not a programming language. `language: sql` appears on both `kind: sql` (a job) and `kind: postgres_extension` (an extension). |
 | `repo_url`, `repo_ref`, `docs_path` | Git location; default docs `README.md` |
 | `status` | `draft` \| `published` \| `deprecated` |
 
@@ -70,6 +70,7 @@ Each catalog row points at **one** repository that does **one** job. First-party
 | `w4h-load-json` | `notebook` | `python` | `w4h-load-json` |
 | `w4h-sample-icde-demo-csv` | `dataset` | `csv` | `w4h-sample-icde-demo-csv` (ADR-016 sample; adds a `gps_track` geo signal) |
 | `w4h-sample-icde-demo-csv-importer` | `notebook` + `cli` | `python` | `w4h-sample-icde-demo-csv-importer` (ADR-016: notebook to adapt; CLI for incremental/cron) |
+| `w4h-sql-compute-mets` | `sql` (+ `notebook`, `cli`) | `sql` | `w4h-sql-compute-mets` ([ADR-023](ADR-023-sql-analytics-contributions.md): YAML + parameterized SQL via the API; notebook/CLI pick one dataset in a project). Distinct from the pandas `w4h-compute-mets` notebook/CLI ([ADR-019](ADR-019-mets-wear-compliance-analytics.md)). |
 
 `w4h-notebooks` is an **index**, not the catalog source of truth and not a monorepo for new tools.
 
@@ -98,6 +99,9 @@ The Compose `notebooks` service remains a **single-user convenience image**, not
 
 | Date | Change |
 |------|--------|
+| 2026-08-23 | **Fetch repo info** detects all catalog kinds from the repo (`.ipynb` → `notebook`, `[project.scripts]` → `cli`, `*.control` → `postgres_extension`, ADR-016 `signals` manifest → `dataset`, ADR-023 SQL manifest → `sql`). Kinds are additive (e.g. SQL job + notebook + CLI). |
+| 2026-08-23 | `w4h-sql-compute-mets` catalog row: `kinds: sql, notebook, cli` (SQL job plus thin clients that pick one dataset in a project). |
+| 2026-08-23 | Added `sql` kind for YAML-bound SQL jobs executed by the API ([ADR-023](ADR-023-sql-analytics-contributions.md)). `postgres_extension` remains `CREATE EXTENSION` only. Planned first-party row: `w4h-sql-compute-mets`. |
 | 2026-08-21 | Added `dataset` kind (and `csv`/`json` language values) for ADR-016 sample-data repos, which were wrongly classified as `script`/`other`; fixed `w4h-sample-fitbit-csv` and cataloged the previously-missing `w4h-sample-icde-demo-csv` pair. |
 | 2026-08-21 | Contributions admin page gets a **Fetch repo info** action (`POST /contributions/inspect`): given a repo URL, it auto-fills the catalog row from the README and, for sample-data repos, `manifest.yaml`, and runs a minimal manifest sanity check (required fields, unusual column types, `geomts_mapping.values[].source` not matching a column) shown as errors/warnings before save. Manual entry is unchanged and unblocked by validation. Scoped to Super-admin curation of first-party contributions — not a community self-publish validator (still M9). |
 | 2026-08-16 | Docker convenience Jupyter preloads `w4h-sample-fitbit-csv-importer` (not a generic sample). |

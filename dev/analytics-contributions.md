@@ -2,16 +2,16 @@
 title: "Analytics contributions — RA handoff (METs & wear compliance)"
 description: Task breakdown for Research Assistants — extend Fitbit sample, port wear compliance, add METs notebook, cohort dashboards, and catalog entries.
 updated_by: nocera@usc.edu
-updated_at: 2026-08-18T00:00:00.000Z
+updated_at: 2026-08-25T00:00:00.000Z
 sort_order: 5
 ---
 
 **Status:** Active handoff  
-**ADR:** [ADR-019 — METs and wear-compliance analytics](ADR-019-mets-wear-compliance-analytics.md)  
-**MVP:** §6.2 (D-14), §10 (A-01a, A-04, A-04a–c), milestone **M3**  
+**ADR:** [ADR-019 — METs and wear-compliance analytics](ADR-019-mets-wear-compliance-analytics.md); platform SQL path: [ADR-023](ADR-023-sql-analytics-contributions.md); cohort comparison: [ADR-021](ADR-021-cohort-control-group-comparison.md)
+**MVP:** §6.2 (D-14, D-25, D-34), §10 (A-01a, A-04, A-04a–c), milestone **M3**  
 **Target:** September 2026 (M3)
 
-**August update:** WP1–WP3 (extended Fitbit sample, wear-compliance notebook, METs notebook) were smoke-tested end to end during 0.3.0 Peña Roja — data import + both notebooks run manually against a test dataset using a personal **API key** ([ADR-007](ADR-007-authentication-model.md)), via the `w4h-docker` Jupyter Lab service. See [august-2026-release-plan.md](august-2026-release-plan.md#m3-notebooks-august-smoke-test-ahead-of-productization). WP4–WP6 (API cohort summary, Analytics tab UI, catalog seed) are unaffected — still **September (M3)**.
+**August update:** WP1–WP3 (extended Fitbit sample, wear-compliance notebook, METs notebook) were smoke-tested end to end during 0.3.0 Peña Roja — data import + both notebooks run manually against a test dataset using a personal **API key** ([ADR-007](ADR-007-authentication-model.md)), via the `w4h-docker` Jupyter Lab service. See [august-2026-release-plan.md](august-2026-release-plan.md#m3-notebooks-august-smoke-test-ahead-of-productization). WP4–WP6 (API cohort summary, Analytics tab UI, catalog seed) are unaffected — still **September (M3)**. Platform-side METS compute is now [ADR-023](ADR-023-sql-analytics-contributions.md) (`w4h-sql-compute-mets`, YAML + SQL via the API) — **WP3 (pandas `w4h-compute-mets`) stays**; do not rewrite it. WP4 caches engine output rather than owning a JS formula.
 
 This page is the **operator checklist for RAs**. Product requirements live in [MVP](mvp.md); architecture in ADR-019.
 
@@ -53,14 +53,15 @@ Ship **device wear compliance** and **METs** analysis for Fitbit-style datasets:
 |-----|------------------|
 | ~~No `heart_rate` / `calories` in Fitbit sample~~ | WP1 — done 2026-08-20 |
 | No catalog repo for wear compliance | WP2 |
-| No MET derivation code | WP3 |
+| No MET derivation code | WP3 (pandas companion) + **WP9** (SQL contribution, ADR-023) |
 | Analytics tab is placeholder | WP5 |
-| No API cohort aggregates | WP4 |
+| No API cohort aggregates | WP4 (cache via SQL engine, not a JS formula) |
 | Catalog rows missing | WP6 |
 | No CLI automation on wear-compliance / METs repos (notebook-only today) | WP2, WP3 |
 | No demo of `fft_approximate` against ingested data | WP7 |
 | `fft_approximate` install path undocumented for `w4h-docker` | WP8 |
-| No vendor-agnostic basic dataset stats card (Analytics tab empty for non-Fitbit datasets) | ADR-020 |
+| No vendor-agnostic basic dataset stats card (Analytics tab empty for non-Fitbit datasets) | ADR-020 (prefer ADR-023 manifest) |
+| No YAML SQL METS contribution / discovery / bind-execute API | WP9, D-34 |
 
 ---
 
@@ -117,15 +118,17 @@ Document: interval (e.g. per Fitbit calories row), missing weight → last-known
 | Unit tests | Match synthetic `mets` column within tolerance on fixture rows |
 | README | Formula, assumptions, limitations (not medical advice) |
 
-**Expected catalog row:** slug `w4h-compute-mets`, kinds `notebook` + `cli`, language `python`.
+**Expected catalog row:** slug `w4h-compute-mets`, kinds `notebook` + `cli`, language `python`. This is the **pandas companion**. The platform SQL job is a **separate** planned repo — see WP9 / [ADR-023](ADR-023-sql-analytics-contributions.md). Do not rewrite this package into SQL.
 
 ---
 
 ### WP4 — API cohort summary (`w4h-api`)
 
+Cache/refresh via the [ADR-023](ADR-023-sql-analytics-contributions.md) SQL engine (YAML manifests), **not** a new JS module that owns the MET formula. Wear-compliance may still start from a `ComplianceAnalyzer` port until it has its own SQL manifest.
+
 | Task | Acceptance criteria |
 |------|---------------------|
-| `lib/dataset-cohort-summary.js` (or similar) | Bounded queries on mapped HR/calories tables; wear + MET aggregates |
+| Engine-backed `mets_summary` (and later `wear_compliance`) | Bounded queries on mapped tables via the SQL contribution / engine; no per-metric formula in `lib/dataset-*.js` as the long-term owner |
 | Extend `hydrateDatasetSummaries` / refresh | Merge `wear_compliance`, `mets_summary` into `datasets.summary` |
 | `POST /datasets/:id/summary/refresh` | Team admin+; returns updated summary; audited |
 | No list-endpoint full scans | Use limits / sampling; cache results |
@@ -155,7 +158,8 @@ Document: interval (e.g. per Fitbit calories row), missing weight → last-known
 
 | Task | Acceptance criteria |
 |------|---------------------|
-| Replace placeholder in [`ProjectHub.vue`](../../w4h-app/src/components/project/ProjectHub.vue) Analytics section | Cohort stat cards when linked dataset has summary |
+| Replace placeholder in [`ProjectHub.vue`](../../w4h-app/src/components/project/ProjectHub.vue) Analytics section | **In progress (2026-08-25):** [`ProjectAnalyticsPanel.vue`](../../w4h-app/src/components/project/ProjectAnalyticsPanel.vue) — dataset picker, **cohort comparison** (ADR-021 / ICDE offline query), contributions list, **Run analysis…**. Cached wear/MET cards when summary keys exist. |
+| Subject vs control (A-02 / A-03 v1) | **Done (2026-08-25):** [`CohortAnalyticsPanel.vue`](../../w4h-app/src/components/project/CohortAnalyticsPanel.vue) — subject IDs, control = entire dataset / everyone else / IDs, date range, optional time-of-day windows, KPI deltas, downsampled series, comparison bars. Attribute filters and maps still out. |
 | Subject filter (A-04b) | Dropdown or pick-list when multiple subjects in summary |
 | Contributions link | Admins see link to wear + METs catalog entries |
 | Viewer parity | Same stats visible to Users ([A-07](mvp.md)) |
@@ -168,7 +172,7 @@ Reuse patterns from [`ProjectDatasetMasterDetail.vue`](../../w4h-app/src/compone
 
 | Task | Acceptance criteria |
 |------|---------------------|
-| Seed `w4h.contributions` in [`w4h-api/data/schema.sql`](../../w4h-api/data/schema.sql) | Three new rows when repos are public (wear compliance, METs, approximate-queries demo) |
+| Seed `w4h.contributions` in [`w4h-api/data/schema.sql`](../../w4h-api/data/schema.sql) | Wear compliance + pandas METs + approximate-queries when those repos are public; **`w4h-sql-compute-mets`** when the SQL repo exists (ADR-023, `kind: sql`) |
 | Update [Contributions guide](../guide/sample-packages.md) | List new tools under planned first-party |
 | Super admin smoke test | Browse `/contributions`; README renders from public GitHub |
 
@@ -201,6 +205,22 @@ Reuse patterns from [`ProjectDatasetMasterDetail.vue`](../../w4h-app/src/compone
 
 ---
 
+### WP9 — `w4h-sql-compute-mets` (new repo, ADR-023)
+
+**Not assigned to August RA hours.** Planned first-party **SQL** contribution, distinct from WP3's pandas package.
+
+| Task | Acceptance criteria |
+|------|---------------------|
+| New git repo `w4h-sql-compute-mets` | One job; README (formula, interval, missing-weight, not medical advice); no pandas compute path |
+| `manifest.yaml` | `requires`: calories + weight (GeoMTS roles, units); `produces`: `mets_computed`; no `fitbit_*` physical names |
+| Parameterized SQL | Bind `{{calories_rel}}` etc.; interval-scaled `0.25`; last-known weight else 70 kg; works on Fitbit **and** ICDE demo via mapping + `table_prefix` |
+| Catalog | slug `w4h-sql-compute-mets`, `kinds: sql, notebook, cli`, `language: sql`, publisher `usc-infolab` — after D-34 schema CHECK exists |
+| Notebook + CLI | Thin clients: list datasets in a project, `GET /datasets/:id/signals`, `POST .../contributions/:slug/sql`. Always one dataset; do not assume a project has only one. Not a local SQL/METs compute path |
+
+Depends on D-34 (discovery, bind/execute API, persist `sampling_interval` / unit on mapping).
+
+---
+
 ## Phasing
 
 | Phase | When | Deliverables |
@@ -208,8 +228,8 @@ Reuse patterns from [`ProjectDatasetMasterDetail.vue`](../../w4h-app/src/compone
 | **P0** | First (done) | WP1 + WP2 + WP6 (sample + wear repo + catalog draft) — smoke-tested August 2026 |
 | **P0.5** | August 2026 | WP2/WP3 CLI automation, WP7 (approximate-queries demo), WP8 (docker verification + `fft_approximate` install), ADR-020 (basic dataset stats) — see [Assignments](#assignments-august-2026) |
 | **P1** | Same sprint | WP3 (METs repo) — notebook smoke-tested August; CLI in P0.5 |
-| **P2** | M3 (September) | WP4 + WP5 (API + UI cohort cards) |
-| **P3** | Later M3 | A-02 charts, A-06 export (separate RA track) |
+| **P2** | M3 (September) | WP4 + WP5 (API + UI cohort cards); WP4 uses ADR-023 engine, not a JS formula |
+| **P3** | Later M3 | A-02 charts, A-06 export (separate RA track); **WP9** SQL METS contribution + D-34 |
 
 ---
 
@@ -223,6 +243,7 @@ flowchart LR
   WP2 --> WP6[WP6 Catalog seed]
   WP3 --> WP6
   WP4 --> WP5[WP5 Analytics UI]
+  WP9[WP9 SQL METS - ADR-023] --> WP4
   WP2 --> WP2c[WP2 CLI automation - Tracy]
   WP3 --> WP3c[WP3 CLI automation - Bharghav]
   WP8[WP8 fft_approximate install - Bharghav] --> WP7[WP7 Approx-queries demo - Bharghav]
@@ -281,4 +302,5 @@ ETAs calibrated against actual commit cadence on this project (`git log`, all re
 - [ ] Run `w4h-demo-approximate-queries` against the sample dataset in `w4h-docker` Jupyter Lab — Bharghav, WP7/WP8
 - [ ] Basic dataset stats card renders on Analytics tab for a non-Fitbit-shaped dataset — Tracy, ADR-020
 - [ ] Analytics tab shows wear + MET cohort cards after summary refresh
-- [ ] Contributions catalog lists all three tools with working README links
+- [ ] Contributions catalog lists wear + pandas METs + approximate-queries with working README links
+- [ ] SQL METS contribution (`w4h-sql-compute-mets`) specified and cataloged when D-34 lands — not August RA scope
