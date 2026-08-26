@@ -56,14 +56,14 @@ The API resolves the UI role from the signed-in user and the active team (not fr
 | UI role | Who | How the assistant should answer |
 |---------|-----|----------------------------------|
 | **Super admin** | Platform role Super admin | Platform Admin: SMTP, first team, invite Team admins, audit, usage, settings, Contributions catalog CRUD. Not day-to-day PI trial work. |
-| **Admin** | Team admin on the active team | App shell: create projects, link datasets, invite members, share datasets, lab AI key on Project → People. Not Platform Admin. |
+| **Admin** | Team admin on the active team | App shell: create projects, link datasets, invite members, share datasets, lab AI key on Project → Settings, chat usage on Project → People. Not Platform Admin. |
 | **User** | Everyone else in the app shell | Work in assigned projects: linked datasets, project pages, personal API key / project token, browse Contributions. Point “create / invite / ingest” tasks to an Admin. |
 
 If a task needs a higher role, the assistant should say **who** can do it instead of inventing a button that user cannot see.
 
 ### In-app links
 
-Each turn the API injects a **Help index**, this project's **page titles**, and the **Contributions** catalog. The model is instructed to emit Markdown links only for those slugs (no invented URLs) and to finish with a short **See also** line when something matches. Clicks on `/docs/…`, `/admin/projects/…/edit`, and `/contributions/…` stay inside the Vue app (external `https://` links open in a new tab). Chat also rewrites `/projects/{slug}` to `/admin/projects/{slug}/edit` (project settings / members).
+Each turn the API injects a **Help index**, this project's **page titles**, and the **Contributions** catalog. The model is instructed to emit Markdown links only for those slugs (no invented URLs) and to finish with a short **See also** line when something matches. Clicks on `/docs/…`, `/admin/projects/…/edit`, and `/contributions/…` stay inside the Vue app (external `https://` links open in a new tab). Chat also rewrites `/projects/{slug}` to `/admin/projects/{slug}/edit` (project settings, members, and chat usage).
 
 ---
 
@@ -73,7 +73,7 @@ Claude calls are proxied by the API.
 
 | Source | Who configures | When it is used |
 |--------|----------------|-----------------|
-| **Team (lab) key** | Admin → **Project → People**, or Super admin → Settings → Lab Anthropic key | App-shell chat for that team (the lab pays Anthropic). Member usage is listed on the same page. |
+| **Team (lab) key** | Admin → **Project → Settings**, or Super admin → Settings → Lab Anthropic key | App-shell chat for that team (the lab pays Anthropic). Member usage is listed on **Project → People**. |
 | **Provisioned platform key** | Super admin → Settings | Platform Admin chat, and labs with **no** team key, until the **monthly token quota** is used |
 
 The saved key is shown as a **masked prefix** (not an empty `sk-ant-…` field). Replace to paste a new key; the full secret is never returned.
@@ -163,3 +163,17 @@ If chat is empty (“not available”), configure a team or platform key first; 
 - Screenshots of identifiable dashboards
 
 Ask about **how** to import, map, or analyze; run those steps in the app, contribution notebooks, or your own git repo — not by pasting the data into the assistant. The planned ingest assistant samples files in the browser and obscures preview cells before Claude sees them; the downloadable package is what you edit if mapping is wrong.
+
+---
+
+## Roadmap (post-MVP)
+
+The following are **not** part of the current MVP delivery ([ADR-014](../dev/ADR-014-ai-assistant-claude.md) §13.1). They are tracked separately so pilot work on PHI-safe chat is not blocked:
+
+| Capability | MVP today | Post-MVP |
+|------------|-----------|----------|
+| LLM vendor | **Claude** (Anthropic) via server proxy | OpenAI, OpenAI-compatible / on-prem ([ADR-026](../dev/ADR-026-multi-provider-llm.md)) |
+| Turn shape | Single request → single reply | Multi-step **agent tools** with PHI-safe metadata fetch ([ADR-025](../dev/ADR-025-phi-safe-agent-tools.md)) |
+| Ingest assistant | Planned: app builds obscured profile → Import chat → you confirm → `csv-batch` ([ADR-024](../dev/ADR-024-ingest-assistant.md)) | Richer agent UX; still no LLM filesystem access |
+
+Streaming replies ([AI-01a](../dev/mvp.md)) remain an **MVP** follow-up on the existing chat — not post-MVP.

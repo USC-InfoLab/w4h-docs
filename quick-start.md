@@ -18,7 +18,7 @@ At a glance, the platform provides:
 - **Contributions** — curated tools (notebooks, CLI, scripts, SQL modules, Postgres extensions) with publisher and git README; importers use **Run import…** in the dataset **overview** pane; runnable SQL jobs use **Run analysis…** on the Analytics tab — both via `POST /contributions/:slug/run` ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md), [ADR-023](dev/ADR-023-sql-analytics-contributions.md)). Notebooks may also call `POST /datasets/:id/contributions/:slug/sql` for a direct sync result.
 - **Datasets** — ingested collections of wearable signal tables (research catalogs; plus the Samples sandbox demos)
 - **Docs** — this documentation browser, initialized from the `w4h-docs` source repository
-- **PHI-safe AI chat** — docked assistant (⌘J) for import, processing, and IRB questions; default filter keeps identifiers and raw rows out of Claude ([PHI-safe AI chat](guide/ai-chat.md))
+- **PHI-safe AI chat** — docked assistant (⌘J) for Help how-to questions, plus import, analytics, and IRB; default filter keeps identifiers and raw rows out of Claude ([PHI-safe AI chat](guide/ai-chat.md))
 - **Audit logging** — an append-only record of privileged actions for HIPAA-aligned deployments ([HIPAA Compliance](guide/hipaa-compliance.md))
 
 For the full architectural picture — schema-per-trial isolation, dataset sharing, ACL, and deployment modes — see [Architecture](dev/architecture.md) and the [ADR index](dev/ADR-001-schema-per-trial.md).
@@ -162,7 +162,29 @@ Use the **Docs** link in the navigation bar to open this documentation browser.
 - Use **Search** to find pages by title or content.
 - Admins can edit pages in-place and adjust settings (slug, doc type, visibility, home page card) from the editor gear icon.
 
+While a Help page is open, **PHI-safe AI chat** (next step) can see that page as context — useful when you want a how-to in your own words instead of scanning the sidebar.
+
 Platform changes are tracked in [What's New](whats-new.md).
+
+---
+
+## 7. Ask PHI-safe AI chat
+
+When a team or platform Anthropic key is configured, open **PHI-safe AI chat** from the chat icon in the nav, or with **⌘J** / **Ctrl+J**. The panel docks beside the page.
+
+Use **Help** mode to ask how to use W4H — which screen, who can invite, where API keys live — and to ask about the Help page you are reading. For example:
+
+> How do I invite a student to my project?
+
+> Where do I find my personal API key?
+
+> How do I import Fitbit CSV into my team catalog?
+
+The assistant answers for your **role** (Super admin · Admin · User) and links into Help, Contributions, and this project’s pages when it can. It sends **page context** (shell, route, team/project names, current Help slug) — not table rows.
+
+Switch modes only when you need them: **Import** (load and map files), **IRB** (draft privacy / DMP language), **Analytics** (methods and notebook snippets for data already in W4H).
+
+Do **not** paste subject IDs, emails, GPS, CSV cells, or raw samples. If the panel says chat is not available, an Admin adds a lab key under **Project → Settings**, or Super admin configures a platform key (step 1 above). Full guide: [PHI-safe AI chat](guide/ai-chat.md).
 
 ---
 
@@ -182,6 +204,7 @@ Documentation is organized into doc types — each type is a folder in the sourc
 - [Welcome — Admin](guide/welcome-admin.md) — trial next steps
 - [Welcome — User](guide/welcome-user.md) — what Users can and cannot do
 - [Quick Start](quick-start.md) — you are here
+- [PHI-safe AI chat](guide/ai-chat.md) — Help how-to, import, IRB, and analytics questions
 - [HIPAA Compliance](guide/hipaa-compliance.md) — security controls for regulated deployments
 - [SMTP Configuration](guide/smpt-configuration.md) — outbound email setup
 
@@ -203,6 +226,7 @@ Documentation is organized into doc types — each type is a folder in the sourc
 | Issue a data-access token | Project workspace → Database access |
 | Configure email | Platform Admin → Settings → Mail Server |
 | Refresh docs from source | Platform Admin → Settings → Documentation Management |
+| Ask how to use the platform | Chat icon in the nav (⌘J / Ctrl+J) · Help mode · [PHI-safe AI chat](guide/ai-chat.md) |
 | Change Super admin password | Platform Admin → account menu → Profile |
 | Understand the architecture | [Architecture](dev/architecture.md) |
 | Review design decisions | ADR docs under **Developer** in the sidebar |
@@ -212,4 +236,4 @@ Documentation is organized into doc types — each type is a folder in the sourc
 
 ## Still have questions?
 
-Check the [FAQ](faq/faq.md) or contact your platform administrator.
+Open **PHI-safe AI chat** (**⌘J** / **Ctrl+J**) in Help mode and ask in your own words. Check the [FAQ](faq/faq.md), or contact your platform administrator.

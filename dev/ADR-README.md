@@ -34,6 +34,8 @@ This directory contains ADRs for the W4H wearables toolkit. Each file captures t
 | [ADR-022](ADR-022-in-app-contribution-run-trigger.md) | In-app run trigger for runnable catalog contributions | Draft |
 | [ADR-023](ADR-023-sql-analytics-contributions.md) | SQL analytics contributions (YAML-bound SQL via the API) | Accepted |
 | [ADR-024](ADR-024-ingest-assistant.md) | Ingest assistant: obscured profiles, csv-batch, generated runnable package | Draft |
+| [ADR-025](ADR-025-phi-safe-agent-tools.md) | PHI-safe agent tools (post-MVP) | Draft |
+| [ADR-026](ADR-026-multi-provider-llm.md) | Multi-provider LLM (post-MVP) | Draft |
 
 ## What is an ADR?
 

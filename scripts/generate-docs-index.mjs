@@ -13,7 +13,7 @@ const ROOT = path.resolve(__dirname, '..')
 const OUT = path.join(ROOT, 'DOCS_INDEX.md')
 
 const SKIP_DIRS = new Set(['.git', 'node_modules', 'media', 'scripts'])
-const SKIP_FILES = new Set(['LICENSE', 'CONTRIBUTING.md', 'CLAUDE.md'])
+const SKIP_FILES = new Set(['LICENSE', 'CONTRIBUTING.md', 'CLAUDE.md', 'AGENTS.md', 'DOCS_INDEX.md'])
 
 function walkMd(dir, base = ROOT) {
   if (!fs.existsSync(dir)) return []
@@ -67,7 +67,7 @@ function groupByTop(relPaths) {
 }
 
 function main() {
-  const files = walkMd(ROOT).filter((f) => f !== 'AGENTS.md' && f !== 'DOCS_INDEX.md')
+  const files = walkMd(ROOT)
   const generatedAt = new Date().toISOString().slice(0, 10)
   const adrs = files.filter((f) => /\/ADR-?\d+/i.test(f) || /ADR-README/i.test(f))
   const sections = []

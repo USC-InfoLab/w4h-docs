@@ -18,7 +18,7 @@ Structural map of `w4h-docs` for agents and humans. **Index only** — not a sub
 | Docs screenshots / fake users | `dev/docs-fixtures.md` |
 | Guides | `guide/` |
 
-ADRs in tree: **25**. Prefer MVP + relevant ADR before inventing product rules.
+ADRs in tree: **27**. Prefer MVP + relevant ADR before inventing product rules.
 
 ## Root
 
@@ -57,7 +57,10 @@ ADRs in tree: **25**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/ADR-022-in-app-contribution-run-trigger.md` | ADR-022 — In-app run trigger for runnable catalog contributions |
 | `dev/ADR-023-sql-analytics-contributions.md` | ADR-023 — SQL analytics contributions (YAML-bound SQL via the API) |
 | `dev/ADR-024-ingest-assistant.md` | ADR-024 — Ingest assistant: obscured file profiles, csv-batch, generated runnable package |
+| `dev/ADR-025-phi-safe-agent-tools.md` | ADR-025 — PHI-safe agent tools (post-MVP) |
+| `dev/ADR-026-multi-provider-llm.md` | ADR-026 — Multi-provider LLM (post-MVP) |
 | `dev/ADR-README.md` | ADR Readme |
+| `dev/agentic-ai-roadmap.md` | Agentic AI roadmap (post-MVP) |
 | `dev/analytics-contributions.md` | Analytics contributions — RA handoff (METs & wear compliance) |
 | `dev/analytics-sql-engine-options.md` | Analytics SQL engine — options memo |
 | `dev/architecture.md` | Architecture |

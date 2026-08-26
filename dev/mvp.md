@@ -17,8 +17,9 @@ sort_order: 3
 
 **Funding:** SC CTSI Pilot Funding Program
 
-**Document Status:** Draft v0.32
+**Document Status:** Draft v0.33
 
+> **Changelog (v0.32 → v0.33):** Scoped **agentic AI** and **multi-provider LLM** as **post-MVP** ([ADR-025](ADR-025-phi-safe-agent-tools.md), [ADR-026](ADR-026-multi-provider-llm.md), §13.4). MVP §13.1 unchanged: single-turn PHI-safe chat, **Claude** proxy (AI-02b), streaming (AI-01a). Ingest assistant (D-35 / ADR-024) stays MVP Todo — app-orchestrated, not an LLM tool loop. Added §16 rows so agent orchestration and non-Claude providers do not expand MVP scope.
 > **Changelog (v0.31 → v0.32):** Pulled **[ADR-021](ADR-021-cohort-control-group-comparison.md)** filter-based cohort comparison onto the project Analytics tab (ICDE demo offline query: selected subjects vs control, date range, optional time-of-day windows, KPI deltas, downsampled series, comparison bars). Live `GET`/`POST /datasets/:id/analytics/cohort` over mapped signals — not Streamlit, not free SQL, not a third MET formula. Attribute matching, maps, and real-time remain out. A-02/A-03/A-07 moved to in progress.
 > **Changelog (v0.30 → v0.31):** Opened **[ADR-024](ADR-024-ingest-assistant.md)** (Draft): in-app ingest assistant for a team’s own files — browser file chooser builds a **PHI-obscured** profile (headers, types, sizes, redacted preview cells) for Import-mode chat; ingest still uses `POST /datasets/:id/import/csv-batch` (same as sample importers); durable output is a **downloadable runnable package** (generic `w4h-ingest` scaffold + generated `manifest.yaml` + notebook/CLI/`run.sh`) the researcher can edit if the UI mapping fails. Not a new ICDE-style git pair per study and not a project notebook registry (ADR-018). Added **D-35**. D-09 remains the CSV ingest requirement (still `🚩 Todo`).
 > **Changelog (v0.29 → v0.30):** **[ADR-023](ADR-023-sql-analytics-contributions.md)** Accepted — YAML-bound SQL analytics contributions executed by the API (`kind: sql`), not free SQL and not ADR-022 `run.sh`. First listing is a **new** planned repo **`w4h-sql-compute-mets`**; the pandas **`w4h-compute-mets`** notebook/CLI (ADR-019) is unchanged. Added **D-34** (discovery + bind/execute engine + mapping interval/unit; `🚩 Todo`). D-14/D-25 list the SQL kind and the new slug. Analytics cards (A-04c) still read cached summaries — not flipped to done. Options memo [analytics-sql-engine-options.md](analytics-sql-engine-options.md) is superseded.
@@ -469,7 +470,7 @@ Hierarchy and authoring match platform docs **within the project**: page types/g
 
 ## 13. AI Assistant Features
 
-See [ADR-014](ADR-014-ai-assistant-claude.md) (**Accepted**) for **PHI-safe AI chat**: provider, team vs platform keys, Cursor-like UX, and PHI egress filter.
+See [ADR-014](ADR-014-ai-assistant-claude.md) (**Accepted**) for **PHI-safe AI chat**: provider, team vs platform keys, Cursor-like UX, and PHI egress filter. **Post-MVP** agent tools and multi-provider LLM: [ADR-025](ADR-025-phi-safe-agent-tools.md), [ADR-026](ADR-026-multi-provider-llm.md), §13.4 below.
 
 ### 13.1 Chat AI Helper (substrate) — PHI-safe AI chat
 
@@ -508,6 +509,17 @@ Modes / guided flows on the §13.1 substrate (ADR-014) — not separate chat pro
 | AI-10 | **Study design advisor**: recommends statistical methods and study designs for a given wearable data type and clinical question, including trial/protocol design guidance. | `✅ Stable` | `🚩 Todo` |
 | AI-11 | **Literature assistant**: surfaces relevant published research based on clinical domain, device type, and target outcome. | `✅ Stable` | `🚩 Todo` |
 | AI-12 | **Endpoint-to-device advisor**: given a target clinical endpoint, recommends candidate wearable devices and data streams needed to capture it. | `✅ Stable` | `🚩 Todo` |
+
+### 13.4 Post-MVP AI enhancements
+
+Explicitly **outside MVP §13.1** delivery. Do not block or redefine AI-01…AI-16, D-35, or AI-05…AI-08. See [agentic-ai-roadmap.md](agentic-ai-roadmap.md) for implementation phasing.
+
+| # | Requirement | Req Status | Impl Status |
+|---|-------------|------------|-------------|
+| AI-17 | **Multi-provider LLM**: provider adapter beyond Claude (OpenAI, OpenAI-compatible / TRE `base_url`); platform and team settings; server-side model allowlist. MVP remains Claude-only ([AI-02b](#131-chat-ai-helper-substrate--phi-safe-ai-chat)). | `⚠️ Draft` | `🚩 Todo` |
+| AI-18 | **Agent tool loop (read-only)**: server-orchestrated multi-step calls with PHI-safe metadata tools (Help docs, contributions catalog, dataset signals/summary). No row fetch. | `⚠️ Draft` | `🚩 Todo` |
+| AI-19 | **Agent confirmed actions**: deferred mutations (navigation, SQL contribution run, cohort preview, ingest mapping save) require explicit UI confirm + audit. | `⚠️ Draft` | `🚩 Todo` |
+| AI-20 | **Per-conversation model override** from admin allowlist (optional). | `⚠️ Draft` | `🚩 Todo` |
 
 ---
 
@@ -575,6 +587,8 @@ Modes / guided flows on the §13.1 substrate (ADR-014) — not separate chat pro
 | Community / outreach metrics on Usage page | GitHub stars/forks, workshop attendance stay external (M9); do not clutter `/admin/usage`. |
 | Wearable-augmented vs standard-of-care outcome deltas on Usage page | Protocol Wearable Value Quantification belongs in pilot analysis notebooks / reports, not admin KPIs. |
 | Device wear compliance and MET cohort stats on Usage page | Wear/MET **cohort summaries** belong on the project **Analytics** tab (A-01a, A-04a–c); detailed protocol reports in Contributions (A-04). Not admin Usage KPIs. |
+| **Agentic AI tool loop** (multi-step LLM tools, autonomous actions) | MVP ships **single-turn** PHI-safe chat ([ADR-014](ADR-014-ai-assistant-claude.md), AI-01…AI-04). Bounded agent orchestration is post-MVP ([ADR-025](ADR-025-phi-safe-agent-tools.md), AI-18…AI-19). Ingest assistant (D-35) is app-orchestrated, not an LLM filesystem tool. |
+| **Multi-provider LLM** (OpenAI, Azure, on-prem gateways) | MVP ships **Claude** via server proxy (AI-02b ✅ Done). Other providers post-MVP ([ADR-026](ADR-026-multi-provider-llm.md), AI-17). |
 
 ---
 
