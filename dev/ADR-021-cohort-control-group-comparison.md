@@ -7,17 +7,17 @@ updated_at: 2026-08-19T00:00:00.000Z
 
 **Status:** Draft
 **Date:** 2026-08-19
-**Relates to:** ADR-003 (table model), ADR-008 (GeoMTS), ADR-019 (METs and wear-compliance analytics), ADR-020 (basic dataset stats dashboard), MVP §10 (A-03, A-07)
+**Relates to:** ADR-003 (table model), ADR-008 (GeoMTS), ADR-019 (METs and wear-compliance analytics), ADR-020 (dataset metadata summary), MVP §10 (A-03, A-07)
 **References:**
 - [dev/analytics-contributions.md](analytics-contributions.md) — assignments, timeline
 - [ADR-019](ADR-019-mets-wear-compliance-analytics.md) — wear/MET cohort cards, notebook-first sequencing this ADR follows
-- [ADR-020](ADR-020-basic-dataset-stats-dashboard.md) — vendor-agnostic stats card, same `datasets.summary` caching pattern
+- [ADR-020](ADR-020-basic-dataset-stats-dashboard.md) — metadata summary; shares `datasets.summary` projection pattern for cached fields
 
 ---
 
 ## Context
 
-MVP **A-03** ("Comparative analytics: compare selected subjects against a control group") has been on the requirements list since the doc's v0.4 rewrite with no dedicated decision record — unlike the wear/MET work (ADR-019) and the basic-stats card (ADR-020), which both got formal ADRs once someone needed to actually build them.
+MVP **A-03** ("Comparative analytics: compare selected subjects against a control group") has been on the requirements list since the doc's v0.4 rewrite with no dedicated decision record — unlike the wear/MET work (ADR-019) and the metadata summary (ADR-020), which both got formal ADRs once someone needed to actually build them.
 
 The earlier ICDE-era prototype (`w4h-icde-demo`, a Streamlit tool, architecturally unrelated to the current stack) had an ad hoc age/height-matched control-group view over direct Postgres. That prototype's data model doesn't map onto the current GeoMTS / API-scoped architecture, so it isn't a starting point here — noted for lineage only.
 
@@ -57,7 +57,7 @@ Not scoped for August. Candidate for the September/M3 chart-library slice (along
 **Negative / risks:**
 - Comparison quality depends on subject-demographic metadata that isn't reliably populated across datasets today — the open dependency above is real, not cosmetic.
 - Filter-based cohorts are **not** matched cohorts; any UI or report using this must label results as such and not imply statistical rigor it doesn't have.
-- Adds a third `datasets.summary` sub-key (alongside ADR-019's `wear_compliance`/`mets_summary` and ADR-020's `basic_stats`) — the combined jsonb shape needs one documented source of truth once more than one of these ADRs reaches Accepted.
+- Adds another `datasets.summary` sub-key (alongside ADR-019's `wear_compliance`/`mets_summary` and ADR-020's projected observations/wear read path) — the combined jsonb shape needs one documented source of truth once more than one of these ADRs reaches Accepted.
 
 ---
 

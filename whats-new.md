@@ -2,7 +2,7 @@
 title: 🆕 What's New!
 description: Highlights from W4H Toolkit 0.3.0 — 🧗 Peña Roja.
 updated_by: nocera@usc.edu
-updated_at: 2026-08-19T00:00:00.000Z
+updated_at: 2026-09-15T00:00:00.000Z
 ---
 
 <p class="lead">
@@ -68,6 +68,10 @@ Use a personal `W4H_API_KEY` in local `.env` only. Do not commit credentials or 
 ## Project dataset overview
 
 Dataset stats and overview always appear in the context of a **selected dataset** in the project workspace (master–detail). Summaries use cached metadata — the UI does not run live full-table `COUNT(*)` scans.
+
+**Metadata summary** — the selected dataset shows seven researcher-facing sections: **Scope** (tables, observations, collection dates, study length), **Subjects** (enrolled participants, participant age), **Device**, **Cadence** (per-signal sampling interval), **Provenance**, **Wear Compliance**, and **Semantic**. Info-icon tooltips define each field. The API assembles this on read from `w4h.datasets` and `w4h.tables`, with bounded timestamp-gap sampling for **observed cadence** (mode interval + largest gap). Fields the importer has not persisted yet display as **Unavailable** per tile (native sensor rate, ontology codes, firmware, and similar).
+
+**Wear Compliance** always shows four tiles: wear-compliant subjects, cohort compliance rate, median daily wear (%), and median days wear. Values come from cached per-subject wear rows in `datasets.summary` when present; each tile shows **Unavailable** on its own until wear-compliance analytics have been run (for example via the Analytics tab or `w4h-fitbit-wear-compliance`).
 
 GeoMTS remains a **role mapping** over physical tables (`w4h.tables`), not a forced rename to `subject_id` / `ts` / `lat` / `lon`. See [ADR-003](dev/ADR-003-dataset-table-model.md) and [ADR-008](dev/ADR-008-geomts-data-model.md).
 

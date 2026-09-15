@@ -7,10 +7,10 @@ updated_at: 2026-08-17T00:00:00.000Z
 
 **Status:** Draft  
 **Date:** 2026-08-17  
-**Relates to:** ADR-003 (table model), ADR-008 (GeoMTS), ADR-016 (paired sample/importer), ADR-018 (contributions catalog), ADR-020 (basic dataset stats dashboard), MVP §6.2 (D-14), MVP §10 (A-01, A-04)  
+**Relates to:** ADR-003 (table model), ADR-008 (GeoMTS), ADR-016 (paired sample/importer), ADR-018 (contributions catalog), ADR-020 (dataset metadata summary), MVP §6.2 (D-14), MVP §10 (A-01, A-04)  
 **References:**
 - [dev/analytics-contributions.md](analytics-contributions.md) — RA task breakdown, assignments, timeline
-- [ADR-020](ADR-020-basic-dataset-stats-dashboard.md) — general (non-Fitbit-specific) dataset stats card, split out of this ADR's Analytics tab scope
+- [ADR-020](ADR-020-basic-dataset-stats-dashboard.md) — metadata summary on project Datasets tab; Wear Compliance tiles read `datasets.summary.wear_compliance` when cached
 - Legacy: `w4h-notebooks/compliance_analyzer.py`, `w4h-notebooks/band_wear_compliance.ipynb`
 
 ---

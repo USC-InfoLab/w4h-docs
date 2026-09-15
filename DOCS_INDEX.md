@@ -52,7 +52,7 @@ ADRs in tree: **23**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/ADR-017-community-package-registry.md` | ADR-017 — Community package registry |
 | `dev/ADR-018-contributions-catalog.md` | ADR-018 — Contributions catalog; no project notebook registry |
 | `dev/ADR-019-mets-wear-compliance-analytics.md` | ADR-019 — METs and wear-compliance analytics (contributions + cohort dashboards) |
-| `dev/ADR-020-basic-dataset-stats-dashboard.md` | ADR-020 — Basic dataset statistics dashboard (Admin & User parity) |
+| `dev/ADR-020-basic-dataset-stats-dashboard.md` | ADR-020 — Dataset metadata summary (project Datasets tab) |
 | `dev/ADR-021-cohort-control-group-comparison.md` | ADR-021 — Cohort control-group comparison analytics |
 | `dev/ADR-022-in-app-contribution-run-trigger.md` | ADR-022 — In-app run trigger for runnable catalog contributions |
 | `dev/ADR-README.md` | ADR Readme |
