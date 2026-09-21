@@ -2,7 +2,7 @@
 title: "ADR-018 — Contributions catalog; no project notebook registry"
 description: Platform catalog of contributed tools (publisher, repo, docs). W4H does not track researchers’ project notebooks.
 updated_by: nocera@usc.edu
-updated_at: 2026-08-23T22:00:00.000Z
+updated_at: 2026-09-21T00:00:00.000Z
 ---
 
 **Status:** Accepted  
@@ -49,10 +49,14 @@ The platform holds **metadata pointers** only — not `.ipynb` blobs or extensio
 | `title`, `summary` | Listing copy |
 | `kind`, `kinds` | One or more of `notebook` \| `cli` \| `script` \| `postgres_extension` \| `dataset` \| `sql`. Importers that ship a notebook and a CLI list both; ADR-016 sample-data repos (manifest.yaml + CSV/JSON, no code) are `dataset`, not `script`. `kind: sql` is a YAML-declared, parameterized SQL **job** the API binds and executes ([ADR-023](ADR-023-sql-analytics-contributions.md)) — distinct from `postgres_extension` (`CREATE EXTENSION` on the institution’s Postgres). `kind` is the primary (first) value. |
 | `language` | `python` \| `r` \| `sql` \| `csv` \| `json` \| `other`. For `dataset` rows this is the sample's file format (manifest.yaml's `format` field), not a programming language. `language: sql` appears on both `kind: sql` (a job) and `kind: postgres_extension` (an extension). |
-| `repo_url`, `repo_ref`, `docs_path` | Git location; default docs `README.md` |
+| `repo_url`, `repo_ref`, `docs_path` | Git location; default docs `README.md`. `repo_ref` is the **pin** the platform runs (a `vMAJOR.MINOR.PATCH` tag, not `main`). |
+| `version` | Display semver derived from the pinned tag (`v0.2.0` → `0.2.0`). |
+| `latest_version`, `latest_repo_ref`, `version_checked_at` | Last-seen GitHub tag from Super admin **Check for updates**. Not a version history table. |
 | `status` | `draft` \| `published` \| `deprecated` |
 
-**Who:** authenticated users **browse** published rows. **Super admin** creates/edits (MVP). Community self-publish is M9.
+**Who:** authenticated users **browse** published rows (including the pinned `version`). **Super admin** creates/edits and **pins a GitHub tag** (MVP). Community self-publish is M9.
+
+**Version pin:** the catalog stores one current pin per row, not a changelog of past releases. Publishers cut a `v*` tag (GitHub Release preferred) when Super admin should be able to pick it up. Super admin **Check for updates** lists semver tags (`POST /contributions/check-updates`), caches `latest_*`, and **Update** inspects that ref then sets `repo_ref` + `version` (`POST /contributions/:slug/update-version`). Never auto-follow `main`. `pyproject.toml` version is a hint only — sample-data repos have none. Paired importer and sample-data repos version independently; updating one warns if the other also has a newer tag. `w4h.contribution_runs` copies `version` + `repo_ref` at run start so “what executed” survives a later pin bump.
 
 **Docs page:** the catalog detail view renders the linked repo README (public GitHub raw), or falls back to an external link. Contribution docs are **not** copied into `w4h-docs`. Help explains how to contribute; it is not a page per tool.
 
@@ -99,6 +103,7 @@ The Compose `notebooks` service remains a **single-user convenience image**, not
 
 | Date | Change |
 |------|--------|
+| 2026-09-21 | Catalog **version pin**: `version` + cached `latest_*` on `w4h.contributions`; Super admin Check for updates / pin a GitHub `v*` tag; in-app Run checks out the pin (dirty sibling checkouts left as-is). Not a versions table; git remains the history. |
 | 2026-08-23 | **Fetch repo info** detects all catalog kinds from the repo (`.ipynb` → `notebook`, `[project.scripts]` → `cli`, `*.control` → `postgres_extension`, ADR-016 `signals` manifest → `dataset`, ADR-023 SQL manifest → `sql`). Kinds are additive (e.g. SQL job + notebook + CLI). |
 | 2026-08-23 | `w4h-sql-compute-mets` catalog row: `kinds: sql, notebook, cli` (SQL job plus thin clients that pick one dataset in a project). |
 | 2026-08-23 | Added `sql` kind for YAML-bound SQL jobs executed by the API ([ADR-023](ADR-023-sql-analytics-contributions.md)). `postgres_extension` remains `CREATE EXTENSION` only. Planned first-party row: `w4h-sql-compute-mets`. |

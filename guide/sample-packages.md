@@ -41,7 +41,7 @@ MVP first-party listings also include **w4h-load-json** and **fft_approximate** 
 
 Write the module, ship tests, try it locally (or on a **staging** deployment — not production), then send the git URL to the W4H team: **[Contribute a module](contribute-a-module.md)**. Super admin **publishes** the listing in production ([Platform Admin → Contributions](/admin/contributions)). They do not vet the module in Platform Admin. There is no in-app submit.
 
-Until then, Super admin adds the `w4h.contributions` row (paste the repo URL → **Fetch repo info**, or enter fields by hand). For vendor **sample data** packages, use `w4h-sample-<vendor>-<format>` plus a separate importer repo.
+Until then, Super admin adds the `w4h.contributions` row (paste the repo URL → **Fetch repo info**, or enter fields by hand) and pins a GitHub **`v*` tag** when one exists (**Check for updates** on Platform Admin → Contributions). For vendor **sample data** packages, use `w4h-sample-<vendor>-<format>` plus a separate importer repo.
 
 **Dataset vs. importer — which do I catalog first?** No order is enforced. Publish the **sample-data repo first** if the importer’s `contribution.yaml` live sample points at it — in-app **Run import…** clones that sibling when the yaml (or the `<sample>-importer` naming) says so.
 

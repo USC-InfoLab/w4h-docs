@@ -20,6 +20,8 @@ Use the **local app** (`npm run dev` in w4h-api + w4h-app). Do not use Docker fo
 
 Do not copy a full Kaggle dump or production CSVs into the module. Strip a few rows into `tests/fixtures/`, or point `tests.live.sample` at a sibling sample package (`w4h-sample-fitbit-csv` or `w4h-sample-icde-demo-csv`).
 
+When Super admin should pick up a new build, cut a **`vMAJOR.MINOR.PATCH` git tag** (GitHub Release preferred) and bump `pyproject.toml` `version` when the repo has one. Sample-data packages tag the repo even without Python. The catalog stores one pin, not a version history.
+
 ## `contribution.yaml`
 
 Two test lanes:
@@ -66,7 +68,7 @@ There is no in-app “submit” button. Send the git URL (issue, PR, or email) o
 
 After staging said yes. Platform Admin → **Contributions** is a **listing** control, not a QA lab.
 
-1. Paste the repo URL → **Fetch repo info** → save as **published** (production users can browse `/contributions`).
+1. Paste the repo URL → **Fetch repo info** → save as **published** (production users can browse `/contributions`). Pin a GitHub **`vMAJOR.MINOR.PATCH` tag** when the repo has one; **Check for updates** later to promote a newer tag. Do not leave published runnable rows on `main`.
 2. Optionally mark **runnable** so Admins get **Run import…** / **Run analysis…**. That flag is not a checkbox in the admin form yet; the platform team sets it in the database after staging proved `run.sh`.
 3. If it must come out: **deprecated** or delete the row. The git repo stays the author’s.
 
