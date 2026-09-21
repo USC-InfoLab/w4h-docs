@@ -39,14 +39,10 @@ MVP first-party listings also include **w4h-load-json** and **fft_approximate** 
 
 ## How to contribute
 
-MVP curation is Super admin ([Platform Admin → Contributions](/admin/contributions)). Community self-publish is later (M9) — the flow below is for admin-curated, first-party contributions. Until then:
+Write the module, ship tests, try it on the local app: **[Contribute a module](contribute-a-module.md)**. Super admin catalogs a passing module ([Platform Admin → Contributions](/admin/contributions)). Community self-publish is later.
 
-1. Create **one git repo** that does one job, with a README (publisher, language, how to run, no secrets).
-2. Ask a Super admin to add a `w4h.contributions` row. On the Contributions admin page, paste the repo URL and click **Fetch repo info** to auto-fill `slug`, `publisher`, `title`, `summary`, `kind` / `kinds`, and `language` from the README, `manifest.yaml`, and detected files — `.ipynb` → `notebook`, `[project.scripts]` in `pyproject.toml` → `cli`, Postgres `*.control` → `postgres_extension`, ADR-016 sample `signals` → `dataset`, ADR-023 SQL job manifest → `sql`. Kinds stack when a repo ships more than one (importers: notebook + CLI; SQL jobs may also include notebook + CLI). The form also flags manifest sanity-check errors/warnings (missing columns, a `geomts_mapping` value with no matching column, etc.) before saving. Manual entry of all fields still works if you skip this step. SQL analytics jobs ([ADR-023](../dev/ADR-023-sql-analytics-contributions.md)) use `kind: sql` (YAML + SQL via the API), not `postgres_extension`.
-3. For vendor samples, follow ADR-016 naming (`w4h-sample-<vendor>-<format>` and a separate importer repo).
+Until then, Super admin adds the `w4h.contributions` row (paste the repo URL → **Fetch repo info**, or enter fields by hand). For vendor **sample data** packages, use `w4h-sample-<vendor>-<format>` plus a separate importer repo.
 
-**Dataset vs. importer — which do I catalog first?** No order is enforced — the two rows are independent. But publish the **sample-data repo first** (or make sure it's public before anyone runs the importer): the in-app **Run import…** flow ([ADR-022](../dev/ADR-022-in-app-contribution-run-trigger.md)) resolves the paired data repo automatically by the ADR-016 naming convention and fails to clone it if it isn't there yet.
-
-The manifest sanity check covers admin-curated first-party contributions only — it isn't a community self-publish validator (that's M9, future work).
+**Dataset vs. importer — which do I catalog first?** No order is enforced. Publish the **sample-data repo first** if the importer’s `contribution.yaml` live sample points at it — in-app **Run import…** clones that sibling when the yaml (or the `<sample>-importer` naming) says so.
 
 Project workspaces do **not** register your team’s analysis notebooks. Put repo links in **project documentation**.

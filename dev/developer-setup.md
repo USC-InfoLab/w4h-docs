@@ -129,3 +129,7 @@ Do not capture the UI while signed in as yourself, and do not seed fake users
 into your working database. `seed-docs` creates a separate **`w4h-sample`**
 Postgres database; serve it with `npm run start:sample`. Details:
 [docs-fixtures.md](docs-fixtures.md).
+
+## Test a new contribution module
+
+Required tests live **in the module**, not here. Local app, empty team dataset, no Docker: [Contribute a module](../guide/contribute-a-module.md).

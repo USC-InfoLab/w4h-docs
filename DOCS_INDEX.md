@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-08-26
+- Generated: 2026-09-21
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -75,6 +75,7 @@ ADRs in tree: **27**. Prefer MVP + relevant ADR before inventing product rules.
 | File | Title |
 |------|-------|
 | `guide/ai-chat.md` | PHI-safe AI chat |
+| `guide/contribute-a-module.md` | Contribute a module |
 | `guide/docker-deployment.md` | Docker Deployment |
 | `guide/hipaa-compliance.md` | HIPAA Compliance |
 | `guide/sample-packages.md` | Contributions |
