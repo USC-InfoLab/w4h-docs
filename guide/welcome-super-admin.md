@@ -56,3 +56,5 @@ Local development (clone, `npm run dev`): [Developer Setup](../dev/developer-set
 ## After bootstrap
 
 Platform Admin home shows health (database, SMTP, audit log), usage, and attention (pending invites, teams without an Admin). Use **Audit log** and **Usage** for ops; those are not the same ledger ([HIPAA Compliance](hipaa-compliance.md)).
+
+**Contributions** is only the **production listing**. Authors and the W4H team vet modules on a laptop or a **staging** deployment, as Admin, not here. You publish (or deprecate) a row after that. You do not ingest into a PI’s project. See [Contribute a module](contribute-a-module.md).

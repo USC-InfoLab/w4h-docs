@@ -39,7 +39,7 @@ MVP first-party listings also include **w4h-load-json** and **fft_approximate** 
 
 ## How to contribute
 
-Write the module, ship tests, try it on the local app: **[Contribute a module](contribute-a-module.md)**. Super admin catalogs a passing module ([Platform Admin → Contributions](/admin/contributions)). Community self-publish is later.
+Write the module, ship tests, try it locally (or on a **staging** deployment — not production), then send the git URL to the W4H team: **[Contribute a module](contribute-a-module.md)**. Super admin **publishes** the listing in production ([Platform Admin → Contributions](/admin/contributions)). They do not vet the module in Platform Admin. There is no in-app submit.
 
 Until then, Super admin adds the `w4h.contributions` row (paste the repo URL → **Fetch repo info**, or enter fields by hand). For vendor **sample data** packages, use `w4h-sample-<vendor>-<format>` plus a separate importer repo.
 

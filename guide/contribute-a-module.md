@@ -41,25 +41,35 @@ pytest tests/ -q -m "not integration"
 
 This must pass before anyone catalogs the row. The file importer’s `tests/test_manifest_files.py` is a copy-this-as-a-template check that mapping matches CSV headers.
 
-## Live test (local platform)
+## Live test (not production)
 
-1. Clone the module **next to** `w4h-api`. Folder name = catalog **slug**.
-2. Start **w4h-api** and **w4h-app**.
-3. Super admin → **Contributions** → add the row (`slug` = folder name, **runnable** on).
-4. As Team admin, create an **empty dataset** on *your* project (not Samples).
-5. Dataset overview → **Run import…** → pick the module.
+Never vet a new module on the **production** catalog or against production datasets.
 
-Or the same entrypoint without the UI:
+1. **Author** — laptop / local `npm run dev`. Empty dataset on *your* team. `pytest`, then:
 
-```bash
-export W4H_API_KEY=... W4H_API_BASE=http://localhost:2026 W4H_DATASET_ID=your-dataset-id
-./run.sh import
-```
+   ```bash
+   export W4H_API_KEY=... W4H_API_BASE=http://localhost:2026 W4H_DATASET_ID=your-dataset-id
+   ./run.sh import
+   ```
 
-Success: tables and stats show on that dataset. Throw the dataset away and re-run as needed. That is the scratch target — not a second environment.
+   To click **Run import…** locally, add a catalog row on **that** local database (slug = folder name next to `w4h-api`). That is your machine, not W4H production.
 
-## Catalog
+2. **W4H review** — a **dedicated staging (dev) deployment**: same app, separate Postgres, synthetic data only. Reviewers log in as **Admin** (not Super admin), add a throwaway dataset, and run the module the way a PI would. Super admin’s job is the platform, not clicking through importer tests.
 
-After automated + live tests pass, Super admin publishes the catalog row. Keep `runnable` off until a live run on a writable team dataset has succeeded.
+**Who sees `draft`?** In the product today: **only Super admin**, and only on the Contributions admin page — not in **Run import…**. That is the wrong audience for testing. Treat **draft as staging-only** (or skip it): testers on staging are Admins looking at a listing that is already `published` *on staging*. Production should get a row only after staging passed, as **published** there. Do not park unvetted modules as drafts on production.
+
+## Submit to the W4H team
+
+There is no in-app “submit” button. Send the git URL (issue, PR, or email) once local tests passed. The team tries it on **staging**, not production.
+
+## What Super admin does (production)
+
+After staging said yes. Platform Admin → **Contributions** is a **listing** control, not a QA lab.
+
+1. Paste the repo URL → **Fetch repo info** → save as **published** (production users can browse `/contributions`).
+2. Optionally mark **runnable** so Admins get **Run import…** / **Run analysis…**. That flag is not a checkbox in the admin form yet; the platform team sets it in the database after staging proved `run.sh`.
+3. If it must come out: **deprecated** or delete the row. The git repo stays the author’s.
+
+Super admin does **not** ingest into a PI’s project and does **not** re-run the author’s pytest as their day job.
 
 Browse listings: [Contributions](sample-packages.md).
