@@ -38,6 +38,8 @@ flowchart TB
 
 **Summary:** The browser loads the SPA. The SPA talks only to the API (via `VITE_API_URL`). The API owns database access and optional outbound email.
 
+**Core team (USC-InfoLab / w4h-toolkit):** how we coordinate new repos, cross-repo PRs, catalog, releases, and GitHub org admin — [Core team workflow](core-team-workflow.md). External module authors use [Contribute a module](../guide/contribute-a-module.md) instead.
+
 ---
 
 ## First-time setup workflow
@@ -132,4 +134,4 @@ Postgres database; serve it with `npm run start:sample`. Details:
 
 ## Test a new contribution module
 
-Required tests live **in the module**, not here. Local app, empty team dataset, no Docker: [Contribute a module](../guide/contribute-a-module.md).
+Required tests live **in the module**, not here. **First-party:** CLI tests in the repo, then [Core team workflow § Test Run import… in the app](core-team-workflow.md#test-run-import-in-the-app-core-team-checklist). **External authors:** [Contribute a module](../guide/contribute-a-module.md).

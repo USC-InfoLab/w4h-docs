@@ -5,7 +5,7 @@ card_title: Contribute a module
 sort_order: 3
 ---
 
-Ship **one git repo** that does one job. The repo must include tests and a `contribution.yaml` so anyone can vet it the same way. Worked example: **w4h-fitbit-csv-file-importer**.
+Ship **one git repo** that does one job. The repo must include tests and a `contribution.yaml` so anyone can vet it the same way. Worked example: **w4h-fitbit-csv-file-importer**. The same layout is used by **w4h-glucose-monitor-csv-file-importer** (Dexcom Clarity and FreeStyle Libre) and **w4h-data-recorder-csv-file-importer** (Empatica E4). Those two cite Kaggle column layouts and keep only synthetic rows in `tests/fixtures/`.
 
 Use the **local app** (`npm run dev` in w4h-api + w4h-app). Do not use Docker for this, and do not ingest into W4H Samples.
 

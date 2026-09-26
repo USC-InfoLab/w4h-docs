@@ -26,6 +26,7 @@ Open these together via `w4h-repos.code-workspace` when changing cross-cutting b
 - Product requirements & impl status: `dev/mvp.md`
 - Architecture & ADRs: `dev/architecture.md`, `dev/ADR-*.md`
 - User-facing setup: `quick-start.md`, `guide/`
+- Core team coordination (internal): `dev/core-team-workflow.md` — not `guide/contribute-a-module.md` (external authors)
 - Community **Contributions** catalog: `w4h.contributions` (in-app `/contributions`, ADR-018). Help is contribute-only.
 - SQL analytics contributions: [ADR-023](dev/ADR-023-sql-analytics-contributions.md) — YAML-bound SQL executed by the API (`kind: sql`). Do not invent a free-SQL endpoint or a third JS METS formula. Pandas `w4h-compute-mets` stays a separate companion.
 - Private-file ingest assistant: [ADR-024](dev/ADR-024-ingest-assistant.md) (Draft) — PI **Import files…** into their project; private until they **submit** importer + sample-data packages to Super admin. Not a Contribution, not a share, Discoverable off. Do not invent a Claude filesystem tool or auto-catalog of generated packages.
