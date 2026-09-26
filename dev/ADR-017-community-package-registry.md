@@ -43,7 +43,7 @@ Each contribution is **one git repo** (ADR-018). ADR-016 pairing (sample repo + 
 Platform team **W4H Samples** (synthetic data only — never PHI) owns **one canonical ingested demo dataset** per curated sample.
 
 - Auto-enroll every account as team `member` (not `team_admin`) and as **viewer** on a sandbox **project** that links those datasets.
-- **Super admin only** seeds or replaces canonical tables (privileged ingest / CLI `replace`). Members must not create datasets on this team, run importer write paths against canonical tables, or DDL.
+- Canonical tables are seeded by **platform migrations / seed jobs** (`w4h_platform`, e.g. docs fixtures), not by the Super admin account calling `POST …/import/csv-batch`. Those datasets stay **`read_only`**; API ingest is denied for every role. Members must not create datasets on this team or run importer write paths against canonical tables.
 - Members **re-run analysis** from contribution notebooks (query, plot, model) against already-loaded rows. W4H does not register those notebooks on the project.
 - **Personal API keys** scoped via sandbox project membership (ADR-007). Do **not** share a single “sample team key” in multi-user deployments (audit and revocation). Docker compose may inject a key for a single local admin as a packaging convenience.
 
@@ -75,3 +75,4 @@ Importer `.env` / environment only — never keys in git or notebook outputs (AD
 |------|--------|
 | 2026-08-16 | Initial draft. |
 | 2026-08-16 | Live catalog moved to `w4h.contributions` (ADR-018); project notebooks dropped. |
+| 2026-09-26 | Samples canonical load is platform seed + `read_only`; API ingest no longer grants Super admin a bypass on read-only or trial datasets. |

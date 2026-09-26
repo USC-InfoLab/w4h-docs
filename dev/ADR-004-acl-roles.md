@@ -82,7 +82,7 @@ A Admin **cannot remove themselves**. Another Admin (or Super admin, by inviting
 
 Project ACL rules (e.g. `resource_type = doc`) may grant or deny capabilities beyond membership defaults.
 
-**Ingest delegation** (PI grants a student create/ingest on team datasets **without** `team_admin`) is the same class of problem: a **capability / ACL grant**, not a new team membership role. Tracked in MVP as Draft D-22. Until that ships, create/ingest DDL remains Team admin (or Super admin) only (D-12); non-admins use API-key ingest when authorized (D-13).
+**Ingest delegation** (PI grants a student create/ingest on team datasets **without** `team_admin`) is the same class of problem: a **capability / ACL grant**, not a new team membership role. Tracked in MVP as Draft D-22. Until that ships, create/ingest via the API remains **Team admin** or **project owner** on the owning team (D-12); **Super admin does not ingest** into trial datasets. Non-admins use API-key ingest only when a future grant says so (D-13).
 
 ### PostgreSQL DB role mapping
 

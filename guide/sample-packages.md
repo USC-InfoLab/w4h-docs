@@ -16,7 +16,7 @@ Curated tools live in **Contributions** (`{{APP_URL}}/contributions`) — a mark
 
 Search for tasks such as “load CSV” or “approximate query”. Each listing points at **one git repo**. The README is rendered on the catalog detail page.
 
-**W4H Samples sandbox:** you are a member of the Samples team. Super admin seeds canonical demo datasets. Use your **personal API key** and re-run contribution notebooks against that data. Do not re-ingest into the sandbox. Ingest into **your team’s** catalog when you need write/ETL practice ([ADR-017](../dev/ADR-017-community-package-registry.md)).
+**W4H Samples sandbox:** you are a member of the Samples team. Platform seed jobs load canonical demo datasets (`read_only`). Use your **personal API key** and re-run contribution notebooks against that data. Do not re-ingest into the sandbox. Ingest into **your team’s** catalog when you need write/ETL practice ([ADR-017](../dev/ADR-017-community-package-registry.md)).
 
 Paired vendor sample + importer repos ([ADR-016](../dev/ADR-016-paired-sample-importer-repos.md)) are listed as separate contributions (one repo each). Two first-party pairs ship today — they differ on whether they carry a geo signal:
 
@@ -26,6 +26,16 @@ Paired vendor sample + importer repos ([ADR-016](../dev/ADR-016-paired-sample-im
 | **w4h-sample-icde-demo-csv** + importer | Yes — `gps_track` (lat/lon, WGS84) | Yes ([ADR-022](../dev/ADR-022-in-app-contribution-run-trigger.md)) |
 
 The ICDE demo pair is trimmed synthetic data from the ICDE 2024 prototype (`w4h-icde-demo`); it exercises the geo branch of GeoMTS mapping ([ADR-008](../dev/ADR-008-geomts-data-model.md)).
+
+**File importers** (your export files, not bundled sample repos) — one repo each; synthetic fixtures for tests and in-app Run ([ADR-016](../dev/ADR-016-paired-sample-importer-repos.md)):
+
+| Contribution | Devices | In-app **Run import…** (when `runnable`) |
+|---|---|---|
+| **w4h-fitbit-csv-file-importer** | Fitbit CSV export | Yes |
+| **w4h-glucose-monitor-csv-file-importer** | Dexcom Clarity, FreeStyle LibreLink | Yes (after catalog + staging) |
+| **w4h-data-recorder-csv-file-importer** | Empatica E4 data recorder CSV | Yes (after catalog + staging) |
+
+Use **one project** and **one or two linked catalog datasets** as Team Admin; each run uses a different importer/`table_prefix` (`glucose_*`, `recorder_*`, …) so tables do not collide in the same dataset schema.
 
 **Your own files (planned):** a PI loads data **into their project** with **Import files…**. That stays on the owning team: not shared, not Discoverable, not a Contribution, not Samples. Download the importer zip to edit or cron locally. **Submit to Super admin** is a later choice: importer package plus a synthetic/de-identified **sample** data package (not the live trial tables). Share to another research team remains a separate control ([ADR-012](../dev/ADR-012-project-dataset-linking.md)). See [ADR-024](../dev/ADR-024-ingest-assistant.md).
 

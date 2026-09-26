@@ -44,6 +44,20 @@ There is more than one paired sample/importer set, and they intentionally differ
 
 Each package sets its own `manifest.yaml.vendor` slug and passes it as `table_prefix` in the import payload (see Import mechanics) so physical tables stay distinguishable across vendors in the same dataset-scoped schema, instead of colliding on generic signal names.
 
+### File importers (user-supplied device exports)
+
+Researchers export CSV from their own devices; W4H does not bundle those files in git. Each **file importer** is one contribution repo: notebook (file chooser) + CLI + `run.sh` + `contribution.yaml` + `tests/fixtures/` (synthetic rows only). Kaggle or vendor docs may be cited in the README for column layout — not copied into the repo.
+
+| Contribution repo | Devices / export shapes | `table_prefix` |
+|-------------------|-------------------------|----------------|
+| `w4h-fitbit-csv-file-importer` | Fitbit account CSV export | `fitbit` |
+| `w4h-glucose-monitor-csv-file-importer` | Dexcom Clarity, FreeStyle LibreLink | `glucose` |
+| `w4h-data-recorder-csv-file-importer` | Empatica E4 data-recorder CSV (per-signal and merged nurse-stress shapes) | `recorder` |
+
+In-app **Run import…** (ADR-022) uses the repo’s declared live sample (`contribution.yaml` → fixtures or a sibling sample package). **Team Admin** runs these on writable team catalog datasets; Super admin only **lists** them in Platform Admin → Contributions ([ADR-018](ADR-018-contributions-catalog.md)).
+
+User-facing text for a listing comes from the **git repo README** (rendered on `/contributions/:slug`) plus the catalog **title** and **summary** Super admin saves after **Fetch repo info** — not from platform Help pages.
+
 ### Listing sample packages
 
 Discovery is the in-app **Contributions** catalog ([ADR-018](ADR-018-contributions-catalog.md)): `w4h.contributions` (publisher, kind, language, repo, README). This ADR only defines **how** sample and importer repos are paired (typically two contribution rows, one repo each). The Samples sandbox is [ADR-017](ADR-017-community-package-registry.md).
@@ -54,7 +68,7 @@ API keys are read from **environment or local `.env`** in the importer repo. Key
 
 ### Import mechanics
 
-- Importers use `POST /datasets/:id/import/csv-batch` (chunked rows, API key). Against **W4H Samples** canonical datasets, only Super admin may `replace`/`append` (ADR-017). Team-admin ingest applies to the caller’s own team catalogs.
+- Importers use `POST /datasets/:id/import/csv-batch` (chunked rows, API key). **Read-only** Samples datasets reject all API ingest (ADR-017). Writable team catalogs: **Team admin** or **project owner** only — not Super admin ([ADR-004](ADR-004-acl-roles.md)).
 - Payload carries `signal`, `table_prefix`, `columns`, `mapping` (GeoMTS role mapping, stored as-is in `w4h.tables.mapping_json`), `mode`, `dedupe_columns`, `rows`. `table_prefix` (e.g. `fitbit`, `icde_demo`) namespaces the physical table so multiple vendors in the same dataset-scoped schema don't collide on a shared signal slug (e.g. `heart_rate`) — the endpoint no longer hardcodes a vendor prefix.
 - Physical tables live in dataset-scoped schemas; metadata and mapping register in `w4h.tables` (ADR-003).
 - CLI supports **initial import** (`replace` / `append`) and **sync** (append with dedupe) for cron jobs.
@@ -86,3 +100,4 @@ API keys are read from **environment or local `.env`** in the importer repo. Key
 | 2026-08-21 | Added second sample/importer pair (`w4h-sample-icde-demo-csv`, with a `gps_track` geo signal) alongside `w4h-sample-fitbit-csv` (no geo) to exercise both branches of the ADR-008 mapping. Fixed `/import/csv-batch` hardcoding `fitbit_` as the physical table prefix; payload now carries an explicit `table_prefix`. |
 | 2026-08-21 | Contributions admin's **Fetch repo info** ([ADR-018](ADR-018-contributions-catalog.md)) applies this pairing convention a second place: inspecting a `<sample-repo>-importer` repo without its own `manifest.yaml` now probes the paired `<sample-repo>`'s `manifest.yaml` directly on GitHub (same `owner/<slug>` convention `contribution-runner.js`'s `pairedDataSlugFor()` uses at run time, but resolved from the repo URL rather than the catalog, since the paired row may not be cataloged yet) and surfaces it as a "paired sample-data repo detected" note. |
 | 2026-08-25 | Clarified the rejected alternative: no **vendor-parser** catalog. Private-file ingest via an obscured-profile assistant and a generated runnable package is [ADR-024](ADR-024-ingest-assistant.md), not a new sample pair per study. |
+| 2026-09-26 | Documented first-party **file importers** (Fitbit, glucose monitor, E4 data recorder) and README-as-user-docs surfacing via Contributions. API ingest ACL no longer grants Super admin a bypass. |

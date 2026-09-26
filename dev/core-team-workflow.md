@@ -53,7 +53,7 @@ First-party tools are **one git repo per job** (notebook + CLI + `contribution.y
 | 4 | Platform | **Staging:** add catalog row (`published`), run as **Admin** the way a PI would — not only Super admin in Platform Admin |
 | 5 | Super admin | **Production:** Platform Admin → Contributions → **Fetch repo info** → **published**; pin tag; set **`runnable = true`** in DB after `./run.sh` / in-app **Run import…** is proven ([ADR-022](ADR-022-in-app-contribution-run-trigger.md)) |
 | 6 | Platform | Optional: seed **`w4h.contributions`** in `w4h-api/data/schema.sql` so fresh dev databases list the tool; extend **`runnable`** seed list when appropriate |
-| 7 | Docs | Update MVP / Contributions guide when the listing is first-party and user-visible |
+| 7 | Docs | **`README.md`** in the module (user-facing on `/contributions/:slug`); update MVP / [Contributions guide](../guide/sample-packages.md) when first-party |
 
 **In-app Run (local dev):** clone the contribution repo **next to w4h-api** (sibling checkout). The API runner resolves `../<slug>/run.sh` and may clone/ff-only pull paired sample repos per [ADR-022](ADR-022-in-app-contribution-run-trigger.md).
 
@@ -71,18 +71,41 @@ Use this after **`pytest`** and **`./run.sh import`** pass in the module repo. B
 
 | Check | Action |
 |-------|--------|
-| Module tests green | In the importer repo: `pytest tests/ -q -m "not integration"` |
+| Module tests green | In the importer repo: `pytest tests/ -q -m "not integration"`; `contribution.yaml` matches [contribute-a-module](../guide/contribute-a-module.md) |
+| README ready for users | Public **`README.md`** covers device/export shape, env vars, CLI, and who runs what — rendered on the catalog detail page after publish |
 | CLI path works | `./run.sh import` with `W4H_API_KEY` + empty **your-team** `W4H_DATASET_ID` |
 | Repo on disk for the runner | Clone **`USC-InfoLab/<slug>`** as a **sibling of `w4h-api`** (same parent folder), **or** set `CONTRIBUTION_RUNNER_REPO_ROOT` to that parent. Slug must match the folder name (e.g. `w4h-glucose-monitor-csv-file-importer`). |
 | Catalog row on **this** database | The importer must appear in **`w4h.contributions`** with **`status = published`**. On local dev: Super admin → **Platform Admin → Contributions** → paste GitHub URL → **Fetch repo info** → save (see [contribute-a-module § live test](../guide/contribute-a-module.md#live-test-not-production)). |
 | Runnable flag | In-app Run only lists rows with **`runnable = true`**. The admin form may not expose this yet — on local/staging after `./run.sh` is proven: `UPDATE w4h.contributions SET runnable = true WHERE slug = '<slug>';` (same pattern as seed in `w4h-api/data/schema.sql`). |
 
-### 2. Log in as the right role
+### 2. Role checks (two passes)
 
-- Use the **app shell** as **Admin** or **User** on a project you can write to (team admin / project owner for ingest).
-- **Super admin** Platform Admin is for **catalog rows**, not the primary ingest QA persona ([contribute-a-module](../guide/contribute-a-module.md)).
+Staging sign-off needs **both** personas from [contribute-a-module § live test](../guide/contribute-a-module.md#live-test-not-production). **Super admin** is only for catalog setup (§1), not the ingest click-through.
+
+#### A. Team Admin — **required** (primary PI path)
+
+Log in to the **app shell** as **Admin**: **`team_admin`** on the dataset’s team and/or **`owner`** on the project ([ADR-004](ADR-004-acl-roles.md)). This is the person who creates catalog datasets, links them, and runs **Run import…**.
+
+**Local fixtures:** after `npm run start:sample` in **w4h-api**, use seeded **Admin** `admin@example.com` / `DocsOnly!2026` on project **Wearable Pilot** ([docs-fixtures](docs-fixtures.md)). Or use your own team with the same Admin powers.
+
+Complete **§3–§5** below as this user. Record pass/fail.
+
+#### B. Team User — **required negative**
+
+Log in as **User** (`team_members.role = member`, project **`editor`** — not project owner). Open the same project and select the same writable, empty dataset.
+
+| Expect | Reason |
+|--------|--------|
+| **Run import…** button **not shown** | UI gates on project `canManage` (`canRunImportOnSelected` in **w4h-app** `ProjectDatasetMasterDetail.vue`) |
+| No ingest actions on datasets | Users analyze loaded data; they do not load tables ([Contributions guide](../guide/sample-packages.md)) |
+
+If a User can start a catalog import, treat that as a **bug** (ACL/UI mismatch with [ADR-004](ADR-004-acl-roles.md) / ingest checks in `w4h-api/lib/ingest-csv.js`).
+
+**Local fixtures:** `user@example.com` / `DocsOnly!2026` ([docs-fixtures](docs-fixtures.md)).
 
 ### 3. Click path (first load — empty dataset)
+
+Perform **§3–§5 as Team Admin only** (§2A).
 
 1. Open a **project** you own or administer.
 2. **Datasets** — create a new **catalog dataset** on your team (empty) or pick an existing empty one, and **link** it to the project if needed.
@@ -95,10 +118,16 @@ Use this after **`pytest`** and **`./run.sh import`** pass in the module repo. B
 
 ### 4. Pass criteria
 
+**Team Admin (§2A)**
+
 - Run status **succeeded** (no error in the run log).
 - Dataset **overview** refreshes: signal/table count and stats update without a full page reload.
 - In Postgres or the UI, physical tables exist under the dataset schema with the expected **`table_prefix`** (e.g. `glucose_*`, `recorder_*`, `fitbit_*`).
 - Optional: open **Contributions** → detail page for the slug; README still renders.
+
+**Team User (§2B)**
+
+- **Run import…** absent on dataset overview for a writable dataset; User cannot complete a catalog run from the UI.
 
 ### 5. Re-run (dataset already has data)
 
@@ -108,7 +137,7 @@ Use this after **`pytest`** and **`./run.sh import`** pass in the module repo. B
 
 ### 6. Staging vs local
 
-Same steps; only the **base URL** and **Postgres** change. Staging should already have a **`published`** row; platform sets **`runnable`** after CLI proof. Testers report pass/fail in Slack or an issue — do not use production catalog until staging sign-off.
+Same steps for **§2A + §2B**; only the **base URL** and **Postgres** change. Staging should already have a **`published`** row; platform sets **`runnable`** after CLI proof. Testers report **two** results (Admin pass/fail, User negative pass/fail) in Slack or an issue — do not use production catalog until staging sign-off.
 
 ### 7. If it fails
 

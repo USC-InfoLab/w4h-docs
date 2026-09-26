@@ -40,7 +40,7 @@ The ingest assistant lives in the **app** (dataset overview / ingest dialog), no
 - JS builds a **file profile** per file: name, size, encoding/delimiter guess, header names, inferred types, approximate row count, cheap structural hints (column looks like time / id / lat-lon).
 - A few **preview rows** are parsed **in the browser** for the user and for obscuring (below). Whole files are never uploaded to Anthropic. Ingest of the full file uses `csv-batch` (browser chunks while the `File` is still in memory, or the generated CLI later).
 
-Same ingest ACL as today: Team admin or project owner on a writable dataset; read-only sample datasets stay Super-admin-only ([ADR-017](ADR-017-community-package-registry.md)). Ingest is **the PI’s own team catalog**, not a publish.
+Same ingest ACL as today: Team admin or project owner on a writable dataset; read-only sample datasets reject all API ingest ([ADR-017](ADR-017-community-package-registry.md)). Ingest is **the PI’s own team catalog**, not a publish.
 
 ### 1a. Private to the PI’s project until they submit
 
