@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-09-26
+- Generated: 2026-10-06
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -70,6 +70,7 @@ ADRs in tree: **27**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/docs-fixtures.md` | Local docs fixtures |
 | `dev/mvp.md` | MVP |
 | `dev/notes.md` | notes |
+| `dev/onboarding-report.md` | Onboarding report |
 
 ## `guide/`
 
