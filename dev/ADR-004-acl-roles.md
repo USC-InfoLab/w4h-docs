@@ -34,7 +34,7 @@ Access control must be enforceable at the database level (not just the applicati
 | **Admin** | One team / project | `team_members.role = team_admin` and/or `project_members.role = owner` |
 | **User** | One team / project | `team_members.role = member`; `project_members.role = editor` (legacy `viewer` displays as User) |
 
-Super admin is platform-only. Do not put Super admin on a project Members dropdown. Effective team authority comes from **team membership role**, not from a global `users.role = team_admin` (legacy — migrate). Stored values `team_admin` / `member` / `owner` / `editor` are unchanged.
+Super admin is platform-only. Do not put Super admin on a project Members dropdown. Effective team authority comes from **team membership role**, not from a global `users.role = team_admin` (retired 2026-10-04 — see below). Stored values `team_admin` / `member` / `owner` / `editor` are unchanged.
 
 ## Decision
 
@@ -61,7 +61,7 @@ Stored on `team_members.role`. Product UI: **Admin** / **User**.
 
 **Effective Team admin for team T** = caller is Super admin **or** has `team_members` row for T with `role = team_admin`.
 
-Legacy `users.role = team_admin` migrates to `team_members.role = team_admin` on each of that user's teams; thereafter team admin is membership-scoped only.
+Legacy `users.role = team_admin` was migrated to `team_members.role = team_admin` on each of that user's teams (schema migration, 2026-10-04) and the global value is cleared to `project_user`. Team admin is membership-scoped only: the API never writes `users.role = team_admin`, and `team_admin` is accepted only as an *input alias* on user create/update meaning "Admin on the teams given". The JWT `caps.team_admin` claim (any `team_admin` membership) drives the app shell; per-team checks always read `team_members`.
 
 ### 3. Project membership roles
 
@@ -137,7 +137,7 @@ Session `search_path` / DB role must follow the **active team context** for the 
 - Aligns MVP language: Super admin (platform) · Admin / User (per team and project)
 
 **Negative / risks:**
-- Must migrate legacy global `users.role = team_admin` onto `team_members.role`
+- Legacy global `users.role = team_admin` migrated onto `team_members.role` (done; see §2)
 - Application must resolve effective role **per team** on each request (`search_path`, authorization checks)
 - Project-scoped data access for members still relies on application-layer filtering or per-project views (open item in `architecture.md`)
 - Ingest delegation without Team admin remains a separate ACL/capability design (D-22)
@@ -162,4 +162,5 @@ Session `search_path` / DB role must follow the **active team context** for the 
 | 2026-07-22 | Usage surface `/admin/usage` (study metrics); Team admin team-scoped view; members cannot browse Usage ledger. |
 | 2026-08-12 | Product UI: **Super admin** · **Admin** · **User**. Stored `team_admin`/`member` and `owner`/`editor` unchanged; Super admin is not a project membership. |
 | 2026-08-12 | One Admin type (no primary vs invited split). Admin cannot remove themselves; at least one must remain. |
+| 2026-10-04 | Global `users.role = team_admin` retired: migrated to memberships, no longer written or honoured. Creating a project/dataset needs Team admin on *that* team (dual-hat). |
 | 2026-08-13 | Product UI short name **Admin** (was “Project admin”); roles remain Super admin · Admin · User. |

@@ -35,7 +35,7 @@ Shared local password (not a real credential; only exists inside `w4h-sample`):
 
 `DocsOnly!2026`
 
-Also created: team **Demo Trial** (`docs-demo`), project **Wearable Pilot** (`docs-pilot`), catalog dataset **Demo heart rate** (placeholder row, no PHI). Help docs are imported into this database the same way as a fresh install. Sample CSVs still live in **w4h-datasets** if you want a real ingest later.
+Also created: team **Demo Trial** (`docs-demo`), project **Wearable Pilot** (`docs-pilot`), catalog dataset **Demo heart rate** (placeholder row, no PHI). Plus one **pending, verified access request** (synthetic researcher, `researcher@example.com`) so the Super admin **Requests** page (`/admin/access-requests`) has something to approve in screenshots. Help docs are imported into this database the same way as a fresh install. Sample CSVs still live in **w4h-datasets** if you want a real ingest later.
 
 ## Capture env
 

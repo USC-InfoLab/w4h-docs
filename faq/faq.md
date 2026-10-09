@@ -5,6 +5,14 @@ updated_by: nocera@usc.edu
 updated_at: 2026-07-22T00:00:00.000Z
 ---
 
+## How do I get an account?
+
+W4H is open to **USC researchers** for now. On the login screen click **Request access**, give your USC email, and confirm the link we email you. A person reviews your request; if approved you receive an invitation, and on first sign-in you create your own team — nobody else creates or approves it. See the [Quick Start](../quick-start.md#request-access-new-pi).
+
+## How do I chart my data?
+
+Open your project → **Analytics** → *Explore signals*. It works for any loaded dataset — wearables or clinical tables, any vendor. For views it cannot show, an Admin can publish an interactive notebook as a **report**. See [Charts and Reports](../guide/charts-and-reports.md).
+
 ## What is W4H?
 
 W4H is a toolkit for managing wearable health data workflows for clinical research — projects, datasets, contributions, and documentation.

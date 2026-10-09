@@ -5,7 +5,7 @@ card_title: Configure SMTP
 updated_by: nocera@usc.edu
 updated_at: 2026-07-14T23:29:03.472Z
 ---
-This guide explains how to configure a Gmail account as the SMTP server for sending emails from W4H. Gmail SMTP is recommended for **development and testing** purposes only. For **production** environments, use your institution’s email service or a dedicated SMTP provider (such as SendGrid, Amazon SES, or Mailgun) to ensure reliable email delivery and compliance with organizational policies.
+This guide explains how to configure a Gmail account as the SMTP server for sending emails from W4H. SMTP is required for user invitations, login codes, and **Request access** (the form emails each applicant a confirmation link and notifies Super admins). Gmail SMTP is recommended for **development and testing** purposes only. For **production** environments, use your institution’s email service or a dedicated SMTP provider (such as SendGrid, Amazon SES, or Mailgun) to ensure reliable email delivery and compliance with organizational policies.
 
 ---
 

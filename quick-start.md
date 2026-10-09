@@ -29,7 +29,7 @@ For the full architectural picture — schema-per-trial isolation, dataset shari
 
 | Role | Shell | What you can do |
 |---|---|---|
-| **Super admin** | **Platform Admin** only (`W4H Toolkit Admin`) | Bootstrap the platform: SMTP, initial teams, invite Admins, audit, usage, settings. Does **not** run day-to-day trials. |
+| **Super admin** | **Platform Admin** only (`W4H Toolkit Admin`) | Bootstrap the platform: SMTP, approve access requests, audit, usage, settings. Does **not** run day-to-day trials. |
 | **Admin** | App shell (`W4H Toolkit`) | Own trials: teams, dataset declarations, ingest via Contributions, projects, members, shares. |
 | **User** | App shell | Work in assigned projects: analytics on **loaded** datasets (tables present). Cannot add datasets or edit raw tables. |
 
@@ -60,12 +60,26 @@ After login, finish these one-time configuration steps under **Settings** (`{{AP
 | Optional Claude key | Settings → PHI-safe AI chat | Platform key + per-team monthly token quota for provisioned chat; teams may instead paste their own Anthropic key |
 | Refresh documentation | Settings → Documentation Management → **Refresh Docs** | Imports pages from the `w4h-docs` source repository into the platform |
 
-Then bootstrap the first PI:
+Then onboard PIs as they ask for access (see [Request access](#request-access-new-pi) below):
 
-1. **Teams → Add Team** — create their initial team.
-2. **Users → Invite** — invite them as **Team admin** on that team.
+1. A PI submits **Request access** on the login screen and confirms their USC email.
+2. You are notified — an email, a count on the admin home, and a badge on **Requests** in the menu.
+3. **Requests → Approve** — one click sends them an **Admin invitation**. That is all you do: you do not create or approve teams. They create and define their own teams after signing in.
+
+Requests need **SMTP** and **`APP_URL`** to be set (the form cannot verify addresses otherwise). Set `ACCESS_REQUEST_ALLOWED_DOMAINS` in the API environment if more than `usc.edu` should be accepted (comma-separated, exact domains).
 
 The PI (Team admin) then sets up projects and datasets in the **app shell**. See [Setting Up Projects](guide/setting-up-projects.md).
+
+### Request access (new PI)
+
+Open to **USC researchers** for now.
+
+1. On the login screen click **Request access (USC researchers)**.
+2. Enter your name, **USC email**, lab/department, and a short purpose — no patient or study data.
+3. Open the confirmation link W4H emails you (valid for 24 hours). Until you do, nobody sees your request.
+4. A person reviews it. If approved you receive an **invitation** to set your password. On your first sign-in W4H asks you to **create your team** — you name it and are its **Admin**. You can add more teams later from the account menu (**New team**); nobody approves them.
+
+You will not be told whether an account already exists for an address, and a request from an address that is not on an allowed domain is rejected.
 
 > **Tip:** Use **Export Docs** in Settings to download a ZIP backup before refreshing.
 
@@ -73,7 +87,9 @@ For local development setup (cloning repos, `npm run dev`, environment variables
 
 ---
 
-## 2. Create a project (Team admin)
+## 2. Create your team and a project (Admin)
+
+**Start with a team.** A team is your lab or study group — the boundary for your people, datasets and projects. On your first sign-in W4H asks you to **create your team**: give it a name and you are its **Admin**. Need another for a separate study? Account menu → **New team**. Nobody approves teams; the Super admin does not create them. Then: create a project, add datasets, **invite people** (§4).
 
 Projects are the central unit of work — every dataset link and member assignment is scoped to a project ([ADR-001](dev/ADR-001-schema-per-trial.md)).
 
@@ -133,6 +149,8 @@ You are enrolled in the **W4H Samples** sandbox (synthetic demos). Super admin s
 2. Your **personal API key** is issued automatically at account creation — reveal or rotate it under **Profile → API keys** when you run a notebook or CLI. Do not use a shared team key.
 3. Open the listing’s git repo (README is rendered in-app and lives in the repo). Query the canonical sandbox dataset; skip write/`replace` cells unless you are Super admin seeding.
 4. For **your** trial data, open **Projects**, issue a project token or use your key on datasets linked to that project.
+
+**Chart your data in the app.** Open a project → **Analytics** → *Explore signals* to chart any loaded dataset without code (time series, distributions, coverage, scatter, events), and export PNG or CSV. An Admin can also publish an interactive notebook as a **report**. See [Charts and Reports](guide/charts-and-reports.md).
 
 Once you are assigned to a research project ([Welcome — User](guide/welcome-user.md)):
 
@@ -217,12 +235,14 @@ Documentation is organized into doc types — each type is a folder in the sourc
 | I want to… | Go to… |
 |---|---|
 | Set up the database | Login page (first run) or Platform Admin → Settings → Database |
-| Onboard a PI | Platform Admin → Teams (initial team) → Users → Invite as Team admin · [Welcome — Super admin](guide/welcome-super-admin.md) |
-| Create a project | App shell → Projects (Team admin) · [Welcome — Admin](guide/welcome-admin.md) |
+| Request access (new PI) | Login screen → **Request access** · [Quick Start](#request-access-new-pi) |
+| Onboard a PI | Platform Admin → **Requests** → **Approve** (sends the Admin invitation; the Admin creates their own team) · [Welcome — Super admin](guide/welcome-super-admin.md) |
+| Create a team | First sign-in (**Create your team**), then account menu → **New team** (Admin) · [Welcome — Admin](guide/welcome-admin.md) |
+| Create a project | App shell → Projects (Admin) · [Welcome — Admin](guide/welcome-admin.md) |
 | Work in a project as User | App shell → Project / Contributions · [Welcome — User](guide/welcome-user.md) |
 | Manage datasets | App shell → Datasets (Team admin) |
 | Load tables (runnable importer) | Project workspace → Datasets → select dataset → **Run import…** in overview ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)) |
-| Add a team member | App shell → Users → Invite (Team admin) |
+| Invite people | App shell → project → People (Admin); another organization joins as a collaborating team |
 | Issue a data-access token | Project workspace → Database access |
 | Configure email | Platform Admin → Settings → Mail Server |
 | Refresh docs from source | Platform Admin → Settings → Documentation Management |

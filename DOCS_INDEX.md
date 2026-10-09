@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-09-26
+- Generated: 2026-10-08
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -18,7 +18,7 @@ Structural map of `w4h-docs` for agents and humans. **Index only** — not a sub
 | Docs screenshots / fake users | `dev/docs-fixtures.md` |
 | Guides | `guide/` |
 
-ADRs in tree: **27**. Prefer MVP + relevant ADR before inventing product rules.
+ADRs in tree: **30**. Prefer MVP + relevant ADR before inventing product rules.
 
 ## Root
 
@@ -59,6 +59,9 @@ ADRs in tree: **27**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/ADR-024-ingest-assistant.md` | ADR-024 — Ingest assistant: obscured file profiles, csv-batch, generated runnable package |
 | `dev/ADR-025-phi-safe-agent-tools.md` | ADR-025 — PHI-safe agent tools (post-MVP) |
 | `dev/ADR-026-multi-provider-llm.md` | ADR-026 — Multi-provider LLM (post-MVP) |
+| `dev/ADR-027-cross-org-project-collaboration.md` | ADR-027 — Cross-org project collaboration |
+| `dev/ADR-028-platform-access-requests.md` | ADR-028 — Platform access requests |
+| `dev/ADR-029-visualization-component-and-reports.md` | ADR-029 — Generic visualization component and published reports |
 | `dev/ADR-README.md` | ADR Readme |
 | `dev/agentic-ai-roadmap.md` | Agentic AI roadmap (post-MVP) |
 | `dev/analytics-contributions.md` | Analytics contributions — RA handoff (METs & wear compliance) |
@@ -70,12 +73,14 @@ ADRs in tree: **27**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/docs-fixtures.md` | Local docs fixtures |
 | `dev/mvp.md` | MVP |
 | `dev/notes.md` | notes |
+| `dev/proposals/agentic-ai-proposal.md` | Proposal — Agentic AI first release and the SQL question |
 
 ## `guide/`
 
 | File | Title |
 |------|-------|
 | `guide/ai-chat.md` | PHI-safe AI chat |
+| `guide/charts-and-reports.md` | Charts and Reports |
 | `guide/contribute-a-module.md` | Contribute a module |
 | `guide/docker-deployment.md` | Docker Deployment |
 | `guide/hipaa-compliance.md` | HIPAA Compliance |

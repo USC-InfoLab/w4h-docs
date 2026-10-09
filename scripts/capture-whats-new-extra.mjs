@@ -222,11 +222,12 @@ async function main() {
   await mailCard.screenshot({ path: path.join(OUT, 'admin-settings-smtp.png') });
   console.log('shot media/whats-new/admin-settings-smtp.png (element)');
 
-  await page.goto(`${APP_URL}/admin/teams/add`, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(600);
-  await page.locator('input').first().fill('Cardiology Trial');
-  await page.waitForTimeout(300);
-  await shot(page, 'admin-teams-add');
+  // Super admin approves access requests; they do not create teams (ADR-028). The seeded
+  // synthetic pending request (w4h-api lib/seed-docs-fixtures.js) makes the queue non-empty.
+  await page.goto(`${APP_URL}/admin/access-requests`, { waitUntil: 'networkidle' });
+  await page.waitForSelector('text=Approve', { timeout: 10000 });
+  await page.waitForTimeout(400);
+  await shot(page, 'admin-access-requests');
 
   await page.goto(`${APP_URL}/admin/users/add`, { waitUntil: 'networkidle' }).catch(async () => {
     await page.goto(`${APP_URL}/users/add`, { waitUntil: 'networkidle' });
@@ -247,7 +248,7 @@ async function main() {
   }
   await shot(page, 'admin-users-invite');
 
-  // GIF: setup walkthrough home → settings → teams → invite
+  // GIF: setup walkthrough home → settings → access requests
   const setupFrames = [];
   await page.goto(`${APP_URL}/admin/home`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(700);
@@ -290,32 +291,10 @@ async function main() {
   await page.screenshot({ path: fp, fullPage: true });
   setupFrames.push(fp);
 
-  await page.goto(`${APP_URL}/admin/teams/add`, { waitUntil: 'networkidle' });
+  await page.goto(`${APP_URL}/admin/access-requests`, { waitUntil: 'networkidle' });
+  await page.waitForSelector('text=Approve', { timeout: 10000 });
   await page.waitForTimeout(500);
-  await page.locator('input').first().fill('Cardiology Trial');
-  await page.waitForTimeout(200);
   fp = path.join(OUT, '_su_2.png');
-  await page.screenshot({ path: fp });
-  setupFrames.push(fp);
-
-  // invite page — resolve route from router if needed
-  let invited = false;
-  for (const url of [`${APP_URL}/admin/users/add`, `${APP_URL}/users/add`]) {
-    await page.goto(url, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(500);
-    if ((await page.locator('text=Invite').count()) || (await page.locator('form').count())) {
-      invited = true;
-      break;
-    }
-  }
-  if (!invited) {
-    await page.goto(`${APP_URL}/admin/users`, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(400);
-    const btn = page.locator('a,button').filter({ hasText: /Invite|Add User/i }).first();
-    if (await btn.count()) await btn.click();
-    await page.waitForTimeout(600);
-  }
-  fp = path.join(OUT, '_su_3.png');
   await page.screenshot({ path: fp });
   setupFrames.push(fp);
 

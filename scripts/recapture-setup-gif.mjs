@@ -1,5 +1,6 @@
 /**
- * Re-capture admin-setup-flow.gif with generic SMTP / help emails in the Settings frame.
+ * Re-capture admin-setup-flow.gif: setup guide → generic SMTP / help emails → Access requests queue.
+ * (The Super admin no longer creates teams or invites PIs by hand; they approve requests — ADR-028.)
  */
 import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
@@ -98,19 +99,11 @@ async function main() {
   await page.screenshot({ path: fp });
   setupFrames.push(fp);
 
-  await page.goto(`${APP_URL}/admin/teams/add`, { waitUntil: 'networkidle' });
+  // Seeded synthetic pending request (w4h-api lib/seed-docs-fixtures.js) — nothing to type.
+  await page.goto(`${APP_URL}/admin/access-requests`, { waitUntil: 'networkidle' });
+  await page.waitForSelector('text=Approve', { timeout: 10000 });
   await page.waitForTimeout(500);
-  await page.locator('input').first().fill('Cardiology Trial');
-  await page.waitForTimeout(200);
   fp = path.join(OUT, '_su_2.png');
-  await page.screenshot({ path: fp });
-  setupFrames.push(fp);
-
-  await page.goto(`${APP_URL}/admin/users/add`, { waitUntil: 'networkidle' }).catch(async () => {
-    await page.goto(`${APP_URL}/users/add`, { waitUntil: 'networkidle' });
-  });
-  await page.waitForTimeout(600);
-  fp = path.join(OUT, '_su_3.png');
   await page.screenshot({ path: fp });
   setupFrames.push(fp);
 

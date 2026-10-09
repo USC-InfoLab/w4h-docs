@@ -69,7 +69,17 @@ Replace the Analytics tab placeholder with **cached cohort stat cards** when a l
 
 **Implementation:** extend cached `datasets.summary` JSON with optional `wear_compliance` and `mets_summary`; bounded recompute via `POST /datasets/:id/summary/refresh` (Team admin+). Platform-side METS cache/cards **read** a derived `mets_computed` table or a YAML SQL report ([ADR-023](ADR-023-sql-analytics-contributions.md)) — do **not** port the MET formula into `w4h-api/lib/` as the long-term owner. Wear-compliance may still start from a port of `ComplianceAnalyzer` until it has its own SQL manifest. **No live full-table `COUNT(*)` on list endpoints** (MVP / AGENTS). The pandas contribution `w4h-compute-mets` (`kinds: notebook, cli`) stays; the API job is a **separate** planned repo `w4h-sql-compute-mets` (`kind: sql`).
 
-**Defer unchanged:** A-02 time-series plots, A-03 comparisons, A-05 outliers, A-06 PDF export.
+**Status update (2026-10-04) — platform producer built.** `datasets.summary.wear_compliance` is now filled by the platform, and both cards refresh together:
+
+- `lib/dataset-wear-summary.js` computes the protocol of `w4h-fitbit-wear-compliance` in SQL (heart rate as the wear proxy; daily windows; daily and overall thresholds; enrollment dates from the `subjects` table bound each subject's days). It is the **interim `ComplianceAnalyzer` port** this ADR allows, until it has its own SQL manifest. Two deliberate differences from the notebook: one sample counts for its mapped **sampling interval** (not "one row = one minute"), and a **NULL heart rate is not a sample** (pandas counted NaN as worn).
+- Stored shape (compact, no per-day rows): `{ source: 'platform', signal, interval_minutes, computed_at, protocol: { daily_band_wear_percentage, overall_band_wear_percentage, daily_band_wear_hours }, subjects_total, subjects_compliant, compliance_pct, median_daily_wear_pct, subjects: [{ subject_id, days_with_data, compliant_days, overall_compliance_percentage, is_overall_compliant, median_daily_wear_pct }] }` (first 100 subjects).
+- `POST /datasets/:id/summary/refresh` (Admin; optional `wear_protocol`, a stored protocol is kept on later refreshes) recomputes `mets_summary` and `wear_compliance` together, and every successful in-app contribution run refreshes them (best-effort).
+- The Analytics tab shows the cards with a **Refresh** button, a **Wear protocol…** editor (Admins), and a per-subject table whose ticked subjects scope the wear numbers (**A-04b**).
+- Catalog: `w4h-fitbit-wear-compliance` is seeded in `w4h.contributions` (kinds `notebook`, `cli`).
+
+Still open: moving the wear logic into a `kind: sql` manifest (the engine needs optional `requires` and overridable scalars first), and reading ingested rows from the notebook through the API (no `POST /datasets/:id/query` exists).
+
+**Defer unchanged:** A-05 outliers, A-06 whole-dashboard PDF export. (A-02 time series and A-03 cohort comparison have since shipped: ADR-021, ADR-029.)
 
 ### 4. Catalog seeding
 

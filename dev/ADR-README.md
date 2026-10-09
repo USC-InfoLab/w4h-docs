@@ -36,6 +36,9 @@ This directory contains ADRs for the W4H wearables toolkit. Each file captures t
 | [ADR-024](ADR-024-ingest-assistant.md) | Ingest assistant: obscured profiles, csv-batch, generated runnable package | Draft |
 | [ADR-025](ADR-025-phi-safe-agent-tools.md) | PHI-safe agent tools (post-MVP) | Draft |
 | [ADR-026](ADR-026-multi-provider-llm.md) | Multi-provider LLM (post-MVP) | Draft |
+| [ADR-027](ADR-027-cross-org-project-collaboration.md) | Cross-org project collaboration | Accepted |
+| [ADR-028](ADR-028-platform-access-requests.md) | Platform access requests (USC-verified) | Accepted |
+| [ADR-029](ADR-029-visualization-component-and-reports.md) | Generic visualization component and published reports | Accepted |
 
 ## What is an ADR?
 

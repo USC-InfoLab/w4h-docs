@@ -55,7 +55,7 @@ The API resolves the UI role from the signed-in user and the active team (not fr
 
 | UI role | Who | How the assistant should answer |
 |---------|-----|----------------------------------|
-| **Super admin** | Platform role Super admin | Platform Admin: SMTP, first team, invite Team admins, audit, usage, settings, Contributions catalog CRUD. Not day-to-day PI trial work. |
+| **Super admin** | Platform role Super admin | Platform Admin: SMTP, approve access requests (Admin invitation), audit, usage, settings, Contributions catalog CRUD. Not day-to-day PI trial work. |
 | **Admin** | Team admin on the active team | App shell: create projects, link datasets, invite members, share datasets, lab AI key on Project → Settings, chat usage on Project → People. Not Platform Admin. |
 | **User** | Everyone else in the app shell | Work in assigned projects: linked datasets, project pages, personal API key / project token, browse Contributions. Point “create / invite / ingest” tasks to an Admin. |
 

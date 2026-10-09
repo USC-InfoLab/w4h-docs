@@ -27,6 +27,8 @@ Ship **device wear compliance** and **METs** analysis for Fitbit-style datasets:
 4. **Automation** — CLI entry point on each analytical notebook repo (`kinds: notebook, cli`), parity with [`w4h-sample-fitbit-csv-importer`](https://github.com/USC-InfoLab/w4h-sample-fitbit-csv-importer)'s `import`/`sync` pattern, so a Team admin can run these on cron, not only interactively
 5. **Approximate queries demo** — new notebook (`w4h-demo-approximate-queries`) showing `fft_approximate` range-aggregate queries against the sample dataset
 
+**Status (2026-10-04):** the repos exist. `USC-InfoLab/w4h-fitbit-wear-compliance` (notebook + cron-friendly CLI, branch `feature/wp2-cli`, no tag), `w4h-demo-approximate-queries` (notebook-only, `master`) and `w4h-hr-anomaly` are **private**, so the catalog's README fetch and tag check cannot reach them until they are public or tokened. Both the wear-compliance and approximate-queries repos are now seeded in `w4h.contributions` (pinned to their default branch until a tag exists). WP4 is built **in the API as an interim port** (`lib/dataset-wear-summary.js`, refresh after every run, [ADR-019](ADR-019-mets-wear-compliance-analytics.md) status update); WP5 shows the cards with Refresh, a protocol editor and a per-subject filter (A-04b). Open: the `kind: sql` wear manifest, A-05 outliers, A-06 PDF.
+
 **Adjacent, separate track:** [ADR-020](ADR-020-basic-dataset-stats-dashboard.md) — a vendor-agnostic basic dataset stats card (subject count, date range, device types, size) for **any** dataset, not gated on Fitbit-shaped signals. Assigned here (Tracy) because it shares the Analytics tab surface, but has no dependency on WP1–WP4 below.
 
 ---
@@ -55,11 +57,11 @@ Ship **device wear compliance** and **METs** analysis for Fitbit-style datasets:
 | No catalog repo for wear compliance | WP2 |
 | No MET derivation code | WP3 (pandas companion) + **WP9** (SQL contribution, ADR-023) |
 | Analytics tab is placeholder | WP5 |
-| No API cohort aggregates | WP4 (cache via SQL engine, not a JS formula) |
-| Catalog rows missing | WP6 |
+| ~~No API cohort aggregates~~ | WP4 — built 2026-10-04 as an interim port (engine manifest still open) |
+| ~~Catalog rows missing~~ | WP6 — wear compliance and approximate-queries seeded 2026-10-04 (repos private: README/tag fetch fails until public) |
 | No CLI automation on wear-compliance / METs repos (notebook-only today) | WP2, WP3 |
-| No demo of `fft_approximate` against ingested data | WP7 |
-| `fft_approximate` install path undocumented for `w4h-docker` | WP8 |
+| ~~No demo of `fft_approximate` against ingested data~~ | WP7 — `w4h-demo-approximate-queries` exists (private, notebook-only; not executed in this audit) |
+| ~~`fft_approximate` install path undocumented for `w4h-docker`~~ | WP8 — section added to [Docker Deployment](../guide/docker-deployment.md) 2026-10-04 |
 | No vendor-agnostic basic dataset stats card (Analytics tab empty for non-Fitbit datasets) | ADR-020 (prefer ADR-023 manifest) |
 | No YAML SQL METS contribution / discovery / bind-execute API | WP9, D-34 |
 
@@ -133,21 +135,22 @@ Cache/refresh via the [ADR-023](ADR-023-sql-analytics-contributions.md) SQL engi
 | `POST /datasets/:id/summary/refresh` | Team admin+; returns updated summary; audited |
 | No list-endpoint full scans | Use limits / sampling; cache results |
 
-**Summary JSON shape (draft):**
+**Summary JSON shape (built 2026-10-04):**
 
 ```json
 {
   "wear_compliance": {
-    "subjects_total": 5,
-    "subjects_compliant": 3,
-    "median_daily_wear_pct": 72.5,
-    "protocol": { "daily_threshold_pct": 60, "windows": ["08:00-20:00"] }
+    "available": true, "source": "platform", "signal": "heart_rate", "interval_minutes": 1,
+    "protocol": { "daily_band_wear_percentage": 60, "overall_band_wear_percentage": 60,
+                  "daily_band_wear_hours": [["08:00", "20:00"]] },
+    "subjects_total": 5, "subjects_compliant": 3, "compliance_pct": 60.0, "median_daily_wear_pct": 72.5,
+    "subjects": [{ "subject_id": "S1", "days_with_data": 14, "compliant_days": 12,
+                   "overall_compliance_percentage": 85.7, "is_overall_compliant": true,
+                   "median_daily_wear_pct": 91.0 }]
   },
   "mets_summary": {
-    "signal": "mets_computed",
-    "subjects_with_data": 4,
-    "cohort_mean_mets": 1.8,
-    "cohort_met_hours_per_day": 12.3
+    "signal": "mets_computed", "available": true,
+    "cohort_mean_mets": 1.8, "cohort_met_hours_per_day": 12.3
   }
 }
 ```
@@ -160,7 +163,7 @@ Cache/refresh via the [ADR-023](ADR-023-sql-analytics-contributions.md) SQL engi
 |------|---------------------|
 | Replace placeholder in [`ProjectHub.vue`](../../w4h-app/src/components/project/ProjectHub.vue) Analytics section | **In progress (2026-08-25):** [`ProjectAnalyticsPanel.vue`](../../w4h-app/src/components/project/ProjectAnalyticsPanel.vue) — dataset picker, **cohort comparison** (ADR-021 / ICDE offline query), contributions list, **Run analysis…**. Cached wear/MET cards when summary keys exist. |
 | Subject vs control (A-02 / A-03 v1) | **Done (2026-08-25):** [`CohortAnalyticsPanel.vue`](../../w4h-app/src/components/project/CohortAnalyticsPanel.vue) — subject IDs, control = entire dataset / everyone else / IDs, date range, optional time-of-day windows, KPI deltas, downsampled series, comparison bars. Attribute filters and maps still out. |
-| Subject filter (A-04b) | Dropdown or pick-list when multiple subjects in summary |
+| Subject filter (A-04b) | **Done (2026-10-04):** per-subject table with tick boxes scopes the wear numbers; protocol editor and Refresh for Admins |
 | Contributions link | Admins see link to wear + METs catalog entries |
 | Viewer parity | Same stats visible to Users ([A-07](mvp.md)) |
 

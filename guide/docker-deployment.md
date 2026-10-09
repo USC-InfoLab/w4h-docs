@@ -72,7 +72,9 @@ Optional compose `.env` overrides:
 |---|---|
 | `APP_PORT` | Host port for the web UI (default `5180`) |
 | `APP_URL`, `API_PUBLIC_URL` | Public URLs for invites and docs placeholders |
-| `SMTP_*` | Outbound email (or configure later in Platform Admin → Settings) |
+| `SMTP_*` | Outbound email (or configure later in Platform Admin → Settings). Also required for **Request access** — the form verifies each USC address by email |
+| `ACCESS_REQUEST_ALLOWED_DOMAINS` | Email domains allowed to request access (comma-separated, exact match; default `usc.edu`) |
+| `REPORT_MAX_BYTES` | Largest published notebook report (default 8 MB) |
 | `W4H_API_KEY` | Personal API key for the preloaded importer notebook (after Step 5) |
 | `W4H_DATASET_ID` | Catalog dataset id the importer targets (default `sample-fitbit-csv`) |
 | `VITE_JUPYTER_URL` | URL baked into the app for **Managed JupyterLab** (default `http://127.0.0.1:8888`) |
@@ -154,9 +156,23 @@ This should work out of the box. If it does not, check the `api` service logs fo
 
 ---
 
+## Optional: approximate-query extension (fft_approximate)
+
+[`fft_approximate`](https://github.com/USC-InfoLab/fft_approximate) is a PostgreSQL C extension for approximate range aggregates over time series. It runs **inside your PostgreSQL server**, which is outside this Compose stack (PostgreSQL is external, [ADR-015](../dev/ADR-015-docker-deployment-packaging.md)), so install it on the database host, not in a container here.
+
+1. **Check support.** It needs a self-managed PostgreSQL 12+ where you can install files into the server's directories. It is **not supported on RDS, Aurora or Cloud SQL**, which do not allow custom C extensions.
+2. **Build and install** on the database host by following the [fft_approximate README](https://github.com/USC-InfoLab/fft_approximate): set `PG_CONFIG` for your platform, then `make` and `sudo make PG_CONFIG=$PG_CONFIG install`.
+3. **Create the extension** in the W4H database (`CREATE EXTENSION fft_approximate;`) with your own connection settings.
+4. **Mind the platform gotchas** the README lists: AppArmor path allow-lists on Ubuntu, SELinux contexts (`restorecon`) on RHEL/Fedora, and the macOS *App Management* privacy grant for Postgres.app.
+5. **Try it** with the [Approximate range queries demo]({{APP_URL}}/contributions) notebook (`w4h-demo-approximate-queries`). It connects to PostgreSQL **directly**, not through the W4H API, and works on a bounded slice of heart-rate or calories data from a dataset you already imported.
+
+The extension is optional: nothing else in W4H depends on it.
+
+---
+
 ## Out of scope
 
 - **Spark-enabled deployment** (Dep-02 / M6). This guide covers the standalone, non-Spark deployment only.
 - **TRE mode.** Not part of this deployment. See ADR-006.
 - **Notebook versioning.** Managed by you or your team, outside the platform.
-- **Installing `fft_approximate`.** A prerequisite on your Postgres instance (Linux, macOS, or Windows), not part of this Docker stack. Follow the [fft_approximate README](https://github.com/USC-InfoLab/fft_approximate).
+- **Installing `fft_approximate` inside the stack.** It lives on your Postgres host; see [Optional: approximate-query extension](#optional-approximate-query-extension-fft_approximate).

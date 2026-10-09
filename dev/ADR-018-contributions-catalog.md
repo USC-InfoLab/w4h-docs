@@ -103,6 +103,7 @@ The Compose `notebooks` service remains a **single-user convenience image**, not
 
 | Date | Change |
 |------|--------|
+| 2026-10-04 | Added first-party `w4h-hr-anomaly` row (`kinds: notebook, cli`, not `runnable`): the MVP M4 example model contribution. It reads the series API and writes a derived table; it is not an in-app Run importer. |
 | 2026-09-21 | Catalog **version pin**: `version` + cached `latest_*` on `w4h.contributions`; Super admin Check for updates / pin a GitHub `v*` tag; in-app Run checks out the pin (dirty sibling checkouts left as-is). Not a versions table; git remains the history. |
 | 2026-08-23 | **Fetch repo info** detects all catalog kinds from the repo (`.ipynb` → `notebook`, `[project.scripts]` → `cli`, `*.control` → `postgres_extension`, ADR-016 `signals` manifest → `dataset`, ADR-023 SQL manifest → `sql`). Kinds are additive (e.g. SQL job + notebook + CLI). |
 | 2026-08-23 | `w4h-sql-compute-mets` catalog row: `kinds: sql, notebook, cli` (SQL job plus thin clients that pick one dataset in a project). |

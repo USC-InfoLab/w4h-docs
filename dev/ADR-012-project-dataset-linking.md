@@ -77,17 +77,19 @@ Team A owns Project P (multi-dataset modeling)
   ├── links Team A datasets (owned)
   └── links Team B dataset (via share to A)
 
-Visible to: Super admin; Team A members of P; Team A team admin
+Visible to: Super admin; any Team A member (list + project overview); Team A team admin
+Workspace (pages, edit): Super admin; members of P; Team A team admin
 Not visible to: Team B  (share alone does not grant project membership)
 ```
 
 | Actor | Sees project P | Sees share of B’s dataset |
 |---|---|---|
 | Team A team admin / members of P | Yes | Yes (as linked / inbound share) |
+| Team A users not on P | Yes (project overview only — no pages) | Yes (as linked) |
 | Team B team admin | No | Yes (outbound share / “shared with Team A”) |
 | Team B users not on P | No | No dataset browse into A |
 
-**MVP:** project members must belong to the project’s owning team (§16 — no cross-team project membership). To collaborate in one UI, users must be on the same team, or wait for a post-MVP membership exception.
+**Superseded by [ADR-027](ADR-027-cross-org-project-collaboration.md):** a project has one owning team but may add **collaborating teams** (invited by the owner side, accepted by the invited team's Admin). Their people join as Users and see only that project; each team contributes and controls its own datasets. The same-team-only rule no longer applies.
 
 ### 5. Team admin self-service checklist
 
@@ -131,6 +133,8 @@ Not visible to: Team B  (share alone does not grant project membership)
 
 | Date | Change |
 |---|---|
+| 2026-10-04 | §4 membership rule superseded by ADR-027 (cross-org project collaboration). |
+| 2026-10-04 | Project visibility: any member of the owning team sees the project overview (MVP P-06); pages and edit stay with project members and team admins. |
 | 2026-07-21 | Discoverable catalog listing (metadata only) vs share; Mine / Others / Shared filters. |
 | 2026-07-15 | Accepted — documents multi-dataset linking, push-share UX, and project visibility vs dataset share. |
 | 2026-07-15 | Project membership roles: owner / editor / viewer only. |

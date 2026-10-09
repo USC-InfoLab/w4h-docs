@@ -2,12 +2,12 @@
 title: MVP
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-09-21T00:00:00.000Z
+updated_at: 2026-10-04T00:00:00.000Z
 sort_order: 3
 ---
 **Protocol Version:** 1
 
-**Date Updated:** September 21, 2026
+**Date Updated:** October 4, 2026
 
 **Title:** W4H Toolkit — Validating and Promoting the W4H Toolkit
 
@@ -17,8 +17,10 @@ sort_order: 3
 
 **Funding:** SC CTSI Pilot Funding Program
 
-**Document Status:** Draft v0.34
+**Document Status:** Draft v0.36
 
+> **Changelog (v0.35 → v0.36):** **[ADR-027](ADR-027-cross-org-project-collaboration.md) Accepted and implemented** — cross-org project collaboration. A project keeps one owning team and may add **collaborating teams** (invited by the owner side, accepted by that team's Admin, per project). Collaborators join as User only and see only that project; each team contributes and controls its own datasets. **Dataset data access now follows project membership** (team membership alone no longer reads a dataset; owning-team Admin and Super admin keep access). Fixed a dual-hat read leak in `canReadProject` (global `users.role` was honoured across teams), blanked project pages and ACL rules for team members who are not on the project, and limited ingest-by-project-owner to the owner's own team's datasets. Added P-11–P-14; removed the §16 cross-team membership exclusion. REDCap: multi-site studies map to one dataset per site team contributed into a shared project (data access groups inside one dataset stay out of scope). Docs screenshot scripts now capture the Super admin **Requests** page instead of the removed Add Team page (the docs fixture seeds one synthetic pending request); the Users edit screen lets a Super admin save an approved Admin who has no team yet; the Admin getting-started cards, guides and Help chat lead with *create a team → project → invite people*. **§17 Delivery Timeline re-baselined**: statuses and progress are now derived from the requirement rows (standalone Docker is built, the documentation system is complete, §7 sharing is verified), and stale rows were corrected (Dep-01/03/05, S-01–S-07, S-10, U-02–U-04, D-06, D-07, D-23, A-01a, A-04a, A-04c). Also audited §3.2 (T-07–T-14; T-11 stays in progress) and fixed team-member removal, which left project access behind and could strand a user with no team or a team with no Admin. Counted the **dataset overview stats** (new A-08) and the **approximate-queries** analysis (new A-09) toward M3, which moves M3 from 45% to 55%, then added the planned **generic visualization component, series API and published reports** (A-10–A-12, [ADR-029](ADR-029-visualization-component-and-reports.md) Draft), which brought M3 to 44% while unbuilt, then **built and verified** (series API, ECharts component, published reports; A-02 and A-06 updated), which took M3 to 64%. A follow-up **audit of A-03, A-04 and A-07** moved A-03 and A-07 to `✅ Done` but found the wear-compliance cache has no producer and the METs cache has no refresh trigger (A-01a, A-04, A-04a, A-04c back to `🚧 In progress`), leaving M3 at 63%. A **second pass** then built the missing pieces: a platform producer for the wear-compliance cache (`lib/dataset-wear-summary.js`), a **Refresh** button and automatic refresh after every run, a wear-protocol editor and per-subject filter, and catalog rows for the existing `w4h-fitbit-wear-compliance` and `w4h-demo-approximate-queries` repos — A-01a, A-04, A-04a–c and A-09 are `🔁 In review`, taking M3 to **81%** (built, not yet used on real data). The audit also fixed a timezone bug (cohort default end date a day late; dataset **Date range** tile always empty; chart time axes shifted by the browser's timezone) and a project-page bug (a team member who is not on the project saw "Unauthorized" errors). Also added the missing **project count** to the Teams list (T-02 → `✅ Done`). Also set R-01, R-03, R-04, R-05, R-06, D-12 and D-16 to `✅ Done` after auditing code, added R-10/R-11, and retired the global `users.role = team_admin` (R-08, R-09 → `✅ Done`: schema migration, membership-only checks, dual-hat project creation now needs Admin on the target team); D-09, D-10 and D-15 to `🚧 In progress`. Fixed the `dataset.import.csv` audit write, which never wrote a row. Onboarding (§3.0): stage 1 is an in-app **Request access** form writing to `w4h.access_requests`; the Super admin is notified (email + home/menu count) and **Approves** from a queue — their only act; they do not create or approve teams. The approved Admin creates their own teams on first sign-in (T-15; T-16–T-20, [ADR-028](ADR-028-platform-access-requests.md)), limited to verified USC email addresses for now — built and verified at the API level; the new pages are not yet exercised in a browser. **M4 re-scoped to one worked example** (§11): the milestone is now a single example model contribution — the per-subject resting heart-rate anomaly detector `w4h-hr-anomaly` (adapter + model, notebook + CLI) — applied to a project dataset and shown in the dashboard. M-03–M-06 are marked post-MVP and excluded from the count; added M-09 (catalog row and `display:` drawing); M-01, M-02 and M-08 are `🚧 In progress`. M4 moves from 10% to 76% after the example was run against a live API (M-02 Done, M-01 In review, M-09 In progress). Fixed `format()` bind-parameter casts in `w4h-api/lib/ingest-csv.js` (`COMMENT ON` failed with 42P18, so any csv-batch import carrying a description returned 500).
+> **Changelog (v0.34 → v0.35):** §17 Delivery Timeline now carries the **proposal milestone plan** (M1–M9: scope, deliverable, completion month) as a **Proposal target** column beside the current **Target**, so slippage is explicit (M1: May → July 2026; M3: August → September 2026). Added the proposal's deliverable wording (WYSIWYG documentation, reusable analytics/plotting library, standalone vs Spark Docker, public release). Status and progress unchanged.
 > **Changelog (v0.33 → v0.34):** **Contribution version pin** ([ADR-018](ADR-018-contributions-catalog.md)): catalog rows store `version` plus last-seen GitHub tag (`latest_version` / `latest_repo_ref`). Super admin **Check for updates** / **Update** on `/admin/contributions` (`POST /contributions/check-updates`, `POST /contributions/:slug/update-version`) — inspect the tag, then pin `repo_ref`. Never auto-follow `main`. In-app Run checks out the pin; dirty sibling checkouts stay as-is. `contribution_runs` records the pin used. Added **D-36**. Publishers cut `vMAJOR.MINOR.PATCH` tags (GitHub Release preferred). Not a versions table and not community self-publish (still M9).
 > **Changelog (v0.32 → v0.33):** Scoped **agentic AI** and **multi-provider LLM** as **post-MVP** ([ADR-025](ADR-025-phi-safe-agent-tools.md), [ADR-026](ADR-026-multi-provider-llm.md), §13.4). MVP §13.1 unchanged: single-turn PHI-safe chat, **Claude** proxy (AI-02b), streaming (AI-01a). Ingest assistant (D-35 / ADR-024) stays MVP Todo — app-orchestrated, not an LLM tool loop. Added §16 rows so agent orchestration and non-Claude providers do not expand MVP scope.
 > **Changelog (v0.31 → v0.32):** Pulled **[ADR-021](ADR-021-cohort-control-group-comparison.md)** filter-based cohort comparison onto the project Analytics tab (ICDE demo offline query: selected subjects vs control, date range, optional time-of-day windows, KPI deltas, downsampled series, comparison bars). Live `GET`/`POST /datasets/:id/analytics/cohort` over mapped signals — not Streamlit, not free SQL, not a third MET formula. Attribute matching, maps, and real-time remain out. A-02/A-03/A-07 moved to in progress.
@@ -101,19 +103,21 @@ Role and sharing semantics follow [ADR-004](ADR-004-acl-roles.md), [ADR-002](ADR
 
 ## 2. Roles & Access Model
 
-Access is layered: **platform role** → **team membership role** → **project membership role** → optional **resource ACL** (e.g. docs). See [ADR-004](ADR-004-acl-roles.md).
+Access is layered: **platform role** → **team membership role** → **project membership role** → optional **resource ACL** (e.g. docs). Dataset data is reached through **project membership** ([ADR-027](ADR-027-cross-org-project-collaboration.md)); team membership alone does not read a dataset. See [ADR-004](ADR-004-acl-roles.md).
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
-| R-01 | Platform role **Super admin** is account-wide (`users.role`). Non–Super-admin accounts are standard users whose team/project authority comes from memberships (ADR-004). | `✅ Stable` | `🔁 In review` |
-| R-02 | Project membership roles are `owner`, `editor`, and `viewer`; project `admin` is retired. | `✅ Stable` | `✅ Done` |
-| R-03 | A user may belong to multiple teams, each with its own **team membership role**. | `✅ Stable` | `🚧 In progress` |
-| R-04 | Every project belongs to exactly one owning team. | `✅ Stable` | `🔁 In review` |
-| R-05 | Sharing a dataset never shares a project (ADR-012). | `✅ Stable` | `🚧 In progress` |
-| R-06 | All users (except Super admin), projects, and datasets must belong to a team. | `✅ Stable` | `🚧 In progress` |
+| R-01 | Platform role **Super admin** is account-wide (`users.role`). Non–Super-admin accounts are standard users whose team/project authority comes from memberships (ADR-004). | `✅ Stable` | `✅ Done` |
+| R-02 | Project membership roles are `owner`, `editor`, and `viewer`; project `admin` is retired. The UI shows **Admin** (`owner`) and **User** (`editor`); `viewer` is legacy and shown as User. Collaborating-team members (P-11) are always `editor`. | `✅ Stable` | `✅ Done` |
+| R-03 | A user may belong to multiple teams, each with its own **team membership role**. | `✅ Stable` | `✅ Done` |
+| R-04 | Every project belongs to exactly one owning team. | `✅ Stable` | `✅ Done` |
+| R-05 | Sharing a dataset never shares a project (ADR-012). Dataset data access follows project membership (ADR-027). | `✅ Stable` | `✅ Done` |
+| R-06 | All users (except Super admin), projects, and datasets must belong to a team. Enforced by the API on create (`team_id` required for projects and datasets; at least one team for non–Super-admin users); the columns are not `NOT NULL` in the schema. **One exception:** an Admin approved from an access request has no team until they create their first one on first sign-in (`users.can_create_teams`). | `✅ Stable` | `✅ Done` |
 | R-07 | Users are never hard-deleted; lifecycle uses `active` / `discontinued`. | `✅ Stable` | `✅ Done` |
-| R-08 | **Team membership roles** on `team_members.role`: `team_admin` \| `member`. The same user may be `team_admin` on team A and `member` on team B (dual-hat). | `✅ Stable` | `🚧 In progress` |
-| R-09 | Effective Team admin for team T = Super admin **or** membership on T with role `team_admin`. Global `users.role = team_admin` is legacy and migrates onto `team_members`. | `✅ Stable` | `🚧 In progress` |
+| R-08 | **Team membership roles** on `team_members.role`: `team_admin` \| `member`. The same user may be `team_admin` on team A and `member` on team B (dual-hat). | `✅ Stable` | `✅ Done` — every authority check reads `team_members` for the team in question (project create/manage/read, dataset create/edit/ingest, sharing, team and user admin). Dual-hat verified: Admin on A and member on B cannot create or manage on B. |
+| R-09 | Effective Team admin for team T = Super admin **or** membership on T with role `team_admin`. Global `users.role = team_admin` is legacy and migrates onto `team_members`. | `✅ Stable` | `✅ Done` — migrated by the schema bootstrap (global `team_admin` → `team_admin` on each of their teams, then `users.role = project_user`); the API no longer writes or honours the global value. `team_admin` remains only as an input alias when creating/updating a user. The JWT `caps.team_admin` claim is derived from memberships. |
+| R-10 | **Dataset data follows project membership** ([ADR-027](ADR-027-cross-org-project-collaboration.md)): a non-admin reads or queries a dataset only through a project that links it and in which they are a member. Team membership or a team-wide share alone grants nothing. The owning team's Admin and Super admin keep access. | `✅ Stable` | `✅ Done` |
+| R-11 | **Project visibility tiers:** (1) project members — full workspace incl. pages; (2) owning-team members not on the project — overview only (roster, linked datasets), no pages, ACL rules, analytics or reports; the project page shows only the Datasets and People tabs plus a note; (3) collaborating-team members — only the projects they are members of, nothing else of the owning team; (4) everyone else — nothing. | `✅ Stable` | `✅ Done` |
 
 Project membership roles are **not** a fourth platform tier. Team membership roles are **not** a fourth platform tier either — they scope Team admin vs member **per team**.
 
@@ -121,8 +125,9 @@ Project membership roles are **not** a fourth platform tier. Team membership rol
 
 - A user **can belong to multiple teams** with **different roles per team** (e.g. Team admin on their home trial, `member` on a collaborator team).
 - **Team admins** (per team) manage that team's users, projects, and datasets — including inviting, discontinuing, and resuming members — within that team only.
-- **All projects belong to one owning team.** There are no dual-owned or platform-level "Super admin" projects.
-- **Sharing a dataset does not share a project.** A Team A project that links Team B's shared dataset is visible to Team A only (ADR-012). Team B sees the share agreement, not Team A's project.
+- **All projects belong to one owning team.** There are no dual-owned or platform-level "Super admin" projects. A project may add **collaborating teams** from other organizations (P-11, ADR-027); their people join as Users and see only that project.
+- **Sharing a dataset does not share a project.** A Team A project that links Team B's shared dataset is visible to Team A only (ADR-012). Team B sees the share agreement, not Team A's project. To work together in one project, Team B is invited as a collaborating team (ADR-027).
+- **Dataset data follows project membership** (R-10). A dataset's owning team keeps control of it: only that team's Admin links or unlinks it in another team's project, and only its own team's Admin or project owner ingests into it.
 - New deployments **must** assign all non–Super-admin users, projects, and datasets to a team at setup time. Unscoped records are not permitted.
 - Users are **never hard-deleted** from the platform. A user account has a `status` of `active` or `discontinued`; discontinuing a user is reversible (see §4).
 - **Ingest without full Team admin** (PI delegates wearable ETL to a student) is **not** covered by per-team roles alone — that is a finer-grained ACL/capability (see D-22).
@@ -136,48 +141,61 @@ Super admin **does not** manage or approve individual trials — they have no tr
 
 | Stage | Who | What |
 |---|---|---|
-| 1. Request access | Prospective PI (guest) | Submits a **platform access** request (identity + affiliation + brief purpose) |
-| 2. Bootstrap | Super admin | Creates the **Team admin** account (invite) and an **initial team**; does **not** configure projects, datasets, or IRB for the trial |
-| 3. Trial setup | Team admin (PI) | Creates further teams if needed, datasets, projects, members, shares — full self-service |
+| 1. Request access | Prospective PI (guest) | Fills in the public **Request access** form on the login screen (name, **USC email**, affiliation, brief purpose), then clicks the **verification link** emailed to that address. Only then does the request reach the Super admin as `pending` in `w4h.access_requests` — no account yet. Non-USC addresses are rejected. |
+| 2. Approve | Super admin | Is **notified** of the request (email + a count on the admin home and menu), opens the **Access requests** queue and clicks **Approve**. That sends the PI an **Admin invitation** — the Super admin's whole job. The Super admin does **not** create teams, approve teams, or configure anything for the trial; they only decide who may join. They can also **Decline** or mark spam. |
+| 3. Trial setup | Admin (PI) | Accepts the invitation, then **creates and defines their own teams** (first sign-in opens *Create your team*; more teams later from the account menu) with datasets, projects, members, and shares. To work with another organization, invites that team into a project as a collaborating team ([ADR-027](ADR-027-cross-org-project-collaboration.md)). Full self-service — no Super admin involvement. |
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'actorBkg': '#e6edf7', 'actorBorder': '#4a5d8a', 'actorTextColor': '#1b1f24',
+  'actorLineColor': '#8b949e', 'signalColor': '#8b949e', 'signalTextColor': '#8b949e',
+  'noteBkgColor': '#fff4cc', 'noteBorderColor': '#b08800', 'noteTextColor': '#1b1f24'
+}}}%%
 sequenceDiagram
   participant PI as Prospective PI
+  participant API as W4H
   participant SA as Super admin
   participant TA as Team admin (PI)
 
-  PI->>SA: Request platform access
-  SA->>TA: Invite as Team admin + create initial team
-  TA->>TA: Setup trials (teams / datasets / projects / members)
+  PI->>API: Submit Request access form
+  API-->>SA: Notify: email + home / menu count
+  SA->>API: Open queue, click Approve
+  API->>TA: Send Admin invitation
+  Note over PI,TA: Super admin stops here:<br/>no teams, projects, datasets, or IRB
+  TA->>TA: Create own team(s)
+  TA->>TA: Set up trials (datasets / projects / members / shares)
+  TA->>TA: Invite collaborating teams into a project (optional)
 ```
 
 ### 3.1 Team Management
 
 | # | Requirement | Who | Req Status | Impl Status |
 |---|-------------|-----|------------|-------------|
-| T-01 | Create a research team (name, slug). **Bootstrap:** Super admin may create the PI’s initial team at onboarding. **Self-service:** Team admin may create additional teams for their trials after they have been onboarded (T-15). | Super admin; Team admin (after onboard) | `⚠️ Draft` | `🚧 In progress` |
-| T-02 | List all teams with member count and project count. | Super admin | `✅ Stable` | `🔁 In review` |
+| T-01 | Create a research team (name, slug). **Only an Admin creates teams**: an approved Admin makes their own team(s) — the first on their first sign-in, more later from the account menu (T-15) — and becomes each team's Admin. The **Super admin does not create or approve teams**; they only approve who may join (T-17) and can review, edit or deactivate teams afterwards (T-03, T-04). | Admin (approved) | `✅ Stable` | `✅ Done` — `POST /teams` is limited to Admins (and approved Admins who have no team yet); a Super admin gets 403. |
+| T-02 | List all teams with member count and project count (active projects only). A Team admin sees only their own teams. | Super admin; Team admin (own teams) | `✅ Stable` | `✅ Done` — `GET /teams` returns `member_count` and `project_count`; shown on the Teams list. |
 | T-03 | Edit any team's name and metadata. | Super admin | `✅ Stable` | `✅ Done` |
 | T-04 | Deactivate any team (soft-delete; preserves data). | Super admin | `✅ Stable` | `✅ Done` |
 | T-05 | View, edit, and manage their own team's details, metadata, and membership. | Team admin (scoped to own team) | `✅ Stable` | `✅ Done` |
 | T-06 | Each team has a unique URL-friendly `slug`. | System | `✅ Stable` | `✅ Done` |
-| T-15 | After platform onboarding, Team admin can create additional teams (new trials / study tenancies) without Super admin involvement. Super admin does **not** approve each new team/trial. | Team admin | `⚠️ Draft` | `🚧 In progress` |
-| T-16 | Prospective users can submit a **platform access request** (name, email, affiliation, short purpose). This is **not** a per-trial approval queue. | Guest / System | `⚠️ Draft` | `🚩 Todo` |
-| T-17 | Super admin can list pending access requests and **fulfill** one by inviting the requester as Team admin and creating their **initial team** (guided or one-step). | Super admin | `⚠️ Draft` | `🚩 Todo` |
-| T-18 | Super admin attention / home surfaces pending **access requests** (not trial setup tasks). | Super admin | `⚠️ Draft` | `🚩 Todo` |
+| T-15 | An approved Admin creates **their own teams** without Super admin involvement: *Create your team* on first sign-in (they have no team until then — see R-06), then *New team* in the account menu for further trials or study groups. The creator becomes the team's Admin. | Admin | `✅ Stable` | `🔁 In review` — built (`/team/new`, account-menu entry, `GET /users/me/session`); API verified on a scratch DB, UI not yet exercised in a browser. |
+| T-16 | **Request access form (public):** a guest-facing page (`/request-access`, linked from the login screen) collects name, email, affiliation, and a short purpose (no patient or study data). **Only USC researchers may apply for now:** the email must be on an allowlisted USC domain (environment setting `ACCESS_REQUEST_ALLOWED_DOMAINS`, default `usc.edu`; exact match — e.g. `usc.edu`, `med.usc.edu`, `keck.usc.edu`; never suffix matching, so `usc.edu.evil.com` fails). Submitting inserts an **`unverified`** row in **`w4h.access_requests`** (`id`, `name`, `email`, `affiliation`, `purpose`, `status` `unverified` \| `pending` \| `fulfilled` \| `declined` \| `spam`, `verified_at`, `created_at`, `handled_by`, `handled_at`, `note`, `user_id`) and emails a **one-time, expiring (24 h) verification link** to that address; the token is stored hashed. Clicking it proves control of the mailbox and moves the row to `pending`. Unverified rows never notify the Super admin and are purged after the link expires. It creates **no account** and needs no login. This is **not** a per-trial approval queue. | Guest / System | `✅ Stable` | `🔁 In review` — built ([ADR-028](ADR-028-platform-access-requests.md)); API verified against a scratch DB, UI not yet exercised in a browser |
+| T-17 | **Access requests queue** (`/admin/access-requests`, Super admin): list pending and handled requests with the submitted details. **Approve** sends the requester the Admin invitation (U-13–U-16) and records who approved; it **creates no team** — the Admin creates their own after signing in (T-15). The invited account is `project_user` flagged `can_create_teams` until it has a team. If the email already has an account, it is flagged and notified instead. **Decline** and **Mark spam** take an optional note. | Super admin | `✅ Stable` | `🔁 In review` — built; API verified, UI not yet exercised in a browser |
+| T-18 | **Super admin notification:** a **verified** request (1) emails every active Super admin through the existing SMTP path (best-effort; a mail failure never blocks the submission), (2) adds a **pending-requests count** to the attention strip on `/admin/home` (`GET /config/admin-home`) and a badge on the **Access requests** menu item. Optional: a reminder when a request has been pending for more than a few days. | Super admin | `✅ Stable` | `🔁 In review` — built; API verified, UI not yet exercised in a browser |
+| T-19 | **Requester feedback:** on submit the PI sees a generic "received — a person will review this" message and gets a confirmation email; on **Approve** they get the Admin invitation, on **Decline** an optional short notice. Messages never reveal whether an account already exists. | Guest / System | `✅ Stable` | `✅ Done` — verified against a scratch DB |
+| T-20 | **Abuse protection and audit** for the unauthenticated endpoint: the USC-domain gate and email verification (T-16) keep bots and outsiders out of the queue; plus per-IP and per-email rate limits, a honeypot field, length caps, one open request per email, output escaping in emails, and no secrets or PHI stored. Submit, verify, approve (`fulfill`), decline and spam are written to `w4h.audit_log` (ADR-011). Processed requests are kept for the audit trail; spam may be purged. | System | `✅ Stable` | `✅ Done` — verified against a scratch DB |
 
 ### 3.2 User–Team Association
 
 | # | Requirement | Who | Req Status | Impl Status |
 |---|-------------|-----|------------|-------------|
-| T-07 | Assign a user to one or more teams at creation, with a **team membership role** per team (`team_admin` \| `member`). | Super admin / Team admin (own team only) | `✅ Stable` | `🚧 In progress` |
-| T-08 | Remove a user from a team (membership link only — does **not** discontinue the user's account or their membership in other teams). | Super admin / Team admin (own team only) | `✅ Stable` | `🚧 In progress` |
-| T-09 | Users with no team assignment are Super admins. | System | `✅ Stable` | `🔁 In review` |
-| T-10 | Team admin can view, invite, edit, discontinue, and resume members of their team (scoped by that team's membership). | Team admin | `✅ Stable` | `🔁 In review` |
-| T-11 | Users can see teammates across all their teams; Super admin sees all users globally. | System | `✅ Stable` | `✅ Done` |
-| T-12 | Discontinuing a user does not remove their team or project memberships; resuming restores their prior access immediately. | System | `✅ Stable` | `🚩 Todo` |
-| T-13 | Change a member's **team membership role** on a team without changing their roles on other teams (dual-hat). | Super admin / Team admin (own team) | `✅ Stable` | `🚧 In progress` |
-| T-14 | Add an existing user to a team with an explicit team membership role (no duplicate account). | Super admin / Team admin (own team) | `✅ Stable` | `🚧 In progress` |
+| T-07 | Assign a user to one or more teams at creation, with a **team membership role** per team (`team_admin` \| `member`). A Team admin may assign only to their own teams. | Super admin / Team admin (own team only) | `✅ Stable` | `✅ Done` — API takes a list of `{team_id, role}`; the invite form picks one team, further teams are added from the user's edit screen. |
+| T-08 | Remove a user from a team (membership link only — does **not** discontinue the user's account or their membership in other teams). Guards: a user keeps at least one team (R-06), and a team keeps at least one Admin. Removal also drops the user's seats on that team's projects (P-12), unless a collaborating team of the project still covers them (ADR-027). | Super admin / Team admin (own team only) | `✅ Stable` | `✅ Done` — verified; the project-seat cleanup and both guards were added in v0.36 (previously removal left project access behind). |
+| T-09 | Users with no team assignment are Super admins — or an Admin approved from an access request who has not created their first team yet (`users.can_create_teams`, ADR-028). | System | `✅ Stable` | `✅ Done` |
+| T-10 | Team admin can view, invite, edit, discontinue, and resume members of their team (scoped by that team's membership). | Team admin | `✅ Stable` | `✅ Done` — verified: list and detail are limited to their teams; editing, discontinuing and inviting outside them returns 403. |
+| T-11 | Users can see teammates across all their teams; Super admin sees all users globally. | System | `✅ Stable` | `🚧 In progress` — `GET /teams/:id` returns the member list to any member of that team (others get 403) and Super admin sees everything, but a plain User has no page for it: the Teams list is not in the app shell for them. |
+| T-12 | Discontinuing a user does not remove their team or project memberships; resuming restores their prior access immediately. | System | `✅ Stable` | `✅ Done` — verified: discontinued users are locked out, memberships are kept, and access returns on resume. Their personal API key is revoked on discontinue (D-21), so a new key must be issued after resume. |
+| T-13 | Change a member's **team membership role** on a team without changing their roles on other teams (dual-hat). | Super admin / Team admin (own team) | `✅ Stable` | `✅ Done` — `PATCH /teams/:id/members/:userId`; verified a role change on one team leaves the others untouched. |
+| T-14 | Add an existing user to a team with an explicit team membership role (no duplicate account). A Team admin can add only people who already belong to one of their teams; a Super admin can add anyone. | Super admin / Team admin (own team) | `✅ Stable` | `✅ Done` — `POST /teams/:id/members` by `user_id` or email; a duplicate returns 409. |
 
 ---
 
@@ -188,9 +206,9 @@ sequenceDiagram
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
 | U-01 | Create, edit, discontinue, and resume users. Users are never hard-deleted. | `✅ Stable` | `✅ Done` |
-| U-02 | Assign platform role `super_admin` (account-wide). Non–Super-admin authority is via **team membership roles** and **project membership roles** (ADR-004). Legacy `users.role` values `team_admin` / `project_user` / `admin` / `researcher` / `clinician` migrate accordingly. | `✅ Stable` | `🔁 In review` |
-| U-03 | Users have multi-valued team membership (`team_members`) including per-team role. | `✅ Stable` | `🚧 In progress` |
-| U-04 | Team admin can invite/add members to their team (with team membership role). | `✅ Stable` | `🚧 In progress` |
+| U-02 | Assign platform role `super_admin` (account-wide). Non–Super-admin authority is via **team membership roles** and **project membership roles** (ADR-004). Legacy `users.role` values `team_admin` / `project_user` / `admin` / `researcher` / `clinician` migrate accordingly. | `✅ Stable` | `✅ Done` — `team_admin` is retired as a platform role and migrated onto memberships (R-09); `researcher`/`clinician`/`admin` remain accepted legacy aliases |
+| U-03 | Users have multi-valued team membership (`team_members`) including per-team role. | `✅ Stable` | `✅ Done` — `team_members` with a per-team role; verified (T-07, T-13) |
+| U-04 | Team admin can invite/add members to their team (with team membership role). | `✅ Stable` | `✅ Done` — verified (T-07, T-14) |
 | U-05 | Team admin can discontinue and resume Project users in their team. | `✅ Stable` | `✅ Done` |
 | U-06 | `team_id` (primary) embedded in JWT at login for request scoping. | `✅ Stable` | `✅ Done` |
 | U-07 | User profile displays their team(s) and project memberships. | `✅ Stable` | `🚩 Todo` |
@@ -208,7 +226,7 @@ sequenceDiagram
 | U-14 | Invitation email contains a time-limited signed link for password set and account activation. | `✅ Stable` | `✅ Done` |
 | U-15 | Expired or unused invitations can be revoked or resent by the inviting admin. | `✅ Stable` | `✅ Done` |
 | U-16 | Invite flow is intentionally basic for MVP: single SMTP provider (Google), plain-text/simple HTML template, no custom branding. | `✅ Stable` | `✅ Done` |
-| U-17 | Platform access request (T-16) is distinct from Team admin **inviting** members to an existing team (U-13). Fulfilling an access request uses the invite flow with team membership role `team_admin` and an initial team (T-17). | `⚠️ Draft` | `🚩 Todo` |
+| U-17 | Platform access request (T-16) is distinct from Team admin **inviting** members to an existing team (U-13). Approving an access request (T-17) reuses the invite flow (U-13–U-16); the invitee becomes an Admin only once they create their first team (T-15). | `⚠️ Draft` | `🔁 In review` — access requests are built (T-16–T-20, ADR-028) |
 
 ---
 
@@ -221,11 +239,15 @@ sequenceDiagram
 | P-03 | At least one `owner` enforced per project. | `✅ Stable` | `✅ Done` |
 | P-04 | Projects have a `team_id` (owning team). | `✅ Stable` | `✅ Done` |
 | P-05 | Team admin can create projects within their team and link multiple owned or inbound-shared datasets (D-06, ADR-012). | `✅ Stable` | `✅ Done` |
-| P-06 | Users see only projects in their team(s) or where explicitly added as members (same team only in MVP). | `✅ Stable` | `✅ Done` |
+| P-06 | Users see only projects in their team(s) or where explicitly added as members (owning team or an active collaborating team, ADR-027). A team member who is not on a project's roster sees its overview (members, linked datasets) but not its private pages. Team admin is judged per team from `team_members.role`, never from a global `users.role`. | `✅ Stable` | `✅ Done` |
 | P-07 | Super admin sees all projects across all teams. | `✅ Stable` | `✅ Done` |
 | P-08 | Project list and detail views display the owning team name. | `✅ Stable` | `✅ Done` |
 | P-09 | Project documentation pages stored in a dedicated project-scoped table (see §12.2). | `✅ Stable` | `✅ Done` |
 | P-10 | IRB protocol metadata stored per project (protocol ID, expiry date). | `✅ Stable` | `✅ Done` |
+| P-11 | **Collaborating teams** ([ADR-027](ADR-027-cross-org-project-collaboration.md)): a project keeps one owning team and may add others. The owner side (project Admin / owning-team Admin) invites; an Admin of the invited team accepts (one invitation per project). Either side can end it; removing a team removes its people and unlinks the datasets it contributed immediately. | `✅ Stable` | `✅ Done` |
+| P-12 | Project members must belong to the owning team or an active collaborating team. Collaborators join as **User** only (never project Admin). A collaborating team's Admin may add or remove people from their own team. | `✅ Stable` | `✅ Done` |
+| P-13 | Collaborators see only the project they belong to — roster (with each person's home team), linked datasets, pages — and nothing else of the owning team. The owning team sees only what the collaborator contributes. | `✅ Stable` | `✅ Done` |
+| P-14 | Only an Admin of a dataset's owning team can link it into a project that is not owned by their team, and can unlink it at any time. A project Admin ingests only into datasets their own team owns. Link, unlink, invite and accept are audited. | `✅ Stable` | `✅ Done` |
 
 ---
 
@@ -242,24 +264,24 @@ All datasets in the W4H Toolkit are interpreted using the **GeoMTS (Geospatial M
 | D-03 | Datasets used for GeoMTS analysis have registered tables in `w4h.tables` with a role **mapping** (subject, time, optional geo, values). Physical column names are not required to be normalized. | `✅ Stable` | `🚧 In progress` |
 | D-04 | Original data is always preserved. Derived or modified data is stored separately (additive model). | `✅ Stable` | `🚩 Todo` |
 | D-05 | Each dataset version (original, derived) is tracked with provenance metadata. | `✅ Stable` | `🚩 Todo` |
-| D-06 | Datasets can be linked to one or more projects with per-link access type (`read` / `read_write`). Linkable set = project team’s owned datasets ∪ inbound shares ∪ datasets the actor admins on their other teams (linking those auto-creates a team share). | `✅ Stable` | `🚧 In progress` |
-| D-07 | Team catalog shows: (1) **Mine** — owned datasets; (2) **Shared** — inbound shares (linkable); (3) **Others** — peer datasets marked **Discoverable** (name, description, owning team only — **not** linkable until shared). Non-discoverable peer datasets stay hidden. | `✅ Stable` | `🚧 In progress` |
+| D-06 | Datasets can be linked to one or more projects with per-link access type (`read` / `read_write`). Linkable set = project team’s owned datasets ∪ inbound shares ∪ datasets the actor admins on their other teams (linking those auto-creates a team share). | `✅ Stable` | `✅ Done` — linking, per-link access type and the linkable set are verified (ADR-027 tests) |
+| D-07 | Team catalog shows: (1) **Mine** — owned datasets; (2) **Shared** — inbound shares (linkable); (3) **Others** — peer datasets marked **Discoverable** (name, description, owning team only — **not** linkable until shared). Non-discoverable peer datasets stay hidden. | `✅ Stable` | `✅ Done` — Mine / Shared / Others verified; hidden datasets never exposed |
 | D-08 | Super admin sees all datasets across all teams. | `✅ Stable` | `✅ Done` |
-| D-23 | **Discoverable** flag on each dataset: when on, other teams can see the dataset’s name, description, and owning team in **Others**. Does **not** grant link, query, or project access (share still required). Default **on** at create; Team admin / Super admin can change anytime. | `✅ Stable` | `🚧 In progress` |
-| D-24 | Datasets list supports filters **All** / **Mine** / **Others** / **Shared** (D-07). | `✅ Stable` | `🚧 In progress` |
+| D-23 | **Discoverable** flag on each dataset: when on, other teams can see the dataset’s name, description, and owning team in **Others**. Does **not** grant link, query, or project access (share still required). Default **on** at create; Team admin / Super admin can change anytime. | `✅ Stable` | `✅ Done` — default on at create, switch on the create/edit forms; listing verified |
+| D-24 | Datasets list supports filters **All** / **Mine** / **Others** / **Shared** (D-07). | `✅ Stable` | `🔁 In review` — All / Mine / Others / Shared filters exist on the Datasets page; not exercised in a browser |
 | D-32 | Datasets can be **archived** (Team admin / Super admin, per [ADR-010](ADR-010-soft-delete-no-hard-deletion.md)): archiving hides a dataset from default views and blocks new ingestion without deleting data; archiving auto-revokes that dataset's own sharing agreements and unlinks it from projects. Restore via catalog **Archived** filter. No hard delete. | `✅ Stable` | `✅ Done` |
 
 ### 6.2 Data Ingestion
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
-| D-09 | Import datasets via **CSV**. | `✅ Stable` | `🚩 Todo` — API `csv-batch` exists for sample importers; in-app chooser + ingest assistant is [ADR-024](ADR-024-ingest-assistant.md) (D-35) |
-| D-10 | Import datasets via **JSON**. | `✅ Stable` | `🚩 Todo` |
+| D-09 | Import datasets via **CSV**. | `✅ Stable` | `🚧 In progress` — works today through `POST /datasets/:id/import/csv-batch` (importer notebooks/CLIs, Update/Full modes) and the in-app **Run import…** dialog (D-31, D-33). Still missing: a browser file chooser for a team's own files — the ingest assistant, [ADR-024](ADR-024-ingest-assistant.md) (D-35). |
+| D-10 | Import datasets via **JSON**. | `✅ Stable` | `🚧 In progress` — first-party **w4h-load-json** notebook ingests JSON through the API with personal-key auth. No in-app JSON import or CLI/`run.sh` yet. |
 | D-11 | Import datasets via **REDCap** (see §9). | `✅ Stable` | `🚩 Todo` |
-| D-12 | **Team admin** (team membership role on the owning team) or **project owner** creates team catalog datasets and ingests via the API (`POST …/import/csv-batch`, in-app **Run import…**). **Super admin** does not ingest into PI datasets; Samples canonical tables are seeded by platform jobs and stay `read_only`. | `✅ Stable` | `🚧 In progress` — catalog-row creation is done (inline "Create new catalog dataset…" in the project workspace, `w4h-app` `ProjectHub.vue`; backend `actorCanManageCatalogOnTeam`); signal-table DDL / ingest UI is still Todo, tracked as D-09–D-11 |
+| D-12 | **Team admin** (team membership role on the owning team) or **project owner** creates team catalog datasets and ingests via the API (`POST …/import/csv-batch`, in-app **Run import…**). **Super admin** does not ingest into PI datasets; Samples canonical tables are seeded by platform jobs and stay `read_only`. | `✅ Stable` | `✅ Done` — catalog rows via the project workspace's "Create new catalog dataset…" (`actorCanManageCatalogOnTeam`); ingest via `csv-batch` and in-app **Run import…** gated by `assertCanIngestDataset` (owning-team Admin, or project owner **of the owning team**, ADR-027); physical signal tables are created on ingest; Super admin and archived/`read_only` datasets are refused. Further input formats are D-09–D-11. |
 | D-13 | **Team members** who are not Team admin ingest data via **API key** only (no direct DB / DDL) when so authorized (project membership + key scope). | `✅ Stable` | `🚧 In progress` |
-| D-14 | Catalog first-party tools (ADR-018): paired **w4h-sample-fitbit-csv** + **w4h-sample-fitbit-csv-importer** (ADR-016), **w4h-load-json**, and listed **`fft_approximate`** Postgres extension (not vendored into the API). **In progress, August 2026 (ADR-019):** extend Fitbit sample with `heart_rate` + `calories`; catalog **w4h-fitbit-wear-compliance** and **w4h-compute-mets**, each with a CLI automation entry point (`kinds: notebook, cli`) mirroring the Fitbit importer; catalog demo notebook **w4h-demo-approximate-queries** for `fft_approximate`. **Planned (ADR-023):** separate SQL contribution **`w4h-sql-compute-mets`** (`kind: sql`) — YAML + parameterized SQL via the API; do not rewrite the pandas METS repo. | `✅ Stable` | `🚧 In progress` |
-| D-15 | Ingestion logs stored with timestamp, user, row count, and status. | `✅ Stable` | `🚩 Todo` |
+| D-14 | Catalog first-party tools (ADR-018): paired **w4h-sample-fitbit-csv** + **w4h-sample-fitbit-csv-importer** (ADR-016), **w4h-load-json**, and listed **`fft_approximate`** Postgres extension (not vendored into the API). **In progress, August 2026 (ADR-019):** extend Fitbit sample with `heart_rate` + `calories`; catalog **w4h-fitbit-wear-compliance** and **w4h-compute-mets**, each with a CLI automation entry point (`kinds: notebook, cli`) mirroring the Fitbit importer; catalog demo notebook **w4h-demo-approximate-queries** for `fft_approximate`. **Planned (ADR-023):** separate SQL contribution **`w4h-sql-compute-mets`** (`kind: sql`) — YAML + parameterized SQL via the API; do not rewrite the pandas METS repo. **Catalog (2026-10-04):** `w4h-fitbit-wear-compliance` and `w4h-demo-approximate-queries` are now seeded in `w4h.contributions`; both repos are **private** and untagged, so their README and tag check fail until they are public or the API gets a token. | `✅ Stable` | `🚧 In progress` |
+| D-15 | Ingestion logs stored with timestamp, user, row count, and status. | `✅ Stable` | `🚧 In progress` — each `csv-batch` call writes a `dataset.import.csv` audit row (user, time, signal, mode, inserted/skipped) and Run import writes `dataset.import.update` / `dataset.import.full_reimport` (D-33). Fixed in v0.36: the `csv-batch` audit call used the wrong signature and wrote nothing. Failed imports and a per-run status log are not recorded yet. |
 | D-22 | **Ingest delegation (ACL/capability):** a Team admin may grant a team `member` permission to create/ingest datasets for that team **without** elevating them to `team_admin` (e.g. PI delegates wearable ETL to a student). This is finer-grained than per-team RBAC; exact grant model TBD (team capability flag vs resource ACL). | `⚠️ Draft` | `🚩 Todo` |
 | D-25 | **Contributions catalog** in `w4h.contributions` (ADR-018): publisher, one or more kinds (`notebook` \| `cli` \| `script` \| `postgres_extension` \| `dataset` \| `sql`), language, git repo, README, **pinned version** (`repo_ref` + display `version`). `kind: sql` is a YAML-bound SQL **job** executed by the API ([ADR-023](ADR-023-sql-analytics-contributions.md)), distinct from `postgres_extension`. Super admin CRUD; authenticated browse (`GET /contributions`). Help is contribute-only, not a page per tool. | `✅ Stable` | `🚧 In progress` |
 | D-26 | Importer repos support **incremental sync** (append/delta CSV) with documented cron path. | `✅ Stable` | `🚧 In progress` |
@@ -277,7 +299,7 @@ All datasets in the W4H Toolkit are interpreted using the **GeoMTS (Geospatial M
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
-| D-16 | Project users authenticate against the data API using a **personal**, individually-issued API key. | `✅ Stable` | `🚧 In progress` |
+| D-16 | Project users authenticate against the data API using a **personal**, individually-issued API key. | `✅ Stable` | `✅ Done` |
 | D-16a | A personal API key is **automatically generated when a user account is created/activated** (Super admin bootstrap, invite acceptance) — removes the manual first-use "Generate new key" step. Shared `issueApiKeyForUser` helper (`lib/utils/apiKeys.js`) used by bootstrap, invite acceptance, and the existing manual rotate endpoint; best-effort, does not block account creation/activation on failure; audited as `user.api_key.auto_issued`. Discontinuing a user still immediately invalidates it (D-21); TTL (D-20) applies the same as a manually generated key. | `✅ Stable` | `✅ Done` |
 | D-17 | API keys are scoped to a user's project memberships and their allowed datasets. | `✅ Stable` | `🚩 Todo` |
 | D-18 | API key analytics: log every API access event to `usage_events` (user, timestamp, duration; `metadata` includes status, path/method, and when available dataset, query type, row count). | `✅ Stable` | `🚧 In progress` |
@@ -302,16 +324,16 @@ Sharing is **dataset-scoped**, not project-scoped. See [ADR-002](ADR-002-cross-t
 
 | # | Requirement | Who | Req Status | Impl Status |
 |---|-------------|-----|------------|-------------|
-| S-01 | Share a dataset owned by your team with one or more other teams (push share). | Team admin, Super admin | `✅ Stable` | `🚧 In progress` |
-| S-02 | Share is **team-wide** (recipient team can link from any of their projects). Project-scoped share is deferred. | Team admin | `✅ Stable` | `🚧 In progress` |
-| S-03 | Default share access type is `read`; `read_write` is explicitly granted. | Team admin | `✅ Stable` | `🚧 In progress` |
-| S-04 | Revoke a dataset share at any time. | Team admin (own datasets), Super admin | `✅ Stable` | `🚧 In progress` |
-| S-05 | Shared datasets show owner team name in the UI: *"Shared by [Team Name]"*. | System | `✅ Stable` | `🚧 In progress` |
-| S-06 | Super admin can view all active share agreements across all teams. | Super admin | `✅ Stable` | `🚧 In progress` |
-| S-07 | Recipient catalog: **Mine** ∪ **Shared** (linkable) ∪ **Others** (discoverable metadata only). Never expose non-discoverable peer catalogs or peer project links. | System | `✅ Stable` | `🚧 In progress` |
+| S-01 | Share a dataset owned by your team with one or more other teams (push share). | Team admin, Super admin | `✅ Stable` | `✅ Done` — verified on a scratch DB (v0.36) |
+| S-02 | Share is **team-wide** (recipient team can link from any of their projects). A **project-scoped** share (`target_project_id`) also exists and is what a collaborating team's contribution records ([ADR-027](ADR-027-cross-org-project-collaboration.md)). | Team admin | `✅ Stable` | `✅ Done` — verified on a scratch DB (v0.36) |
+| S-03 | Default share access type is `read`; `read_write` is explicitly granted. | Team admin | `✅ Stable` | `✅ Done` — verified on a scratch DB (v0.36) |
+| S-04 | Revoke a dataset share at any time. | Team admin (own datasets), Super admin | `✅ Stable` | `✅ Done` — verified on a scratch DB (v0.36) |
+| S-05 | Shared datasets show owner team name in the UI: *"Shared by [Team Name]"*. | System | `✅ Stable` | `✅ Done` — verified on a scratch DB (v0.36) |
+| S-06 | Super admin can view all active share agreements across all teams. | Super admin | `✅ Stable` | `✅ Done` — verified on a scratch DB (v0.36) |
+| S-07 | Recipient catalog: **Mine** ∪ **Shared** (linkable) ∪ **Others** (discoverable metadata only). Never expose non-discoverable peer catalogs or peer project links. | System | `✅ Stable` | `✅ Done` — verified on a scratch DB (v0.36) |
 | S-08 | Linking a shared dataset into a project does not grant the source team visibility into that project. | System | `✅ Stable` | `✅ Done` |
 | S-09 | Optional: recipient may request share; owner Team admin or Super admin approves (pull path). | Team admin, Super admin | `⚠️ Draft` | `🚩 Todo` |
-| S-10 | Discoverable listing does not auto-create a share and does not appear in the project linkable set until shared. | System | `✅ Stable` | `🚧 In progress` |
+| S-10 | Discoverable listing does not auto-create a share and does not appear in the project linkable set until shared. | System | `✅ Stable` | `✅ Done` — verified on a scratch DB (v0.36) |
 
 ---
 
@@ -392,16 +414,21 @@ Basic analytics dashboards allow researchers to understand the data available in
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
 | A-01 | Per-project summary dashboard: subject count, date range, device types, dataset sizes. **Basic stats card:** [ADR-020](ADR-020-basic-dataset-stats-dashboard.md), in progress August 2026 (Tracy). | `✅ Stable` | `🚧 In progress` |
-| A-01a | **Analytics tab cohort overview** — cached wear/MET cohort stat cards when linked dataset has HR/calories/MET signals (Users + Admins). | `✅ Stable` | `🚩 Todo` |
-| A-02 | Signal-level visualization: time series plots for individual subjects or group averages. **v1:** downsampled heart rate / calories / METs series on the Analytics tab (ADR-021). | `✅ Stable` | `🚧 In progress` |
-| A-03 | Comparative analytics: compare selected subjects against a control group. **v1:** filter-based subject IDs + control (entire dataset / everyone else / IDs), not matched cohorts — [ADR-021](ADR-021-cohort-control-group-comparison.md). | `✅ Stable` | `🚧 In progress` |
-| A-04 | **Wear compliance (Contributions)** — catalog notebook + CLI (`w4h-fitbit-wear-compliance`); per-subject protocol wear reports; port legacy `ComplianceAnalyzer`. CLI automation in progress August 2026 (Tracy). | `✅ Stable` | `🚧 In progress` |
-| A-04a | **Wear compliance (cohort)** — cached cohort wear stats on Analytics tab (% subjects meeting threshold, median daily wear %). | `✅ Stable` | `🚩 Todo` |
-| A-04b | **Wear compliance (subject filter)** — same stats scoped to selected subject(s) on Analytics tab. | `✅ Stable` | `🚩 Todo` |
-| A-04c | **METs cohort summary** — when `mets` or `mets_computed` exists, show mean MET-hours / simple cohort summary on Analytics tab. | `✅ Stable` | `🚩 Todo` |
+| A-01a | **Analytics tab cohort overview** — cached wear/MET cohort stat cards when linked dataset has HR/calories/MET signals (Users + Admins). | `✅ Stable` | `🔁 In review` — cards built and checked in a browser: wear compliance, METs, **Refresh** button and a **Wear protocol…** editor; refreshes automatically after every successful in-app run. METs values not hand-verified |
+| A-02 | Signal-level visualization: time series plots for individual subjects or group averages. **v1:** downsampled heart rate / calories / METs series on the Analytics tab (ADR-021). | `✅ Stable` | `🔁 In review` — the generic **Explore signals** time-series chart (A-10) covers any mapped numeric signal; cohort series use the same chart layer |
+| A-03 | Comparative analytics: compare selected subjects against a control group. **v1:** filter-based subject IDs + control (entire dataset / everyone else / IDs), not matched cohorts — [ADR-021](ADR-021-cohort-control-group-comparison.md). | `✅ Stable` | `✅ Done` — v1 as specified (filter-based, not matched cohorts, ADR-021). Audited: 23 API checks with hand-computed averages, deltas and ±2σ band; control modes all / everyone-else / specific IDs; time-of-day windows; validation (no subject, unknown subject, empty control, bad dates, injection); access and audit. Fixed a timezone bug that pushed the default end date a day late |
+| A-04 | **Wear compliance (Contributions)** — catalog notebook + CLI (`w4h-fitbit-wear-compliance`); per-subject protocol wear reports; port legacy `ComplianceAnalyzer`. CLI automation in progress August 2026 (Tracy). | `✅ Stable` | `🔁 In review` — `w4h-fitbit-wear-compliance` exists (notebook + CLI, branch `feature/wp2-cli`, no tag) and is **seeded in the catalog**; the repo is **private**, so its README and tag check cannot load until it is public. Its notebook still reads local CSVs, not the API |
+| A-04a | **Wear compliance (cohort)** — cached cohort wear stats on Analytics tab (% subjects meeting threshold, median daily wear %). | `✅ Stable` | `🔁 In review` — the platform now produces `summary.wear_compliance` (`lib/dataset-wear-summary.js`, interim ADR-019 port): 23 API checks against hand-computed days, thresholds, enrollment bounds and protocol overrides; median daily wear % shown |
+| A-04b | **Wear compliance (subject filter)** — same stats scoped to selected subject(s) on Analytics tab. | `✅ Stable` | `🔁 In review` — per-subject table with tick boxes scopes the wear numbers on the Analytics tab; checked in a browser |
+| A-04c | **METs cohort summary** — when `mets` or `mets_computed` exists, show mean MET-hours / simple cohort summary on Analytics tab. | `✅ Stable` | `🔁 In review` — `mets_summary` refreshes with the wear card (button and after every run); the cohort mean shows. METs values not hand-verified |
 | A-05 | Outlier detection visualization for health metrics. | `✅ Stable` | `🚩 Todo` |
-| A-06 | Export dashboard views as PDF or PNG for reporting. | `✅ Stable` | `🚩 Todo` |
-| A-07 | Dashboard cohort stats accessible to all project members (Viewer and above); Admins additionally get Contributions links for full notebook reports. | `✅ Stable` | `🚧 In progress` |
+| A-06 | Export dashboard views as PDF or PNG for reporting. | `✅ Stable` | `🚧 In progress` — per-chart **PNG and CSV export** exist (A-10); exporting a whole dashboard as PDF does not |
+| A-07 | Dashboard cohort stats accessible to all project members (Viewer and above); Admins additionally get Contributions links for full notebook reports. | `✅ Stable` | `✅ Done` — audited in a browser: Admins and plain members see the same Explore-signals charts and cohort comparison; Admins also get **Run analysis…** and **Publish a report…**; everyone sees the Contributions list. A team member who is not on the project now gets a clean overview-only page instead of "Unauthorized" errors (`capabilities.is_participant`) |
+| A-08 | **Dataset overview stats** (project workspace → Datasets): tiles for datasets, tables, observations, participants, participant-days and collection date range, plus per-signal detail (observed vs declared sampling cadence, ingestion sources). Built from registered tables and the cached `datasets.summary` (`buildMetadataSummary`, [ADR-020](ADR-020-basic-dataset-stats-dashboard.md)); Users and Admins see the same view. A-01's Analytics-tab card is separate. | `✅ Stable` | `🔁 In review` — built; v0.36 audit found and fixed a bug that left the **Date range** tile empty for every dataset (DATE values were not readable by the summary code) |
+| A-09 | **Approximate range queries** — the [`fft_approximate`](https://github.com/USC-InfoLab/fft_approximate) PostgreSQL extension (FFT top-k approximate aggregate range queries on time series), listed in the Contributions catalog (D-14), plus a demo notebook **`w4h-demo-approximate-queries`** that runs it against the sample dataset and an install path for `w4h-docker`. | `✅ Stable` | `🔁 In review` — `fft_approximate` and the notebook demo `w4h-demo-approximate-queries` both exist and are **seeded in the catalog**; the Docker guide now has an install section. The demo repo is private and notebook-only; not executed in this audit |
+| A-10 | **Generic visualization component** ([ADR-029](ADR-029-visualization-component-and-reports.md)): an in-app chart layer (Apache ECharts via `vue-echarts`, lazy-loaded) that picks charts from the dataset's GeoMTS mapping and column types, not from a vendor — time series, event timeline, histogram/box, coverage heatmap, group comparison, scatter, table fallback. Works for any wearable and for clinical data. Shared `ChartCard`: PNG/CSV export (A-06), dark-mode tokens, colour-blind-safe palette, "view as table", loading/empty/error states. Replaces `CohortLineChart.vue`. | `✅ Stable` | `🔁 In review` — built and checked in a headless browser on a scratch DB: time series, distribution (histogram + box), coverage heatmap, scatter, events, table view, PNG/CSV export; replaces the hand-written SVG. Not yet used on real study data; maps, attribute grouping and PDF are open |
+| A-11 | **Generic series API** — `POST /datasets/:id/analytics/series`: one mapped signal, subject and time filters, bucket, aggregate, optional group-by, `max_points`. Identifiers validated against the mapping, values parameterized, no free SQL ([ADR-023](ADR-023-sql-analytics-contributions.md)); access by project membership; audited; returns only aggregates or downsampled points. | `✅ Stable` | `✅ Done` — `GET /datasets/:id/analytics/catalog` and `POST /datasets/:id/analytics/series` with kinds `series`, `distribution`, `coverage`, `scatter`, `events`; 46 API checks passed on a scratch DB (mapping shapes, injection attempts, caps, access, audit) |
+| A-12 | **Published notebook reports** — a project Admin publishes a notebook's interactive HTML to a project for edge cases the component cannot show. Project-members only, size-capped, shown in a sandboxed iframe (`allow-scripts`, no same-origin) with a "snapshot as of" stamp and provenance (contribution, datasets, publisher); warns that the HTML embeds the plotted data; audited; limited to datasets the publisher's team owns (ADR-027). Contributions may also declare a `display:` block that the app renders from the fixed chart set. | `✅ Stable` | `🔁 In review` — publish, list, open and delete work; the sandbox blocks network and parent access (checked in a browser); revocation on unlink works. The display contract reaches the API response but the app does not draw it yet; collaborating-team Admins cannot publish in another team's project |
 
 ---
 
@@ -409,16 +436,19 @@ Basic analytics dashboards allow researchers to understand the data available in
 
 The W4H Toolkit supports applying, retraining, and extending pre-built ML models on a team's own data. Built-in models include GeoMTS-based frameworks (BysGNN, NeuroGNN, WaveGNN, Motif analysis).
 
+> **MVP scope (M4):** one worked example, not a model platform. A **resting heart-rate anomaly detector** ([`w4h-hr-anomaly`](https://github.com/USC-InfoLab/w4h-hr-anomaly), notebook + CLI) is applied to a project dataset, writes its scores as a new derived table, and is drawn by the Analytics tab. It is split into an **adapter** (reads the dataset's GeoMTS mapping and the series API, reduces heart rate to a daily resting value) and a **model** (per-subject robust z-score plus an Isolation Forest that sees only a standard daily table), so it applies to any dataset with a mapped `heart_rate` signal. No shipped weights, no labels. Research/demo only, not a diagnostic. Retraining, tracking, extending, sharing models, a model picker and pretrained neural networks are **post-MVP**; GeoMTS graph models (BysGNN and similar) are not part of M4.
+
 | # | Capability | Requirement | Req Status | Impl Status |
 |---|-----------|-------------|------------|-------------|
-| M-01 | **Apply model** | Run a pre-trained model against a project's dataset and view predictions/outputs. | `✅ Stable` | `🚩 Todo` |
-| M-02 | **Apply model** | Model outputs stored as a derived dataset (additive; original preserved). | `✅ Stable` | `🚩 Todo` |
-| M-03 | **Retrain model** | Fine-tune an existing model with a team's own labeled data. | `✅ Stable` | `🚩 Todo` |
-| M-04 | **Retrain model** | Track retraining runs: parameters, dataset version, performance metrics. | `✅ Stable` | `🚩 Todo` |
-| M-05 | **Extend model** | Define a new model variant based on an existing architecture with custom hyperparameters. | `✅ Stable` | `🚩 Todo` |
-| M-06 | **Extend model** | Share a trained model with another team (with permission). | `⚠️ Draft` | `🚩 Todo` |
+| M-01 | **Apply model** | Run a model against a project's dataset and view predictions/outputs. MVP: the example resting-HR anomaly detector (`w4h-hr-anomaly`); fit per subject on that subject's own days, so there are no pre-trained weights. | `✅ Stable` | `🔁 In review` — verified against a live API on the `w4h-sample` database: the CLI read the Fitbit sample's heart rate through the series API and scored 144 subject-days (74 scored, 3 flagged, all one subject); matches the offline run on the CSV. 6 offline tests pass. Not yet exercised from the app UI; only 2 of the sample's 5 subjects have enough days to score |
+| M-02 | **Apply model** | Model outputs stored as a derived dataset (additive; original preserved). | `✅ Stable` | `✅ Done` — checked live: `--write-back` created a new `fitbit_hr_anomaly` table (144 rows, mapped as signal `hr_anomaly`, drawable through the series API) and the source `heart_rate` table was left intact. No lineage record of the derived table (D-05) |
+| M-03 | **Retrain model** | Fine-tune an existing model with a team's own labeled data. | `✅ Stable` | `🚩 Todo` — **post-MVP** |
+| M-04 | **Retrain model** | Track retraining runs: parameters, dataset version, performance metrics. | `✅ Stable` | `🚩 Todo` — **post-MVP** |
+| M-05 | **Extend model** | Define a new model variant based on an existing architecture with custom hyperparameters. | `✅ Stable` | `🚩 Todo` — **post-MVP** |
+| M-06 | **Extend model** | Share a trained model with another team (with permission). | `⚠️ Draft` | `🚩 Todo` — **post-MVP** |
 | M-07 | **All** | Model execution runs in a notebook environment (Jupyter/VS Code). | `✅ Stable` | `🔁 In review` |
-| M-08 | **All** | Model runs logged in the audit trail with user, model version, and dataset reference. | `✅ Stable` | `🚩 Todo` |
+| M-08 | **All** | Model runs logged in the audit trail with user, model version, and dataset reference. MVP: the write-back's existing `dataset.import.csv` row (user, dataset, signal). | `✅ Stable` | `🚧 In progress` — the row exists; it does not record the contribution version, and a preview run (no write-back) is not audited as a model run |
+| M-09 | **Example in the catalog and the dashboard** | The example is catalogued (D-14) as `notebook` + `cli`, and its output is drawn in the Analytics tab from the manifest's `display:` block (ADR-029 §4): resting HR per subject against its baseline, plus a table of flagged days. | `✅ Stable` | `🚧 In progress` — catalog row `w4h-hr-anomaly` seeded in `w4h-api/data/schema.sql` and shown as `published` (not `runnable`: it is a notebook/CLI client, not a `run.sh` importer); the app does not yet draw its `display:` block (A-12) |
 
 ---
 
@@ -529,11 +559,11 @@ Explicitly **outside MVP §13.1** delivery. Do not block or redefine AI-01…AI-
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
-| Dep-01 | **Standalone Docker** deployment: single-container or docker-compose without Spark. | `✅ Stable` | `🚩 Todo` |
-| Dep-02 | **Spark-enabled Docker** deployment: scalable version with Apache Spark for large dataset processing. | `✅ Stable` | `🚩 Todo` |
-| Dep-03 | Environment configured via `.env` file (DB credentials, API keys, ports, Google SMTP credentials). | `✅ Stable` | `🔁 In review` |
+| Dep-01 | **Standalone Docker** deployment: single-container or docker-compose without Spark. | `✅ Stable` | `✅ Done` — `w4h-docker` Compose runs `app`, `api` and a convenience Jupyter against an external PostgreSQL ([ADR-015](ADR-015-docker-deployment-packaging.md), [Docker Deployment](../guide/docker-deployment.md)). Builds from sibling repos; contributions cannot yet run inside the `api` container (D-31). |
+| Dep-02 | **Spark-enabled Docker** deployment: scalable version with Apache Spark for large dataset processing. | `✅ Stable` | `🚧 In progress` — Spark assets already exist in the W4H dashboard preview (`w4h-dashboard-preview`: container with PySpark and Spark-based METs notebooks); not yet integrated into `w4h-docker` or the current API. |
+| Dep-03 | Environment configured via `.env` file (DB credentials, API keys, ports, Google SMTP credentials). | `✅ Stable` | `✅ Done` — `w4h-api/.env.example`, `w4h-docker/.env.example`, and the first-run database wizard that saves credentials. |
 | Dep-04 | Docker images published to a public registry (Docker Hub or GitHub Container Registry). | `✅ Stable` | `🚩 Todo` |
-| Dep-05 | Setup documentation covers both deployment modes. | `✅ Stable` | `🚩 Todo` |
+| Dep-05 | Setup documentation covers both deployment modes. | `✅ Stable` | `🚧 In progress` — the standalone mode is documented ([Docker Deployment](../guide/docker-deployment.md), Quick Start, `w4h-docker/README.md`); the Spark mode (Dep-02) is not. |
 
 ---
 
@@ -546,7 +576,7 @@ Explicitly **outside MVP §13.1** delivery. Do not block or redefine AI-01…AI-
 | Home | Who | Purpose | Req Status | Impl Status |
 |------|-----|---------|------------|-------------|
 | `/admin/home` | Super admin | **Platform ops home:** setup checklist (when needed); KPIs (teams, users by status, projects, datasets, active shares); platform health (SMTP, DB, audit-write OK); thin usage snapshot (API calls / active keys); **attention strip** (failed logins, break-glass, **invites pending**, **datasets without team**, **teams without Team admin**, **last successful backup / backup reminder**); link to **HIPAA compliance checklist** doc; deep links to `/admin/audit-log`, `/admin/usage`, Users, Teams, Settings. Full log tables live on dedicated pages — not on home. | `✅ Stable` | `🚧 In progress` |
-| App `/home` (Team admin) | Team admin | **Team operator home:** team-scoped summary (members, projects, datasets, inbound/outbound shares); **IRB access reports** entry (H-09a); deep links to team-scoped management (projects, users, datasets, teams). | `✅ Stable` | `🚧 In progress` |
+| App `/home` (Team admin) | Team admin | **Team operator home:** team-scoped summary (members, projects, datasets, inbound/outbound shares); **IRB access reports** entry (H-09a); **getting-started cards in order — 1. create a team, 2. create a project, 3. invite people, 4. datasets & Contributions, 5. AI chat** (dismissible; the same order is in the Admin guide, Quick Start and Help chat); deep links to team-scoped management (projects, users, datasets, teams). | `✅ Stable` | `🚧 In progress` |
 | Project workspace | Project `owner` | Generate **project-scoped IRB access report** (H-09b). No raw audit browse. | `✅ Stable` | `🚩 Todo` |
 
 ### 15.2 Pages
@@ -555,9 +585,9 @@ Explicitly **outside MVP §13.1** delivery. Do not block or redefine AI-01…AI-
 |------|------------|-------------|-------|
 | `/admin/home` | `✅ Stable` | `✅ Done` | Super admin KPIs + usage/compliance snapshots + attention strip via `GET /config/admin-home` (§15.1, H-12/H-12a) |
 | `/admin/teams` | `✅ Stable` | `✅ Done` | List teams (Super admin); Team admin sees own |
-| `/admin/teams/add` | `⚠️ Draft` | `🚧 In progress` | Super admin bootstrap; Team admin self-service create after onboard (T-01 / T-15) |
-| Access request (public) | `⚠️ Draft` | `🚩 Todo` | PI requests platform access (T-16) |
-| Access request queue | `⚠️ Draft` | `🚩 Todo` | Super admin fulfill → Team admin + initial team (T-17 / T-18) |
+| `/team/new` | `✅ Stable` | `🔁 In review` | App shell. *Create your team* on an approved Admin's first sign-in; *New team* in the account menu afterwards (T-15). There is no Super admin "Add Team" page. |
+| `/request-access` (public) | `✅ Stable` | `🔁 In review` | Guest form linked from the login screen (T-16, T-19, T-20); `/request-access/verify` confirms the emailed link. Writes an `access_requests` row via `POST /access-requests`. |
+| `/admin/access-requests` | `✅ Stable` | `🔁 In review` | Super admin queue with badge in the menu; **Approve** (Admin invitation sent to the verified address), **Decline**, **Mark spam**; home attention strip shows the pending count (T-17, T-18). |
 | `/admin/teams/:id/edit` | `✅ Stable` | `🔁 In review` | Edit team + members; remove-member UX incomplete |
 | `/admin/datasets` | `✅ Stable` | `🚧 In progress` | Mine / Others / Shared filters; Discoverable; shares entry |
 | `/admin/datasets/shares` | `✅ Stable` | `🚧 In progress` | Inbound/outbound share agreements; revoke |
@@ -579,7 +609,7 @@ Explicitly **outside MVP §13.1** delivery. Do not block or redefine AI-01…AI-
 | Feature | Rationale |
 |---------|-----------|
 | Row-Level Security (RLS) in PostgreSQL | Application-layer scoping sufficient for MVP; RLS is a post-MVP hardening step. |
-| Cross-team project membership | MVP limits project members to users within the project's owning team. Dataset share ≠ project access (ADR-012). |
+| Standing team-to-team collaboration agreements; derived-data lineage on leaving a project | Collaboration is per project and revokes links only ([ADR-027](ADR-027-cross-org-project-collaboration.md)); lineage waits on D-05 / M-02. |
 | De-identification pipelines | Planned for post-MVP; raw data sharing relies on IRB-approved agreements. |
 | FHIR API endpoints | Interoperability with FHIR is planned post-MVP. |
 | Mobile application | Web platform only for MVP. |
@@ -596,24 +626,35 @@ Explicitly **outside MVP §13.1** delivery. Do not block or redefine AI-01…AI-
 
 ## 17. Delivery Timeline
 
-| # | Milestone | Deliverable | Target | Status | Progress |
-|---|-----------|-------------|--------|--------|----------|
-| M1 | Core Platform Foundation | Requirements, system architecture, authentication, user management, team management (multi-tenancy), project management, dataset management, RBAC, and core database schema | July 2026 | `🚧 In progress` | 75% |
-| M2 | Documentation system and data acquisition modules | Markdown editor with preview; CSV/JSON/database ingestion | July 2026 | `🚧 In progress` | 55% |
-| M3 | Analysis and visualization components | **Basic cohort dashboards** (A-01a, A-04a–c, A-07) + wear/MET **Contributions** (A-04); extend Fitbit sample; full chart library (A-02–A-03, A-05–A-06) later in M3 — [analytics-contributions.md](analytics-contributions.md) | September 2026 | `🚩 Todo` | 0% |
-| M4 | Modeling components and dashboard integration | Plug-and-play dashboard with model interface | September 2026 | `🚩 Todo` | 0% |
-| M5 | Docker deployment, standalone version | Containerized release without Spark support | October 2026 | `🚩 Todo` | 0% |
-| M6 | Docker deployment, Spark-enabled version | Scalable deployment with Spark support | November 2026 | `🚩 Todo` | 0% |
-| M7 | Interoperability and compliance testing | REDCap integration; HIPAA/FHIR checks | December 2026 | `🚩 Todo` | 0% |
-| M8 | Pilot evaluation with trial researchers | Usability and workflow feedback; descriptive metrics exported from `/admin/usage` (adoption, latency/reliability, task-completion / knowledge-transfer) aligned with protocol Study Assessments | January 2027 | `🚩 Todo` | 0% |
-| M9 | Community launch and dissemination | Open-source governance, documentation, tutorials, and public release | March 2027 | `🚩 Todo` | 0% |
+| # | Milestone | Deliverable | Proposal target | Target | Status | Progress |
+|---|-----------|-------------|-----------------|--------|--------|----------|
+| M1 | Core Platform Foundation | Requirements, system architecture, authentication, user management, team management (multi-tenancy), project management, dataset management, RBAC, and core database schema | May 2026 | July 2026 | `🚧 In progress` | 93% |
+| M2 | Documentation system and data acquisition modules | Markdown editor with preview (proposal: WYSIWYG); CSV/JSON/database ingestion | July 2026 | July 2026 | `🚧 In progress` | 80% |
+| M3 | Analysis and visualization components | **Basic cohort dashboards** (A-01a, A-04a–c, A-07), **dataset overview stats** (A-08) and the **approximate-queries** analysis (A-09), a **generic visualization component** for any wearable or clinical data (A-10, A-11) with published notebook **reports** for edge cases (A-12), + wear/MET **Contributions** (A-04); extend Fitbit sample; full chart library (A-02–A-03, A-05–A-06) later in M3; proposal: reusable analytics and plotting library — [analytics-contributions.md](analytics-contributions.md) | August 2026 | September 2026 | `🚧 In progress` | 81% |
+| M4 | Modeling components and dashboard integration | **One example model contribution** — a per-subject resting heart-rate anomaly detector applied to a project dataset and shown in the dashboard (M-01, M-02, M-07–M-09); retrain/extend/share are post-MVP (proposal: plug-and-play dashboard with model interface) | September 2026 | September 2026 | `🚧 In progress` | 76% |
+| M5 | Docker deployment, standalone version | Containerized release without Spark support | October 2026 | October 2026 | `🚧 In progress` | 60% |
+| M6 | Docker deployment, Spark-enabled version | Scalable deployment with Spark support | November 2026 | November 2026 | `🚧 In progress` | 50% |
+| M7 | Interoperability and compliance testing | REDCap integration; HIPAA/FHIR checks | December 2026 | December 2026 | `🚧 In progress` | 20% |
+| M8 | Pilot evaluation with trial researchers | Usability and workflow feedback; descriptive metrics exported from `/admin/usage` (adoption, latency/reliability, task-completion / knowledge-transfer) aligned with protocol Study Assessments | January 2027 | January 2027 | `🚧 In progress` | 10% |
+| M9 | Community launch and dissemination | Open-source governance, documentation, tutorials, and public release | March 2027 | March 2027 | `🚧 In progress` | 10% |
 
-> **Note:** Full FHIR API endpoints remain out of scope for MVP (§16). M7 "HIPAA/FHIR checks" means compliance readiness checks toward interoperability; a FHIR API is post-MVP.
+> **Proposal target** is the originally planned completion month; **Target** is the current plan. As of **October 4, 2026**, M1 (July), M2 (July), M3 and M4 (September) are **past their target** and still open — their remaining gaps are listed below.
 >
-> **M3 deferral (August 2026):** Monthly release **0.3.0 Peña Roja** does not ship analytics dashboards. M3 target moved to **September 2026** — see [august-2026-release-plan.md](august-2026-release-plan.md).
->
-> **Progress** column is manually updated for now; planned for automation via `::w4h-milestone-tracker` component once the task tracker directive is implemented.
+> **How Progress is computed (v0.36):** from the requirement tables, not by hand. Each milestone takes the rows that make up its deliverable; `✅ Done` counts 100%, `🔁 In review` 90%, `🚧 In progress` 50%, `🚩 Todo` 0%, and the result is rounded. M8 and M9 are a judgement (no pilot has started; only supporting groundwork exists). A row's status is only as current as the last audit — v0.36 re-audited §2, §3, §4, §5, §6.1, §7 and §14 against the code.
 
+**Basis and remaining gaps**
+
+| # | Rows counted | What is done | What is left |
+|---|---|---|---|
+| M1 | §2, §3, §4, §5, §6.1, §7 (83 rows: 70 done, 6 in review, 3 in progress, 4 todo) | Roles and per-team RBAC, teams (self-service), users and invites, projects, cross-org collaboration (ADR-027), dataset catalog, sharing, access requests | Dataset provenance and versioning (D-04, D-05), richer metadata and GeoMTS mapping (D-02, D-03), profile page showing teams and projects (U-07), teammates view (T-11), optional share-request path (S-09) |
+| M2 | Doc-01–09, 11, 12, 14; D-09, D-10, D-12, D-13, D-15 | **Documentation system is complete**: Markdown docs in git, import/export, Markdown editor with preview, mermaid, project-private pages, ACL. CSV ingest works through `csv-batch`, importers and the in-app **Run import…** | In-app file chooser (ingest assistant, D-35); in-app JSON import (D-10); per-run ingestion log and failures (D-15); project-page hierarchy and ACL polish (Doc-09, Doc-12); non-Admin ingest delegation (D-13, D-22) |
+| M3 | §10 (16 rows) | Cohort comparison (A-03), member access (A-07), the generic visualization component and series API (A-10, A-11), published reports (A-12), dataset overview stats (A-08), the **wear-compliance and METs cohort cards with refresh (A-01a, A-04a–c)**, the wear-compliance and approximate-queries repos catalogued (A-04, A-09), SQL analytics contributions (ADR-023) | Outlier detection (A-05); whole-dashboard PDF (A-06); the Analytics-tab stats card (A-01); the wear logic as a `kind: sql` manifest; the wear-compliance, approximate-queries and anomaly repos are **private and unreleased** (no tag, README not fetchable); most rows are built but still `🔁 In review` — not yet used on real study data |
+| M4 | M-01, M-02, M-07, M-08, M-09 (5 rows; M-03–M-06 are post-MVP) | The example detector `w4h-hr-anomaly` is built and **verified against a live API**: adapter on the mapping and series API, per-subject z-score + Isolation Forest, CLI and notebook, write-back of a new table, catalog row seeded; notebook execution (M-07) in review | Exercise it from the app UI (M-01); record the contribution version in the audit row (M-08); draw its `display:` block in the Analytics tab (M-09) |
+| M5 | Dep-01, Dep-03, Dep-04, Dep-05 | **Standalone Docker works**: `w4h-docker` Compose (app, api, convenience Jupyter) against an external PostgreSQL, `.env` configuration, first-run database wizard, deployment guide | Published images on a public registry (Dep-04); contributions cannot yet run inside the `api` container (D-31) |
+| M6 | Dep-02 | PySpark container and Spark METs notebooks exist in the W4H dashboard preview | Integrate them with `w4h-docker` and the current API; Spark deployment docs |
+| M7 | §8 + §9 (22 rows) | Audit log, role-scoped access, Super admin compliance snapshot and attention strip | All of REDCap (§9); retention, encryption and TLS statements (H-03, H-05, H-06); IRB access reports (H-09); CI compliance checks (H-08) |
+| M8 | Judgement | Instrumentation: Usage dashboard (D-19), report-an-issue, About, FAQ | The pilot itself; study metrics (D-19b–d, Doc-17, Doc-18); key TTL (D-20) |
+| M9 | Judgement | Contributions catalog and publishing guide, version pinning, first-party packages | Open-source governance, tutorials, community self-publish, public release |
 
 ```mermaid
 gantt
@@ -624,10 +665,10 @@ gantt
     section 2026
     Core Platform Foundation         :active, m1, 2026-05-01, 2026-07-31
     Docs & Data Acquisition          :active, m2, 2026-07-01, 2026-07-31
-    Analytics & Visualization        :m3,     2026-09-01, 2026-09-30
-    Modeling & Dashboard             :m4,     2026-09-01, 2026-09-30
-    Docker Standalone                :m5,     2026-10-01, 2026-10-31
-    Docker + Spark                   :m6,     2026-11-01, 2026-11-30
+    Analytics & Visualization        :active, m3, 2026-09-01, 2026-09-30
+    Modeling & Dashboard             :active, m4, 2026-09-01, 2026-09-30
+    Docker Standalone                :active, m5, 2026-10-01, 2026-10-31
+    Docker + Spark                   :active, m6,     2026-11-01, 2026-11-30
     Interoperability                 :m7,     2026-12-01, 2026-12-31
 
     section 2027
@@ -640,7 +681,7 @@ xychart-beta
     title "Milestone Progress"
     x-axis [M1, M2, M3, M4, M5, M6, M7, M8, M9]
     y-axis "Completion (%)" 0 --> 100
-    bar [75, 55, 0, 0, 0, 0, 0, 0, 0]
+    bar [93, 80, 81, 76, 60, 50, 20, 10, 10]
 ```
 
 ### 17.1 Demo checkpoint — Friday, August 21, 2026

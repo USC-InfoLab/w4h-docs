@@ -44,6 +44,10 @@ W4H does **not** duplicate importer docs in platform Help. After Super admin pub
 
 `contribution.yaml` is for **tests and staging** (`pytest`, `./run.sh import`, in-app Run sample wiring). It is not shown to end users unless you mirror key points in the README.
 
+## Optional: how results are drawn (`display`)
+
+A SQL contribution (`kind: sql`) can add a `display:` block to its manifest to say which chart suits its output (`line`, `bar`, `box`, `heatmap`, `scatter`, `events`, `table`, with `x`, `y`, `group`). The app draws it from its own chart set; contributions never ship UI code. For anything the chart set cannot express, publish an interactive HTML **report** instead. See [Charts and Reports](charts-and-reports.md).
+
 ## Automated test (required)
 
 From the module repo:

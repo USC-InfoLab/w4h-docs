@@ -47,9 +47,9 @@ flowchart LR
 
 | Goal | Who | Where |
 |---|---|---|
-| Request platform access (new PI) | Prospective PI | Access request form (Draft T-16) |
-| Onboard PI | Super admin | Fulfill request → Team admin invite + **initial team** (Draft T-17) |
-| Create further teams / trials | Team admin (PI) | **Teams → Add Team** after onboard (Draft T-15) — Super admin does **not** approve each trial |
+| Request platform access (new PI) | Prospective PI (USC email) | Login screen → **Request access**, then confirm the emailed link ([ADR-028](../dev/ADR-028-platform-access-requests.md)) |
+| Approve a PI | Super admin | **Requests** → **Approve** — sends the Admin invitation. The Super admin does not create or approve teams |
+| Create your teams / trials | Admin (PI) | First sign-in → **Create your team**, then account menu → **New team** (T-15) — Super admin does **not** approve each trial |
 | Create a project | Team admin | **Projects → Add Project** |
 | Create / own datasets | Team admin | **Datasets → Add Dataset** (name/catalog). Tables appear after ingest. |
 | Ingest tables | Team admin / project Admin | Select the dataset → **Run import…** in the **Dataset overview** pane (**Full** / **Update**, [ADR-022](../dev/ADR-022-in-app-contribution-run-trigger.md)). Otherwise [Contributions]({{APP_URL}}/contributions) — adapt an ingest notebook; use the importer CLI for cron / incremental sync |
@@ -59,7 +59,7 @@ flowchart LR
 
 ### Onboarding vs trial setup
 
-Super admin only bootstraps **who** may run trials on the platform. They do not approve study design, datasets, or projects — that is entirely the Team admin (PI) role. See MVP §3.0.
+Super admin only bootstraps **who** may run trials on the platform: they read an access request, then click **Approve**. They do not approve study design, datasets, or projects — that is entirely the Team admin (PI) role. See MVP §3.0.
 
 ---
 

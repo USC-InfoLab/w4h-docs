@@ -1,6 +1,6 @@
 ---
 title: Welcome — Super admin
-description: First-time platform setup — SMTP, initial team, invite an Admin, then stay in Platform Admin.
+description: First-time platform setup — SMTP, then approve PI access requests (the Admin creates their own team), and stay in Platform Admin.
 card_title: Welcome — Super admin
 action_label: Next steps
 is_feature_card: true
@@ -9,7 +9,7 @@ sort_order: 0
 ---
 
 <p class="lead">
-  You bootstrap <strong>who</strong> may run trials. You do <strong>not</strong> create projects, ingest study data, or manage IRB for a PI.
+  You decide <strong>who</strong> may run trials by approving access requests. You do <strong>not</strong> create projects, ingest study data, or manage IRB for a PI.
   After login you stay in <strong>Platform Admin</strong> (<code>W4H Toolkit Admin</code>).
 </p>
 
@@ -22,8 +22,8 @@ Longer walkthrough: [Quick Start](../quick-start.md) §1. Roles: [ADR-004](../de
 | Step | Where | Why |
 |---|---|---|
 | **1. SMTP** | Settings → Mail Server | Invitations and password resets. [SMTP Configuration](smpt-configuration.md). Set **`APP_URL`** to the public app URL so invite links work. |
-| **2. Initial team** | Teams → Add Team | The PI’s first tenancy. Super admin does **not** approve each later trial. |
-| **3. Invite Admin** | Users → Invite | Invite the PI as **Team admin** on that team. They get a time-limited link (password is never emailed). |
+| **2. Allowed domains** | API environment `ACCESS_REQUEST_ALLOWED_DOMAINS` | Which email domains may request access (default `usc.edu`; exact match, comma-separated). Needs SMTP and `APP_URL` from step 1. |
+| **3. Approve requests** | **Requests** (menu badge shows how many wait) | A PI asks from the login screen and confirms their USC email; you get an email and a count on the admin home. **Approve** sends the **Admin** invitation — that is all you do. You do **not** create or approve teams: the Admin creates and defines their own after signing in. **Decline** or **Mark spam** otherwise. You judge *who* they are, not the trial. |
 | **4. Refresh Help** | Settings → Documentation Management → **Refresh Docs** | Pulls pages from `w4h-docs` (including this checklist). |
 | **5. Optional Claude** | Settings → PHI-safe AI chat | Platform key + per-team monthly quota, or leave teams to paste their own key. [PHI-safe AI chat](ai-chat.md). |
 | **6. HIPAA checklist** | [HIPAA Compliance](hipaa-compliance.md) | Audit log, TLS, backups, BAA — before real PHI. |

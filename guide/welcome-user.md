@@ -23,8 +23,9 @@ First analysis walkthrough: [Quick Start](../quick-start.md) §5. Catalog: [Cont
 |---|---|---|
 | **1. Open your project** | Project in the nav | Study info, members, and which datasets are **linked**. You cannot add datasets or edit raw tables. |
 | **2. Check loaded data** | Project → dataset overview | A dataset is **loaded** only when **tables** appear. No tables means it is not loaded yet — ask an Admin. |
-| **3. Run analytics** | [Contributions]({{APP_URL}}/contributions) | Analysis notebooks and CLI against loaded, linked datasets. Use your **personal API key** (Profile → API keys) or a project token. Never commit keys. |
-| **4. Chat, if available** | Chat icon in the nav (⌘J / Ctrl+J) | How-to questions when a team or platform key is configured. If the panel says chat is not available, ask an Admin. Do not paste rows or identifiers — [PHI-safe AI chat](ai-chat.md). |
+| **3. Explore and chart** | Project → **Analytics** → *Explore signals* | Chart any signal of a loaded dataset — time series, distributions, coverage, scatter, events — and export PNG or CSV. See [Charts and Reports](charts-and-reports.md). |
+| **4. Run analytics** | [Contributions]({{APP_URL}}/contributions) | Analysis notebooks and CLI against loaded, linked datasets. Use your **personal API key** (Profile → API keys) or a project token. Never commit keys. |
+| **5. Chat, if available** | Chat icon in the nav (⌘J / Ctrl+J) | How-to questions when a team or platform key is configured. If the panel says chat is not available, ask an Admin. Do not paste rows or identifiers — [PHI-safe AI chat](ai-chat.md). |
 
 Optional: project pages (private notes for this study — not platform Help).
 
