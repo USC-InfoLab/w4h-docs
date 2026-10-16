@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-10-13
+- Generated: 2026-10-16
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -75,6 +75,7 @@ ADRs in tree: **30**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/notes.md` | notes |
 | `dev/onboarding-report.md` | Onboarding report |
 | `dev/proposals/agentic-ai-proposal.md` | Proposal — Agentic AI first release and the SQL question |
+| `dev/testing-a-new-module.md` | Testing a new module |
 
 ## `guide/`
 
