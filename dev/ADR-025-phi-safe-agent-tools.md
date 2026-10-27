@@ -20,7 +20,7 @@ updated_at: 2026-08-26T00:00:00.000Z
 
 Researchers expect Cursor-like **streaming** (MVP AI-01a, still in progress) and, longer term, assistants that **fetch live catalog/schema metadata** and guide multi-step workflows (ingest mapping, contribution runs) without pasting PHI.
 
-This ADR scopes **agentic** behavior as a **post-MVP extension** of the same substrate. It must **not** delay or redefine MVP delivery of AI-01…AI-16, D-35 (ingest assistant), or AI-05…AI-08.
+This ADR scopes **agentic** behavior as a **post-MVP extension** of the same substrate. It must **not** delay or redefine MVP delivery of AI-01…AI-16, AI-05…AI-08, or the ingest assistant ([ADR-024](ADR-024-ingest-assistant.md)).
 
 ## Decision
 

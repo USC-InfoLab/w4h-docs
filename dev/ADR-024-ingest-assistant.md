@@ -9,7 +9,7 @@ updated_at: 2026-08-25T00:00:00.000Z
 **Date:** 2026-08-25
 **Relates to:** ADR-003 (table model), ADR-007 (API keys), ADR-008 (GeoMTS), ADR-012 (share ≠ link; discoverable), ADR-014 (PHI-safe AI chat), ADR-016 (paired sample/importer repos), ADR-017 (Samples sandbox), ADR-018 (no project notebook registry), ADR-022 (run.sh / Update vs Full)
 **References:**
-- MVP D-09, D-12, D-13, D-26, D-27, D-35
+- MVP D-09, D-12, D-13, D-26, D-27
 - [guide/ai-chat.md](../guide/ai-chat.md)
 - [guide/sample-packages.md](../guide/sample-packages.md)
 

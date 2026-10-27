@@ -18,7 +18,7 @@ Internal implementation roadmap. **Product requirements:** MVP §13.4, [ADR-025]
 | **Claude** via server proxy (AI-02b) | OpenAI, OpenAI-compatible / TRE |
 | Static context pack + indexes | Live tool fetch of docs/signals |
 | Streaming replies (AI-01a, in progress) | Tool-step streaming UI |
-| Ingest assistant **app-orchestrated** (D-35, ADR-024) | Agent `confirm-tool` for writes |
+| Ingest assistant **app-orchestrated** (ADR-024) | Agent `confirm-tool` for writes |
 | Modes Help · Import · IRB · Analytics | Mode-scoped tool allowlists |
 
 **Rule:** Ship and stabilize MVP rows before turning on agent tools or alternate providers in production defaults.
@@ -52,7 +52,7 @@ Internal implementation roadmap. **Product requirements:** MVP §13.4, [ADR-025]
 
 - Navigation, SQL contribution run, cohort preview — user confirm required
 
-### Phase 4 — Ingest + agent (overlaps MVP D-35)
+### Phase 4 — Ingest + agent
 
 - MVP: ADR-024 app profile + Import chat + csv-batch (no tool loop required)
 - Post-MVP: `validate_mapping_spec` tool + richer agent UX
