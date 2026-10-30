@@ -53,6 +53,7 @@ Researchers export CSV from their own devices; W4H does not bundle those files i
 | `w4h-fitbit-csv-file-importer` | Fitbit account CSV export | `fitbit` |
 | `w4h-glucose-monitor-csv-file-importer` | Dexcom Clarity, FreeStyle LibreLink | `glucose` |
 | `w4h-data-recorder-csv-file-importer` | Empatica E4: E4 Connect (headerless), per-signal and merged research CSVs (nurse-stress, GalaxyPPG, pain-prediction) | `recorder` |
+| `w4h-embraceplus-csv-file-importer` | Empatica EmbracePlus Cloud per-minute biomarker CSVs (`aggregated_per_minute`); not E4 Connect, not Avro raw | `embrace` |
 
 In-app **Run import…** (ADR-022) uses the repo’s declared live sample (`contribution.yaml` → fixtures or a sibling sample package). **Team Admin** runs these on writable team catalog datasets; Super admin only **lists** them in Platform Admin → Contributions ([ADR-018](ADR-018-contributions-catalog.md)).
 
@@ -102,3 +103,4 @@ API keys are read from **environment or local `.env`** in the importer repo. Key
 | 2026-08-25 | Clarified the rejected alternative: no **vendor-parser** catalog. Private-file ingest via an obscured-profile assistant and a generated runnable package is [ADR-024](ADR-024-ingest-assistant.md), not a new sample pair per study. |
 | 2026-09-26 | Documented first-party **file importers** (Fitbit, glucose monitor, E4 data recorder) and README-as-user-docs surfacing via Contributions. API ingest ACL no longer grants Super admin a bypass. |
 | 2026-10-29 | Recorder importer reads official **E4 Connect** CSVs (unix t0 + Hz, no header) and the Kaggle pain-prediction merged `person_ID` CSV. E3 and Embrace/Avro stay out of scope. |
+| 2026-10-30 | Added **w4h-embraceplus-csv-file-importer** for Empatica Cloud `aggregated_per_minute` CSVs (`table_prefix: embrace`). Separate from the E4 recorder. |

@@ -103,6 +103,7 @@ These are **not** the bundled sample-data pairs. You bring the export; tables go
 | **Fitbit CSV file importer** (`w4h-fitbit-csv-file-importer`) | User-supplied Fitbit account CSVs | **Run import…** |
 | **Glucose monitor CSV file importer** (`w4h-glucose-monitor-csv-file-importer`) | Dexcom Clarity and FreeStyle LibreLink headers | **Run import…** |
 | **Data recorder CSV file importer** (`w4h-data-recorder-csv-file-importer`) | Empatica E4 Connect (raw, no header) plus headered research CSVs (nurse-stress, GalaxyPPG, pain-prediction merge) | **Run import…** |
+| **EmbracePlus CSV file importer** (`w4h-embraceplus-csv-file-importer`) | Empatica Cloud per-minute biomarkers (not E4) | **Run import…** |
 
 Glucose and recorder tests use **synthetic fixtures** that follow public Kaggle column layouts — those downloads are not in git. [Contributions](guide/sample-packages.md).
 
