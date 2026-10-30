@@ -76,7 +76,7 @@ Claude calls are proxied by the API.
 | **Team (lab) key** | Admin → **Project → Settings**, or Super admin → Settings → Lab Anthropic key | App-shell chat for that team (the lab pays Anthropic). Member usage is listed on **Project → People**. |
 | **Provisioned platform key** | Super admin → Settings | Platform Admin chat, and labs with **no** team key, until the **monthly token quota** is used |
 
-The saved key is shown as a **masked prefix** (not an empty `sk-ant-…` field). Replace to paste a new key; the full secret is never returned.
+The saved key is shown as a **masked prefix** (not an empty `sk-ant-…` field). Paste a new value to replace it, then Save; the full secret is never returned. **On file** only means ciphertext (or `ANTHROPIC_API_KEY`) is present. **Live** means Anthropic accepted the key. A stored key Anthropic rejects is **Rejected by Anthropic**. Super admin sets the **default model** from Anthropic’s model list when the key is live; otherwise from a built-in Claude catalog.
 
 Super admin can disable AI platform-wide.
 

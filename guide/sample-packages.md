@@ -33,7 +33,7 @@ The ICDE demo pair is trimmed synthetic data from the ICDE 2024 prototype (`w4h-
 |---|---|---|
 | **w4h-fitbit-csv-file-importer** | Fitbit CSV export | Yes |
 | **w4h-glucose-monitor-csv-file-importer** | Dexcom Clarity, FreeStyle LibreLink | Yes (after catalog + staging) |
-| **w4h-data-recorder-csv-file-importer** | Empatica E4 data recorder CSV | Yes (after catalog + staging) |
+| **w4h-data-recorder-csv-file-importer** | Empatica E4 (Connect ZIP, merged/per-signal research CSV) | Yes (after catalog + staging) |
 
 Use **one project** and **one or two linked catalog datasets** as Team Admin; each run uses a different importer/`table_prefix` (`glucose_*`, `recorder_*`, …) so tables do not collide in the same dataset schema.
 

@@ -77,6 +77,8 @@ node scripts/recapture-smtp-usage.mjs
 node scripts/recapture-setup-gif.mjs
 # Datasets catalog (Admin app shell — Datasets selected):
 node scripts/recapture-datasets.mjs
+# October 2026 flows (request access, project rail, Analytics, Run import):
+node scripts/capture-whats-new-oct.mjs
 ```
 
 Docs captures overwrite Username / From / Help email with `noreply@example.com` and

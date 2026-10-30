@@ -2,7 +2,7 @@
 title: Release notes archive
 description: Monthly W4H Toolkit release notes — current month on What's New, older months here.
 updated_by: nocera@usc.edu
-updated_at: 2026-08-17T18:00:00.000Z
+updated_at: 2026-10-29T00:00:00.000Z
 sort_order: 10
 ---
 
@@ -10,16 +10,18 @@ Like [VS Code Updates](https://code.visualstudio.com/updates){target="_blank"}, 
 
 | Release | Page |
 |---|---|
-| **August 2026 — 🧗 Peña Roja (current)** | [What's New](../whats-new.md) |
+| **October 2026 (current)** | [What's New](../whats-new.md) |
+| September 2026 | [Release notes — September 2026](2026-09.md) |
+| August 2026 — 🧗 Peña Roja | [Release notes — August 2026](2026-08.md) |
 | July 2026 | [Release notes — July 2026](2026-07.md) |
 | June 2026 | [Release notes — June 2026](2026-06.md) |
 | March–May 2026 & earlier | [Earlier 2026](earlier-2026.md) |
 
 ## Authoring convention (monthly)
 
-1. At the start of a new month, **move** the previous month’s full notes from `whats-new.md` into `releases/YYYY-MM.md` (copy screenshots under `media/whats-new/` or `media/YYYY-MM/` as needed).
-2. Replace `whats-new.md` with the **new** month’s notes (same structure: highlights → feature sections with screenshots).
+1. At the start of a new month, **move** the previous month’s full notes from `whats-new.md` into `releases/YYYY-MM.md` (copy screenshots under `media/whats-new/` or `media/YYYY-MM/` as needed). Prefer **GIFs** for multi-step flows (`scripts/capture-whats-new.mjs`, `scripts/capture-whats-new-oct.mjs`, `recapture-*.mjs`).
+2. Replace `whats-new.md` with the **new** month’s notes (same structure: highlights → feature sections with screenshots/GIFs). Stamp `updated_at` so the in-app What's New modal reopens.
 3. Add a row to the table above linking the archived month.
 4. Refresh docs from Platform Admin so Help picks up the new pages.
 
-Slugs come from the Markdown filename (`2026-06.md` → `/docs/2026-06`). Folder `releases/` is the doc type in the sidebar.
+Slugs come from the Markdown filename (`2026-10.md` would be `/docs/2026-10`; the current month stays `/docs/whats-new`). Folder `releases/` is the doc type in the sidebar.

@@ -222,7 +222,7 @@ sequenceDiagram
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
-| U-13 | Super admin / Team admin can invite a new user by email via **Google SMTP**. | `✅ Stable` | `✅ Done` |
+| U-13 | Super admin / Team admin can invite a new user by email via **Google SMTP**. A Super admin may also invite an **Admin with no team** (direct provisioning, same account as an approved access request, [ADR-028](ADR-028-platform-access-requests.md) §4); all other invites need a team. | `✅ Stable` | `🔁 In review` — no-team Admin invite added 2026-10-23; UI builds, not yet exercised end to end |
 | U-14 | Invitation email contains a time-limited signed link for password set and account activation. | `✅ Stable` | `✅ Done` |
 | U-15 | Expired or unused invitations can be revoked or resent by the inviting admin. | `✅ Stable` | `✅ Done` |
 | U-16 | Invite flow is intentionally basic for MVP: single SMTP provider (Google), plain-text/simple HTML template, no custom branding. | `✅ Stable` | `✅ Done` |
@@ -575,7 +575,7 @@ Explicitly **outside MVP §13.1** delivery. Do not block or redefine AI-01…AI-
 
 | Home | Who | Purpose | Req Status | Impl Status |
 |------|-----|---------|------------|-------------|
-| `/admin/home` | Super admin | **Platform ops home:** setup checklist (when needed); KPIs (teams, users by status, projects, datasets, active shares); platform health (SMTP, DB, audit-write OK); thin usage snapshot (API calls / active keys); **attention strip** (failed logins, break-glass, **invites pending**, **datasets without team**, **teams without Team admin**, **last successful backup / backup reminder**); link to **HIPAA compliance checklist** doc; deep links to `/admin/audit-log`, `/admin/usage`, Users, Teams, Settings. Full log tables live on dedicated pages — not on home. | `✅ Stable` | `🚧 In progress` |
+| `/admin/home` | Super admin | **Platform ops home:** setup checklist (when needed); KPIs (teams, users by status, projects, datasets, active shares); platform health (SMTP, DB, audit-write OK); thin usage snapshot (API calls / active keys); **attention strip** (failed logins, break-glass, **access requests pending**, **datasets without team**, **teams without Team admin**, **last successful backup / backup reminder**); link to **HIPAA compliance checklist** doc; deep links to **Access**, **Contributions**, `/admin/audit-log`, `/admin/usage`, **Settings** — not trial team/user/project/dataset admin. Full log tables live on dedicated pages — not on home. | `✅ Stable` | `🚧 In progress` |
 | App `/home` (Team admin) | Team admin | **Team operator home:** team-scoped summary (members, projects, datasets, inbound/outbound shares); **IRB access reports** entry (H-09a); **getting-started cards in order — 1. create a team, 2. create a project, 3. invite people, 4. datasets & Contributions, 5. AI chat** (dismissible; the same order is in the Admin guide, Quick Start and Help chat); deep links to team-scoped management (projects, users, datasets, teams). | `✅ Stable` | `🚧 In progress` |
 | Project workspace | Project `owner` | Generate **project-scoped IRB access report** (H-09b). No raw audit browse. | `✅ Stable` | `🚩 Todo` |
 
@@ -584,11 +584,11 @@ Explicitly **outside MVP §13.1** delivery. Do not block or redefine AI-01…AI-
 | Page | Req Status | Impl Status | Notes |
 |------|------------|-------------|-------|
 | `/admin/home` | `✅ Stable` | `✅ Done` | Super admin KPIs + usage/compliance snapshots + attention strip via `GET /config/admin-home` (§15.1, H-12/H-12a) |
-| `/admin/teams` | `✅ Stable` | `✅ Done` | List teams (Super admin); Team admin sees own |
+| `/admin/teams` | `✅ Stable` | `✅ Done` | List teams — **Team admin** (app shell) only; Super admin uses Platform Admin home KPIs, not team CRUD |
 | `/team/new` | `✅ Stable` | `🔁 In review` | App shell. *Create your team* on an approved Admin's first sign-in; *New team* in the account menu afterwards (T-15). There is no Super admin "Add Team" page. |
 | `/request-access` (public) | `✅ Stable` | `🔁 In review` | Guest form linked from the login screen (T-16, T-19, T-20); `/request-access/verify` confirms the emailed link. Writes an `access_requests` row via `POST /access-requests`. |
 | `/admin/access-requests` | `✅ Stable` | `🔁 In review` | Super admin queue with badge in the menu; **Approve** (Admin invitation sent to the verified address), **Decline**, **Mark spam**; home attention strip shows the pending count (T-17, T-18). |
-| `/admin/teams/:id/edit` | `✅ Stable` | `🔁 In review` | Edit team + members; remove-member UX incomplete |
+| `/admin/teams/:id/edit` | `✅ Stable` | `🔁 In review` | Edit team + members — **Team admin** only; Super admin does not staff teams |
 | `/admin/datasets` | `✅ Stable` | `🚧 In progress` | Mine / Others / Shared filters; Discoverable; shares entry |
 | `/admin/datasets/shares` | `✅ Stable` | `🚧 In progress` | Inbound/outbound share agreements; revoke |
 | `/admin/datasets/:id/ingest` | `✅ Stable` | `🚩 Todo` | Ingestion UI (CSV, JSON, REDCap); ingest assistant [ADR-024](ADR-024-ingest-assistant.md) |

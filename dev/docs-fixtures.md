@@ -52,6 +52,8 @@ PLAYWRIGHT_BROWSERS_PATH="$HOME/Library/Caches/ms-playwright" \
   node scripts/capture-whats-new.mjs          # Super admin / Platform Admin
 PLAYWRIGHT_BROWSERS_PATH="$HOME/Library/Caches/ms-playwright" \
   node scripts/recapture-datasets.mjs         # Admin / app-shell Datasets
+PLAYWRIGHT_BROWSERS_PATH="$HOME/Library/Caches/ms-playwright" \
+  node scripts/capture-whats-new-oct.mjs      # request access, project rail, Analytics, Run import
 ```
 
 See [media/README.md](../media/README.md) for the full capture list.

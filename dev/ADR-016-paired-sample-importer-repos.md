@@ -52,7 +52,7 @@ Researchers export CSV from their own devices; W4H does not bundle those files i
 |-------------------|-------------------------|----------------|
 | `w4h-fitbit-csv-file-importer` | Fitbit account CSV export | `fitbit` |
 | `w4h-glucose-monitor-csv-file-importer` | Dexcom Clarity, FreeStyle LibreLink | `glucose` |
-| `w4h-data-recorder-csv-file-importer` | Empatica E4 data-recorder CSV (per-signal and merged nurse-stress shapes) | `recorder` |
+| `w4h-data-recorder-csv-file-importer` | Empatica E4: E4 Connect (headerless), per-signal and merged research CSVs (nurse-stress, GalaxyPPG, pain-prediction) | `recorder` |
 
 In-app **Run import…** (ADR-022) uses the repo’s declared live sample (`contribution.yaml` → fixtures or a sibling sample package). **Team Admin** runs these on writable team catalog datasets; Super admin only **lists** them in Platform Admin → Contributions ([ADR-018](ADR-018-contributions-catalog.md)).
 
@@ -101,3 +101,4 @@ API keys are read from **environment or local `.env`** in the importer repo. Key
 | 2026-08-21 | Contributions admin's **Fetch repo info** ([ADR-018](ADR-018-contributions-catalog.md)) applies this pairing convention a second place: inspecting a `<sample-repo>-importer` repo without its own `manifest.yaml` now probes the paired `<sample-repo>`'s `manifest.yaml` directly on GitHub (same `owner/<slug>` convention `contribution-runner.js`'s `pairedDataSlugFor()` uses at run time, but resolved from the repo URL rather than the catalog, since the paired row may not be cataloged yet) and surfaces it as a "paired sample-data repo detected" note. |
 | 2026-08-25 | Clarified the rejected alternative: no **vendor-parser** catalog. Private-file ingest via an obscured-profile assistant and a generated runnable package is [ADR-024](ADR-024-ingest-assistant.md), not a new sample pair per study. |
 | 2026-09-26 | Documented first-party **file importers** (Fitbit, glucose monitor, E4 data recorder) and README-as-user-docs surfacing via Contributions. API ingest ACL no longer grants Super admin a bypass. |
+| 2026-10-29 | Recorder importer reads official **E4 Connect** CSVs (unix t0 + Hz, no header) and the Kaggle pain-prediction merged `person_ID` CSV. E3 and Embrace/Avro stay out of scope. |

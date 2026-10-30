@@ -44,7 +44,7 @@ Layer access as: **platform role** → **team membership role** → **project me
 
 | Role | Scope | Responsibilities |
 |---|---|---|
-| Super admin | Platform-wide | **Platform Admin** shell only (`W4H Toolkit Admin`): bootstrap teams/users, audit, usage, settings. No app-shell toggle. Does **not** run day-to-day trials. |
+| Super admin | Platform-wide | **Platform Admin** shell only (`W4H Toolkit Admin`): SMTP/settings, **access-request approval** (Admin invite), Contributions catalog, audit, usage. No app-shell toggle. Does **not** manage team rosters, projects, datasets, or ingest. |
 
 Non–Super-admin accounts do **not** carry global Team admin privileges. Their team and project powers come from memberships. They use the **app shell** (`W4H Toolkit`) only.
 
@@ -59,7 +59,7 @@ Stored on `team_members.role`. Product UI: **Admin** / **User**.
 
 **Dual-hat:** the same user may be `team_admin` on team A and `member` on team B.
 
-**Effective Team admin for team T** = caller is Super admin **or** has `team_members` row for T with `role = team_admin`.
+**Effective Team admin for team T** = caller has `team_members` row for T with `role = team_admin` (Super admin is never effective Team admin).
 
 Legacy `users.role = team_admin` was migrated to `team_members.role = team_admin` on each of that user's teams (schema migration, 2026-10-04) and the global value is cleared to `project_user`. Team admin is membership-scoped only: the API never writes `users.role = team_admin`, and `team_admin` is accepted only as an *input alias* on user create/update meaning "Admin on the teams given". The JWT `caps.team_admin` claim (any `team_admin` membership) drives the app shell; per-team checks always read `team_members`.
 
@@ -98,14 +98,19 @@ Session `search_path` / DB role must follow the **active team context** for the 
 ### Key permission boundaries
 
 **Super admin can:**
-- Create and delete trial schemas / manage all teams
-- Manage all users across all teams
-- Approve or revoke any sharing request
-- Access `w4h_global` unconditionally
-- Read and export the full audit log
-- Use **Platform Admin home** (`/admin/home`) for platform KPIs, health, and usage snapshots; attention strip; deep links to audit + **Usage** (`/admin/usage`)
+- Configure platform settings (SMTP, docs refresh, optional platform AI key)
+- Review **access requests** and **approve Admin invitations** (ADR-028), or **Invite Admin** directly when the PI is already known — same outcome: `can_create_teams`, no team created by Super admin
+- Curate **Contributions** (`w4h.contributions`: publish, pin versions, `runnable`)
+- Read and export the full **audit log**; view platform **Usage**
+- Use **Platform Admin home** (`/admin/home`) for KPIs, health, and attention items (pending requests, backup reminder, etc.)
 - Always remain in the Platform Admin shell after login (no toggle into the team app shell)
-- Promote a user to Super admin
+- Promote another user to Super admin (break-glass)
+
+**Super admin cannot** (Team Admin / project owner in the app shell):
+- Add or remove team members, change team membership roles, or edit trial teams
+- Invite or discontinue trial users except via the access-request → Admin invite flow
+- Create or manage projects, link datasets, **Run import…**, or dataset catalog CRUD
+- Approve dataset shares on behalf of a team (team Admins own share workflow, ADR-012)
 
 **Team admin (per team) can:**
 - Create and manage projects within that team
@@ -164,3 +169,4 @@ Session `search_path` / DB role must follow the **active team context** for the 
 | 2026-08-12 | One Admin type (no primary vs invited split). Admin cannot remove themselves; at least one must remain. |
 | 2026-10-04 | Global `users.role = team_admin` retired: migrated to memberships, no longer written or honoured. Creating a project/dataset needs Team admin on *that* team (dual-hat). |
 | 2026-08-13 | Product UI short name **Admin** (was “Project admin”); roles remain Super admin · Admin · User. |
+| 2026-10-23 | Super admin narrowed to Platform Admin only: access-request approval, Contributions, settings, audit/usage — not team roster, trial users, projects, datasets, or ingest. Effective Team admin is membership-only. |

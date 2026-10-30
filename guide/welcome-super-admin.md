@@ -23,11 +23,11 @@ Longer walkthrough: [Quick Start](../quick-start.md) §1. Roles: [ADR-004](../de
 |---|---|---|
 | **1. SMTP** | Settings → Mail Server | Invitations and password resets. [SMTP Configuration](smpt-configuration.md). Set **`APP_URL`** to the public app URL so invite links work. |
 | **2. Allowed domains** | API environment `ACCESS_REQUEST_ALLOWED_DOMAINS` | Which email domains may request access (default `usc.edu`; exact match, comma-separated). Needs SMTP and `APP_URL` from step 1. |
-| **3. Approve requests** | **Requests** (menu badge shows how many wait) | A PI asks from the login screen and confirms their USC email; you get an email and a count on the admin home. **Approve** sends the **Admin** invitation — that is all you do. You do **not** create or approve teams: the Admin creates and defines their own after signing in. **Decline** or **Mark spam** otherwise. You judge *who* they are, not the trial. |
+| **3. Onboard Admins** | **Access** (Platform Admin menu) | Review the **Pending** queue (self-service requests) and **Approve** or **Decline**. For someone you already know, use **Invite Admin…** on that page — same invitation, no team chosen for them. Admins always create their own team after sign-in. |
 | **4. Refresh Help** | Settings → Documentation Management → **Refresh Docs** | Pulls pages from `w4h-docs` (including this checklist). |
 | **5. Optional Claude** | Settings → PHI-safe AI chat | Platform key + per-team monthly quota, or leave teams to paste their own key. [PHI-safe AI chat](ai-chat.md). |
 | **6. HIPAA checklist** | [HIPAA Compliance](hipaa-compliance.md) | Audit log, TLS, backups, BAA — before real PHI. |
-| **7. Demonstration project** | Mark sample datasets **read-only** on Datasets → Edit, then Projects → Add Project → **Demonstration project** | Seeds a walkthrough project that **links those sample tables**. Teams query them; they do not re-ingest. |
+| **7. Samples sandbox (ops)** | Platform **seed** / migrations (`w4h-sample`, docs fixtures) | Canonical **read-only** sample datasets and the W4H Samples project are loaded by seed jobs — not by Super admin in the dataset or project UI. |
 
 The Team admin then works in the **app shell**. Point them to [Welcome — Admin](welcome-admin.md). Point project Users to [Welcome — User](welcome-user.md).
 

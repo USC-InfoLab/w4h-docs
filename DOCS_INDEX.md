@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-10-13
+- Generated: 2026-10-29
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -104,5 +104,7 @@ ADRs in tree: **30**. Prefer MVP + relevant ADR before inventing product rules.
 |------|-------|
 | `releases/2026-06.md` | Release notes — June 2026 |
 | `releases/2026-07.md` | Release notes — July 2026 |
+| `releases/2026-08.md` | Release notes — August 2026 |
+| `releases/2026-09.md` | Release notes — September 2026 |
 | `releases/archive.md` | Release notes archive |
 | `releases/earlier-2026.md` | Release notes — earlier 2026 |

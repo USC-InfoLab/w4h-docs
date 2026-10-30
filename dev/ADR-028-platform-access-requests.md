@@ -43,6 +43,8 @@ When a request is **verified**, W4H emails every active Super admin (best-effort
 
 The invited account is `project_user` with `users.can_create_teams = true` and **no team membership**. After accepting the invitation the Admin lands on **Create your team** (`/team/new`), names their own team, and becomes its Admin; later they add more teams from the account menu (*New team*) without anyone's approval. `can_create_teams` only lets someone create teams — it grants nothing else, and until they have a team they can do nothing else (a project needs a team). If the email already has an account, it is flagged and notified instead of re-invited.
 
+**Direct provisioning.** When a PI already knows the Super admin, the Super admin may skip the request form: **Invite User** (`/admin/users/add`) with role *Admin* and **no team** creates exactly the account an approval creates (`project_user`, `can_create_teams = true`, no membership) and sends the same Admin invitation. This is the only invite a Super admin sends without a team; Users still need a team, and the Admin invitation is audited as `user.invite_sent`. The Super admin still creates no team.
+
 `POST /teams` is limited to Admins (an Admin on some team, or an approved Admin with the flag); a **Super admin gets 403**. They keep read/edit/deactivate over existing teams (MVP T-03, T-04). `GET /users/me/session` returns the refreshed teams and capabilities after the team is created.
 
 ### 5. Abuse protection and privacy
@@ -71,5 +73,6 @@ The invited account is `project_user` with `users.can_create_teams = true` and *
 
 | Date | Change |
 |---|---|
+| 2026-10-23 | Super admin may provision an Admin directly (Invite User, role Admin, no team) — same account shape as an approval. |
 | 2026-10-04 | Approve sends only the Admin invitation; the Super admin neither creates nor approves teams — the Admin creates their own (`/team/new`). |
 | 2026-10-04 | Accepted and implemented. USC-only via exact domain allowlist + email verification. |

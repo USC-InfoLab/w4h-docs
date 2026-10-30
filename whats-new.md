@@ -1,24 +1,24 @@
 ---
 title: 🆕 What's New!
-description: Highlights from W4H Toolkit 0.3.0 — 🧗 Peña Roja.
+description: Highlights from W4H Toolkit — October 2026 (access requests, collaborating teams, charts, new contributions).
 updated_by: nocera@usc.edu
-updated_at: 2026-08-19T00:00:00.000Z
+updated_at: 2026-10-29T16:00:00.000Z
 ---
 
 <p class="lead">
-  Welcome to <strong>🧗 Peña Roja</strong> — W4H Toolkit <strong>0.3.0</strong> (August 2026).
-  App and API share this version. Below are the changes you will notice most.
+  Welcome to the <strong>October 2026</strong> update of the W4H Toolkit
+  (<strong>🧗 Peña Roja 0.3.0</strong> line). App and API share this version.
+  Below are the changes you will notice most this month.
 </p>
 
 **Highlights**
 
-- [PHI-safe AI chat](#phi-safe-ai-chat) — docked assistant with a default egress filter
-- [Contributions catalog](#contributions-catalog) — browse tools; no project notebook registry
-- [Sample CSV packages](#sample-csv-packages) — Fitbit + ICDE demo pairs
-- [Project dataset overview](#project-dataset-overview) — selected-dataset stats in the workspace
-- [Cohort comparison](#cohort-comparison) — selected subjects vs a control group on the Analytics tab
-- [Roles in the UI](#roles-in-the-ui) — Super admin · Admin · User
-- [Docker deployment](#docker-deployment) — standalone Compose stack, configured entirely through the Admin UI setup wizard
+- [Request access](#request-access) — USC researchers apply from the login screen; Super admin only approves
+- [Collaborating teams](#collaborating-teams) — one project, several organizations; data follows project membership
+- [Charts and published reports](#charts-and-published-reports) — Explore signals on Analytics; sandboxed notebook reports
+- [Analytics cohort cards](#analytics-cohort-cards) — wear compliance and METs with Refresh
+- [Project workspace rail](#project-workspace-rail) — icon sidebar for Datasets, Documentation, Analytics, and the rest
+- [New contributions](#new-contributions) — your-files CSV importers, SQL METs, wear compliance, resting-HR anomaly
 
 > Tip: click any image to enlarge it in the docs browser.
 >
@@ -26,117 +26,132 @@ updated_at: 2026-08-19T00:00:00.000Z
 
 ---
 
-## PHI-safe AI chat
+## Request access
 
-The in-app assistant from [ADR-014](dev/ADR-014-ai-assistant-claude.md) is in this release — not design-only.
+New PIs no longer wait for Super admin to invent a team for them.
 
-Open it from the chat icon in the top nav, or with **⌘J** / **Ctrl+J**. The panel docks beside the page. It sends **page context** (shell, route, team/project names), not table rows.
+1. On the login screen, **Request access (USC researchers)**.
+2. Confirm the mailbox (allowlisted USC domain).
+3. Super admin **Approves** from **Platform Admin → Access** — that sends an **Admin invitation** and creates **no team**.
+4. After sign-in the Admin **creates their own team** (`/team/new`; later, account menu → **New team**).
 
-- Default **PHI-safe (strict)** egress filter so raw wearable rows and obvious identifiers stay out of Claude prompts
-- Modes: **Help**, **Import**, **IRB**, **Analytics**
-- **Team** Anthropic key (lab pays) and optional Super admin **provisioned** platform key with a monthly token quota
-- Keys stay **masked**; the browser never holds the secret
+![Request access form](media/whats-new/request-access.png)
 
-**Permissive** mode is not PHI-safe. Guide: [PHI-safe AI chat](guide/ai-chat.md).
+![Flow: login → Request access → Super admin queue](media/whats-new/request-access.gif)
 
----
+*Animation: login screen, the public request form, then the Super admin **Access** queue with Approve.*
 
-## Contributions catalog
+Super admin can also **Invite Admin…** on that page for someone they already know (same invitation, still no team chosen for them). They stay in Platform Admin and do not create projects or ingest study data. [Welcome — Super admin](guide/welcome-super-admin.md) · [ADR-028](dev/ADR-028-platform-access-requests.md).
 
-W4H does **not** register project-owned notebooks. Browse **Contributions** (`/contributions`) instead — a catalog of tools (publisher, kind, language, git README). Super admins curate listings in Platform Admin.
-
-First-party listings include the two paired CSV samples below, plus **w4h-load-json** and **fft_approximate** (external Postgres extension — install on the database; W4H does not vendor it).
-
-Put your own analysis repo links in **project pages**. See [Contributions](guide/sample-packages.md) and [ADR-018](dev/ADR-018-contributions-catalog.md).
+![Access requests queue](media/whats-new/access-requests.png)
 
 ---
 
-## Sample CSV packages
+## Collaborating teams
 
-Two paired sample + importer repos ([ADR-016](dev/ADR-016-paired-sample-importer-repos.md)) — one git repo per contribution row:
+A project still has one **owning team**. It may also list **collaborating teams** from other organizations.
 
-| Pair | What it is | Geo? |
+- The owner invites a team; that team's Admin accepts (per project — there is no standing org-to-org agreement).
+- Collaborators join as **User** only. Project Admin stays with the owning team.
+- Each team links and controls **its own** datasets. Removing a team removes its people and its datasets immediately.
+- **Dataset data follows project membership.** Being on a team is not enough to read tables. A team member who is not on the project sees Datasets and People only.
+
+On **Project → People**, home-team badges mark collaborators. Invite another organization under **Collaborating teams**. [ADR-027](dev/ADR-027-cross-org-project-collaboration.md).
+
+![Project People tab with collaborating teams](media/whats-new/project-people.png)
+
+---
+
+## Charts and published reports
+
+**Project → Analytics → Explore signals** charts any loaded dataset from its GeoMTS mapping — not from a vendor name. Time series, distribution, coverage heatmap, scatter, and events. PNG and CSV export sit on each chart. Times stay wall-clock as stored.
+
+For edge cases the component cannot draw, an Admin **Publish a report…** (HTML from a notebook, only datasets their own team owns). Reports render in a sandboxed iframe. [Charts and Reports](guide/charts-and-reports.md) · [ADR-029](dev/ADR-029-visualization-component-and-reports.md).
+
+![Flow: Analytics tab → Explore signals](media/whats-new/analytics-explorer.gif)
+
+*Animation: opening Analytics and the signal explorer on a project dataset.*
+
+---
+
+## Analytics cohort cards
+
+Wear-compliance and METs summaries are cached on the dataset and shown as cohort cards. Admins **Refresh** (optional wear protocol); a successful in-app contribution run refreshes them too. Filter by subject when you need a subset. These numbers are not live full-table scans.
+
+---
+
+## Project workspace rail
+
+The project page uses a compact **activity rail** (like the VS Code sidebar): Datasets, Documentation, Analytics, Jupyter, People, and Settings. Hover an icon for its name. On small screens, **Menu** opens the same list.
+
+![Flow: switching Datasets, Documentation, Analytics, People](media/whats-new/project-hub-rail.gif)
+
+*Animation: the project rail switching sections so the content pane stays wide.*
+
+---
+
+## New contributions
+
+Browse **Contributions** in the app (`/contributions`). Super admin curates the listing and pins a GitHub tag. First-party tools added or published this month:
+
+### Import your own CSV files
+
+These are **not** the bundled sample-data pairs. You bring the export; tables go into **your** team's dataset (`table_prefix` keeps vendors from colliding). Notebooks have a file chooser. In-app **Run import…** is enabled when the row is `runnable`.
+
+| Listing | What it imports | In-app Run |
 |---|---|---|
-| **w4h-sample-fitbit-csv** | Synthetic Fitbit-style CSV + `manifest.yaml` | No — real Fitbit exports have no GPS |
-| **w4h-sample-fitbit-csv-importer** | Notebook + CLI via the **W4H API** (not direct Postgres); **runnable** in-app (**Run import…**) | — |
-| **w4h-sample-icde-demo-csv** | Synthetic ICDE 2024 demo CSV + `manifest.yaml`; includes `gps_track` | Yes — exercises geo GeoMTS mapping ([ADR-008](dev/ADR-008-geomts-data-model.md)) |
-| **w4h-sample-icde-demo-csv-importer** | Notebook + CLI for the ICDE demo sample; **runnable** in-app (**Run import…**) | — |
+| **Fitbit CSV file importer** (`w4h-fitbit-csv-file-importer`) | User-supplied Fitbit account CSVs | **Run import…** |
+| **Glucose monitor CSV file importer** (`w4h-glucose-monitor-csv-file-importer`) | Dexcom Clarity and FreeStyle LibreLink headers | **Run import…** |
+| **Data recorder CSV file importer** (`w4h-data-recorder-csv-file-importer`) | Empatica E4 Connect (raw, no header) plus headered research CSVs (nurse-stress, GalaxyPPG, pain-prediction merge) | **Run import…** |
 
-Use a personal `W4H_API_KEY` in local `.env` only. Do not commit credentials or real PHI.
+Glucose and recorder tests use **synthetic fixtures** that follow public Kaggle column layouts — those downloads are not in git. [Contributions](guide/sample-packages.md).
 
----
+![Flow: select a dataset → Run import…](media/whats-new/run-import.gif)
 
-## Project dataset overview
+*Animation: **Run import…** on a project dataset (same dialog for sample importers and file importers).*
 
-Dataset stats and overview always appear in the context of a **selected dataset** in the project workspace (master–detail). Summaries use cached metadata — the UI does not run live full-table `COUNT(*)` scans.
+### Analysis and models
 
-GeoMTS remains a **role mapping** over physical tables (`w4h.tables`), not a forced rename to `subject_id` / `ts` / `lat` / `lon`. See [ADR-003](dev/ADR-003-dataset-table-model.md) and [ADR-008](dev/ADR-008-geomts-data-model.md).
+| Listing | What it does | How you run it |
+|---|---|---|
+| **Compute METs (SQL)** (`w4h-sql-compute-mets`) | YAML-bound SQL: `mets_computed` from mapped calories + weight | Analytics → **Run analysis…** |
+| **Compute METs** (`w4h-compute-mets`) | Pandas companion (same formula family) | Notebook / CLI |
+| **Fitbit wear compliance** (`w4h-fitbit-wear-compliance`) | Per-subject wear-time protocol (HR as wear proxy) | Notebook / CLI; Analytics cohort tile uses the same protocol |
+| **Approximate range queries demo** (`w4h-demo-approximate-queries`) | Notebook demo of `fft_approximate` | Notebook (install the extension on your database first) |
+| **Resting heart-rate anomaly detector** (`w4h-hr-anomaly`) | MVP example model: per-subject resting HR, robust z-score + Isolation Forest; writes `hr_anomaly` | Notebook / CLI (not an in-app importer). Research/demo only, not a diagnostic |
 
-![Dataset catalog with Mine / Others / Shared filters](media/whats-new/datasets-catalog.png)
+![Platform Admin Contributions catalog](media/whats-new/contributions-admin.png)
 
-Discoverable vs shared is unchanged from July: **Others** is metadata only until you **share**. [Setting Up Projects](guide/setting-up-projects.md).
-
----
-
-## Cohort comparison
-
-Once a dataset has mapped heart rate / calories (and METs if you have run compute-METs), the project **Analytics** tab can run the ICDE demo’s offline comparison: pick subject IDs, a control group (entire dataset, everyone else, or specific IDs), a date range, and optional time-of-day windows.
-
-Results show selected-vs-control KPI deltas, downsampled time series (heart rate includes a control ±2σ band), and comparison bars. This is a **filter-based** split, not a matched cohort. Age/height sliders, maps, and real-time streaming are not in this slice. [ADR-021](dev/ADR-021-cohort-control-group-comparison.md).
-
----
-
-## Roles in the UI
-
-Labels are **Super admin** · **Admin** · **User**. There is no “Project admin” in the product UI.
-
-- **Super admin** stays in the Platform Admin shell
-- **Admins** (team admins) and **Users** work in the app shell
-- Project membership is still `owner` / `editor` / `viewer` under the hood
-
-![Platform Admin home](media/whats-new/admin-home.png)
-
-Welcome guides: [Super admin](guide/welcome-super-admin.md) · [Admin](guide/welcome-admin.md) · [User](guide/welcome-user.md).
-
----
-
-## Docker deployment
-
-Prototype Compose packaging in `w4h-docker` runs the app, API, and a convenience Jupyter service against **your** PostgreSQL (no bundled database). See [Docker Deployment](guide/docker-deployment.md) and [ADR-015](dev/ADR-015-docker-deployment-packaging.md).
-
-**Setup is Admin UI–driven, not manual SQL or config-file editing.** `docker compose up` starts the stack with no database credentials required; everything after that happens in the browser:
-
-1. Open the app and enter your Postgres host, port, and credentials in the **setup wizard** — it tests the connection, auto-creates the `w4h` schema, and generates `TOKEN_SECRET` for you.
-2. Create the initial **Super admin** account.
-3. Configure outbound email under **Settings → Mail Server** and send a test message.
-
-With Postgres and SMTP credentials already on hand, that whole in-app portion — schema bootstrap through a working test email — takes **under 5 minutes**.
+Some repos are still private; README and tag check can fail until they are public or the API has a token. Super admin **Check for updates** pins a `v*` release when one exists.
 
 ---
 
 ## Also in this release
 
-### About
-Account menu **About** now shows this release name with the version (**🧗 Peña Roja 0.3.0**).
-
-![About W4H modal](media/whats-new/about-modal.png)
+- Global **`users.role = team_admin`** is gone. Team admin is membership-only (`team_members.role`).
+- Docker: **Request access** needs SMTP and `APP_URL` in the API container.
 
 ### Docs & Help
-- [PHI-safe AI chat](guide/ai-chat.md) and [Contributions](guide/sample-packages.md) guides
-- Monthly archive: July notes moved to [Release notes — July 2026](releases/2026-07.md)
+- [Welcome — Super admin](guide/welcome-super-admin.md) (approve requests; do not create teams)
+- [Welcome — Admin](guide/welcome-admin.md) (create your team, then project → ingest → invite)
+- [Charts and Reports](guide/charts-and-reports.md)
+- [Contributions](guide/sample-packages.md) (file importers, SQL METs, catalog browse)
+- Monthly archive: [September 2026](releases/2026-09.md) · [August 2026](releases/2026-08.md)
 
 ### For developers
-Architecture and requirements: [MVP](dev/mvp.md) and the [ADR index](dev/ADR-README.md). After deploy, **refresh Help** from Platform Admin so this page is imported.
+Architecture and requirements: [MVP](dev/mvp.md) (v0.36) and the [ADR index](dev/ADR-README.md). After deploy, **refresh Help** from Platform Admin so this page is imported.
 
 ---
 
 ## Previous releases
 
-Older months are archived (same idea as VS Code’s versioned Updates pages) so this page stays focused on the **current** release:
+Older months are archived (same idea as VS Code’s versioned Updates pages) so this page stays focused on the **current** month:
 
 | Release | Notes |
 |---|---|
-| **August 2026 — 🧗 Peña Roja 0.3.0** | This page |
+| **October 2026** | This page (access requests, collaborating teams, charts, new contributions) |
+| [September 2026](releases/2026-09.md) | Run import, SQL METS jobs, version pins, cohort Analytics |
+| [August 2026 — 🧗 Peña Roja 0.3.0](releases/2026-08.md) | PHI-safe chat, Contributions catalog, sample CSV pairs, Docker wizard |
 | [July 2026](releases/2026-07.md) | Email code login, Platform Admin setup, discoverable datasets, Usage, audit log |
 | [June 2026](releases/2026-06.md) | Projects rename, ACL, notebook keys, email login codes |
 | [Earlier 2026](releases/earlier-2026.md) | May Projects hub, March–April auth, initial platform |

@@ -56,7 +56,7 @@ Prefer updating ADRs/MVP when changing roles, tenancy, datasets, or docs model �
 - Structural docs map: [`DOCS_INDEX.md`](./DOCS_INDEX.md) (generated; file → title — not a substitute for MVP/ADRs). Regenerate: `node scripts/generate-docs-index.mjs` when adding/renaming docs.
 - Keep status tables in `mvp.md` honest when features land. A row is `✅ Done` only when it was checked (code read, API run against a scratch database, or UI exercised); otherwise `🔁 In review`. §17 milestone progress is **derived from the rows** (Done 100%, In review 90%, In progress 50%, Todo 0%) — update the rows, then the table, never the other way round. Several rows were found stale during the v0.36 audit; re-audit before trusting an old status.
 - ADRs: new ones go in `dev/ADR-NNN-*.md` with a row in `dev/ADR-README.md`; then regenerate `DOCS_INDEX.md`.
-- Screenshots/GIFs: prefer existing `scripts/` capture helpers when updating UI docs.
+- Screenshots/GIFs: prefer existing `scripts/` capture helpers when updating UI docs. **What's New** is GIF-first for flows (`scripts/capture-whats-new.mjs`, `scripts/capture-whats-new-oct.mjs`, plus the `recapture-*.mjs` extras). Keep `whats-new.md` as the **current month** only; archive the previous month to `releases/YYYY-MM.md` (see `releases/archive.md`).
 - Several agent sessions may work in these repos at once (e.g. a model-contribution session). Re-read a file right before editing it, make targeted edits, and never revert changes you did not make.
 - Docs captures log into **seeded synthetic users** on the **`w4h-sample`** database (`dev/docs-fixtures.md`), not real emails and not `DB_DATABASE`. Playwright reads `w4h-docs/.env`, never `w4h-app/.env`. Serve the sample with `npm run start:sample` in **w4h-api**.
 
