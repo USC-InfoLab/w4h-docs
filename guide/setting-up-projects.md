@@ -2,7 +2,7 @@
 title: Setting Up Projects
 description: Create projects and link multiple datasets — owned, shared, and from your other teams.
 updated_by: nocera@usc.edu
-updated_at: 2026-07-21T00:00:00.000Z
+updated_at: 2026-11-04T19:10:00.000Z
 sort_order: 2
 is_feature_card: true
 card_title: Setting Up Projects
@@ -49,10 +49,10 @@ flowchart LR
 |---|---|---|
 | Request platform access (new PI) | Prospective PI (USC email) | Login screen → **Request access**, then confirm the emailed link ([ADR-028](../dev/ADR-028-platform-access-requests.md)) |
 | Approve a PI | Super admin | **Requests** → **Approve** — sends the Admin invitation. The Super admin does not create or approve teams |
-| Create your teams / trials | Admin (PI) | First sign-in → **Create your team**, then account menu → **New team** (T-15) — Super admin does **not** approve each trial |
+| Create your teams / trials | Admin (PI) | First sign-in → **Create your team**, then **Team** dropdown → **New team** (T-15) — Super admin does **not** approve each trial |
 | Create a project | Team admin | **Projects → Add Project** |
 | Create / own datasets | Team admin | **Datasets → Add Dataset** (name/catalog). Tables appear after ingest. |
-| Ingest tables | Team admin / project Admin | Select the dataset → **Run import…** in the **Dataset overview** pane (**Full** / **Update**, [ADR-022](../dev/ADR-022-in-app-contribution-run-trigger.md)). Otherwise [Contributions]({{APP_URL}}/contributions) — adapt an ingest notebook; use the importer CLI for cron / incremental sync |
+| Ingest tables | Team admin / project Admin | Empty dataset → **Select importer…** (**Your files** or **Sample package**). A dataset that already has tables → **Run import…** (**Update** / **Full**, [ADR-022](../dev/ADR-022-in-app-contribution-run-trigger.md)). Your own export is chosen in the notebook or with `--data-dir`. |
 | Link datasets | Team admin / project owner | Project **Datasets** (declarations only — not ingest) |
 | Run analytics | Project User (or Admin) | Contributions analysis tools against **loaded** (tables present) datasets |
 | Share a dataset to another team | Owning Team admin | Dataset edit → **Shares** |
@@ -184,6 +184,14 @@ flowchart TD
 
 ---
 
+## Archive a project
+
+W4H does not delete a project. **Project → Settings → Archive project** keeps this page open, marks the project archived, and hides it from the project menu. People, datasets, and pages stay as they are. A dataset linked to the archived project stays on any other project that uses it.
+
+**Restore** on that same page puts the name back in the menu. **Archived projects** at the bottom of the project menu opens the list if you come back later.
+
+---
+
 ## UI checklist
 
 | Screen | What to do |
@@ -193,6 +201,7 @@ flowchart TD
 | **Projects → Add** | Name, description, **owning team**. |
 | **Project edit → Datasets** | Add/remove **declarations**; labels show This team / Shared by… / Your team · … Ingest is via Contributions. |
 | **Project edit → Members** | **Admin** ingests tables; **User** runs analytics. Only users on the owning team. |
+| **Project → Settings → Archive** | Stays on the page, marked archived, and drops out of the project menu. People, datasets, and pages stay. Restore on the same page. |
 | **Dataset edit → Shares** | Push share to another team; revoke. Overview: `/admin/datasets/shares`. |
 
 ---

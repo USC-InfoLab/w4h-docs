@@ -74,10 +74,10 @@ The PI (Team admin) then sets up projects and datasets in the **app shell**. See
 
 Open to **USC researchers** for now.
 
-1. On the login screen click **Request access (USC researchers)**.
+1. On the login screen, read **How researchers join**, then click **Request access**.
 2. Enter your name, **USC email**, lab/department, and a short purpose — no patient or study data.
 3. Open the confirmation link W4H emails you (valid for 24 hours). Until you do, nobody sees your request.
-4. A person reviews it. If approved you receive an **invitation** to set your password. On your first sign-in W4H asks you to **create your team** — you name it and are its **Admin**. You can add more teams later from the account menu (**New team**); nobody approves them.
+4. A person reviews it. If approved you receive an **invitation** to set your password. On your first sign-in W4H asks you to **create your team** — you name it and are its **Admin**. You can add more teams later from the **Team** dropdown (**New team**); nobody approves them.
 
 You will not be told whether an account already exists for an address, and a request from an address that is not on an allowed domain is rejected.
 
@@ -89,7 +89,7 @@ For local development setup (cloning repos, `npm run dev`, environment variables
 
 ## 2. Create your team and a project (Admin)
 
-**Start with a team.** A team is your lab or study group — the boundary for your people, datasets and projects. On your first sign-in W4H asks you to **create your team**: give it a name and you are its **Admin**. Need another for a separate study? Account menu → **New team**. Nobody approves teams; the Super admin does not create them. Then: create a project, add datasets, **invite people** (§4).
+**Start with a team.** A team is your lab or study group — the boundary for your people, datasets and projects. On your first sign-in W4H asks you to **create your team**: give it a name and you are its **Admin**. Need another for a separate study? **Team** dropdown → **New team**. Nobody approves teams; the Super admin does not create them. Then: create a project, add datasets, **invite people** (§4).
 
 Projects are the central unit of work — every dataset link and member assignment is scoped to a project ([ADR-001](dev/ADR-001-schema-per-trial.md)).
 
@@ -113,7 +113,7 @@ In the workspace you can manage:
 Declaring a dataset (a name on the team or project) is not the same as loading it.
 
 1. Create or add the dataset on the **project** (declaration) or under **Datasets**.
-2. Ingest tables: for a **runnable** contribution (the **Fitbit CSV importer** or **ICDE demo CSV importer**), open the project workspace → **Datasets**, select the **target catalog row**, then click **Run import…**. That loads a copy of the sample into **that row’s own schema** — it does not truncate a sibling dataset that already has the sample. If the sample is already loaded on the project, **Link … instead** (do not run again). On a first load, pick **Sample / importer** (Fitbit or ICDE). On a re-run of a loaded dataset, choose **Update** or **Full** (**Full** truncates tables in this dataset only). It runs on your personal API key, no notebook or CLI needed ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)). For other importers, adapt the notebook or run the CLI from [Contributions]({{APP_URL}}/contributions) into **your team** — not the Samples sandbox — using your personal API key.
+2. Ingest tables: open the project workspace → **Datasets**, select the **target catalog row**. On an empty dataset click **Select importer…**. **Your files** (EmbracePlus, Fitbit export, glucose, data recorder) loads the small example bundled with that importer so the tables appear; your own export is chosen in the notebook or with `--data-dir`. **Sample package** (Fitbit or ICDE) copies that sample into **that row’s own schema**. If the sample is already loaded on the project, **Link … instead**. On a dataset that already has tables, **Run import…** offers **Update** or **Full** (**Full** replaces tables in this dataset only). It runs on your personal API key ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)).
 3. Confirm **tables** on the dataset overview — that means it is loaded. Mapping details: [ADR-003](dev/ADR-003-dataset-table-model.md).
 
 Researchers only see datasets that are linked to projects they belong to. **Users** do not ingest.
@@ -237,12 +237,12 @@ Documentation is organized into doc types — each type is a folder in the sourc
 | Set up the database | Login page (first run) or Platform Admin → Settings → Database |
 | Request access (new PI) | Login screen → **Request access** · [Quick Start](#request-access-new-pi) |
 | Onboard a PI | Platform Admin → **Requests** → **Approve** (sends the Admin invitation; the Admin creates their own team) · [Welcome — Super admin](guide/welcome-super-admin.md) |
-| Create a team | First sign-in (**Create your team**), then account menu → **New team** (Admin) · [Welcome — Admin](guide/welcome-admin.md) |
+| Create a team | First sign-in (**Create your team**), then **Team** dropdown → **New team** (Admin) · [Welcome — Admin](guide/welcome-admin.md) |
 | Create a project | App shell → Projects (Admin) · [Welcome — Admin](guide/welcome-admin.md) |
 | Work in a project as User | App shell → Project / Contributions · [Welcome — User](guide/welcome-user.md) |
 | Manage datasets | App shell → Datasets (Team admin) |
 | Load tables (runnable importer) | Project workspace → Datasets → select dataset → **Run import…** in overview ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)) |
-| Invite people | App shell → project → People (Admin); another organization joins as a collaborating team |
+| Invite people | App shell → project → People (Admin) |
 | Issue a data-access token | Project workspace → Database access |
 | Configure email | Platform Admin → Settings → Mail Server |
 | Refresh docs from source | Platform Admin → Settings → Documentation Management |

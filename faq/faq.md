@@ -7,7 +7,7 @@ updated_at: 2026-07-22T00:00:00.000Z
 
 ## How do I get an account?
 
-W4H is open to **USC researchers** for now. On the login screen click **Request access**, give your USC email, and confirm the link we email you. A person reviews your request; if approved you receive an invitation, and on first sign-in you create your own team — nobody else creates or approves it. See the [Quick Start](../quick-start.md#request-access-new-pi).
+W4H is open to **USC researchers** for now. The sign-in page explains the platform and how to join. Click **Request access**, give your USC email, and confirm the link we email you. A person reviews your request; if approved you receive an invitation, and on first sign-in you create your own team — nobody else creates or approves it. See the [Quick Start](../quick-start.md#request-access-new-pi). In-app Help is available after you sign in; until then the [USC InfoLab project page](https://infolab.usc.edu/projects/W4H/) is the public overview.
 
 ## How do I chart my data?
 

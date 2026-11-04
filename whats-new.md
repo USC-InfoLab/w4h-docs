@@ -1,6 +1,6 @@
 ---
 title: 🆕 What's New!
-description: Highlights from W4H Toolkit — October 2026 (access requests, collaborating teams, charts, new contributions).
+description: Highlights from W4H Toolkit — October 2026 (access requests, project people, charts, new contributions).
 updated_by: nocera@usc.edu
 updated_at: 2026-10-29T16:00:00.000Z
 ---
@@ -47,18 +47,14 @@ Super admin can also **Invite Admin…** on that page for someone they already k
 
 ---
 
-## Collaborating teams
+## People and datasets on a project
 
-A project still has one **owning team**. It may also list **collaborating teams** from other organizations.
+Collaboration is the **project**: invite people on **People**, link datasets on **Datasets**. There is no “another organization” or collaborating-team invite.
 
-- The owner invites a team; that team's Admin accepts (per project — there is no standing org-to-org agreement).
-- Collaborators join as **User** only. Project Admin stays with the owning team.
-- Each team links and controls **its own** datasets. Removing a team removes its people and its datasets immediately.
 - **Dataset data follows project membership.** Being on a team is not enough to read tables. A team member who is not on the project sees Datasets and People only.
+- Sharing a dataset makes it linkable; it does not add the sharer’s people to the project.
 
-On **Project → People**, home-team badges mark collaborators. Invite another organization under **Collaborating teams**. [ADR-027](dev/ADR-027-cross-org-project-collaboration.md).
-
-![Project People tab with collaborating teams](media/whats-new/project-people.png)
+[ADR-027](dev/ADR-027-cross-org-project-collaboration.md).
 
 ---
 
@@ -96,20 +92,20 @@ Browse **Contributions** in the app (`/contributions`). Super admin curates the 
 
 ### Import your own CSV files
 
-These are **not** the bundled sample-data pairs. You bring the export; tables go into **your** team's dataset (`table_prefix` keeps vendors from colliding). Notebooks have a file chooser. In-app **Run import…** is enabled when the row is `runnable`.
+These are separate from the bundled sample-data pairs. You bring the export; tables go into **your** team's dataset (`table_prefix` keeps vendors from colliding). On an empty dataset, **Select importer…** lists them under **Your files**. The button loads the small example bundled with the importer so the tables appear. Your own export is chosen in the notebook (file chooser) or with `--data-dir`. A dataset that already has tables uses **Run import…**.
 
 | Listing | What it imports | In-app Run |
 |---|---|---|
-| **Fitbit CSV file importer** (`w4h-fitbit-csv-file-importer`) | User-supplied Fitbit account CSVs | **Run import…** |
-| **Glucose monitor CSV file importer** (`w4h-glucose-monitor-csv-file-importer`) | Dexcom Clarity and FreeStyle LibreLink headers | **Run import…** |
-| **Data recorder CSV file importer** (`w4h-data-recorder-csv-file-importer`) | Empatica E4 Connect (raw, no header) plus headered research CSVs (nurse-stress, GalaxyPPG, pain-prediction merge) | **Run import…** |
-| **EmbracePlus CSV file importer** (`w4h-embraceplus-csv-file-importer`) | Empatica Cloud per-minute biomarkers (not E4) | **Run import…** |
+| **Fitbit CSV file importer** (`w4h-fitbit-csv-file-importer`) | User-supplied Fitbit account CSVs | **Select importer…** → Your files |
+| **Glucose monitor CSV file importer** (`w4h-glucose-monitor-csv-file-importer`) | Dexcom Clarity and FreeStyle LibreLink headers | **Select importer…** → Your files |
+| **Data recorder CSV file importer** (`w4h-data-recorder-csv-file-importer`) | Empatica E4 Connect (raw, no header) plus headered research CSVs (nurse-stress, GalaxyPPG, pain-prediction merge) | **Select importer…** → Your files |
+| **EmbracePlus CSV file importer** (`w4h-embraceplus-csv-file-importer`) | Empatica Cloud per-minute biomarkers | **Select importer…** → Your files |
 
 Glucose and recorder tests use **synthetic fixtures** that follow public Kaggle column layouts — those downloads are not in git. [Contributions](guide/sample-packages.md).
 
 ![Flow: select a dataset → Run import…](media/whats-new/run-import.gif)
 
-*Animation: **Run import…** on a project dataset (same dialog for sample importers and file importers).*
+*Animation: opening the importer dialog on a project dataset. An empty dataset says **Select importer…** and groups **Your files** separately from **Sample package**.*
 
 ### Analysis and models
 
@@ -150,7 +146,7 @@ Older months are archived (same idea as VS Code’s versioned Updates pages) so 
 
 | Release | Notes |
 |---|---|
-| **October 2026** | This page (access requests, collaborating teams, charts, new contributions) |
+| **October 2026** | This page (access requests, project people, charts, new contributions) |
 | [September 2026](releases/2026-09.md) | Run import, SQL METS jobs, version pins, cohort Analytics |
 | [August 2026 — 🧗 Peña Roja 0.3.0](releases/2026-08.md) | PHI-safe chat, Contributions catalog, sample CSV pairs, Docker wizard |
 | [July 2026](releases/2026-07.md) | Email code login, Platform Admin setup, discoverable datasets, Usage, audit log |

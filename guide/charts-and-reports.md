@@ -88,8 +88,8 @@ Everyone on the project can **Open** it. The page runs in a sandbox: its scripts
 
 - **Size limit:** 8 MB per report (set by `REPORT_MAX_BYTES` on the server).
 - **It contains data.** Treat a report like the dataset it came from. Do not publish a page that embeds more than you intend to share with the project.
-- **Your team's datasets only.** A report cannot use a dataset owned by another team, because that team could not take its data back from a file. So datasets a collaborating team contributes to your project cannot go into a report. Publishing is a project-Admin action, so a collaborating team's people cannot publish reports in someone else's project.
-- **Revocation.** Unlinking a dataset from the project (or a collaborating team leaving) **deletes the reports built from it**.
+- **Your team's datasets only.** A report cannot use a dataset owned by another team, because that team could not take its data back from a file. Publishing is a project-Admin action.
+- **Revocation.** Unlinking a dataset from the project **deletes the reports built from it**.
 - **Who can delete:** the publisher, a project Admin, or the owning team's Admin.
 - **Audit:** publishing, opening and deleting a report are all recorded.
 

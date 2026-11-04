@@ -21,7 +21,7 @@ First analysis walkthrough: [Quick Start](../quick-start.md) §5. Catalog: [Cont
 
 | Step | Where | Why |
 |---|---|---|
-| **1. Open your project** | Project in the nav | Study info, members, and which datasets are **linked**. You cannot add datasets or edit raw tables. |
+| **1. Open your project** | Project name in the nav (dropdown) | Study info, members, and which datasets are **linked**. You cannot add datasets or edit raw tables. |
 | **2. Check loaded data** | Project → dataset overview | A dataset is **loaded** only when **tables** appear. No tables means it is not loaded yet — ask an Admin. |
 | **3. Explore and chart** | Project → **Analytics** → *Explore signals* | Chart any signal of a loaded dataset — time series, distributions, coverage, scatter, events — and export PNG or CSV. See [Charts and Reports](charts-and-reports.md). |
 | **4. Run analytics** | [Contributions]({{APP_URL}}/contributions) | Analysis notebooks and CLI against loaded, linked datasets. Use your **personal API key** (Profile → API keys) or a project token. Never commit keys. |

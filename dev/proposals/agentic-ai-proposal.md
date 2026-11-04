@@ -53,7 +53,7 @@ Scoped to a handful of tools, this is small and does not touch the free-SQL rule
 
 - `SELECT` only, checked against an allowlist by parsing the SQL.
 - A dedicated read-only database role with `statement_timeout` and row limits.
-- No base-table access, and no joins across collaborating teams' datasets.
+- No base-table access, and no joins across other teams' datasets.
 - Results go to the UI as a table or chart. The model gets schema, row count and column summaries only.
 - A good query can be **saved as a YAML contribution**, so it becomes versioned and citable.
 

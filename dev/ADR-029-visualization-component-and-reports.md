@@ -67,7 +67,7 @@ An Admin runs a notebook in their own environment, then **publishes** the HTML t
 - Shown in an **iframe with `sandbox="allow-scripts"`** (no same-origin, no top navigation) under a strict CSP, from content stored by the API — never from a third-party URL.
 - Labelled with a **"snapshot as of"** stamp and its provenance: contribution and version, source datasets, publisher, time.
 - A publish-time warning that the HTML embeds the data it plots. Publishing and viewing are audited.
-- **Cross-org rule (ADR-027):** a report may only use datasets the publisher's team owns; otherwise it is blocked or labelled with its sources, because a contributing team could not revoke data embedded in a file.
+- **Publisher's team only (ADR-027):** a report may only use datasets the publisher's team owns; otherwise it is blocked or labelled with its sources, because another team could not revoke data embedded in a file.
 
 Server-side notebook execution is a possible later step. It needs Python in the `api` container (D-31) and is not part of this ADR.
 
@@ -77,7 +77,7 @@ Server-side notebook execution is a possible later step. It needs Python in the 
 - `lib/viz-queries.js` binds each registered table through the mapping (subject, time, values, including a combined date + time pair) and `information_schema` column types; identifiers are validated, every value is a bind parameter, queries run `READ ONLY` with a 15 s statement timeout, and every result is capped (12 subject lines, 2,000 points, 5,000 scatter points, 20,000 heatmap cells, 500 events).
 - `GET /datasets/:id/analytics/catalog` and `POST /datasets/:id/analytics/series` in `routes/datasets.js`: access by project membership (`assertCanViewDataset`), each call audited as `dataset.query` with `analytics: viz`.
 - `lib/viz-display.js`: the fixed chart set and `sanitizeDisplay`. A SQL contribution's preview result now carries a sanitized `display`.
-- Reports: table `w4h.project_reports` and `GET`/`POST /projects/:id/reports`, `GET /projects/:id/reports/:id/content`, `DELETE /projects/:id/reports/:id` (`routes/projects.js`, `lib/reports.js`). Publishing is a project-Admin action and requires an acknowledgement, at least one declared dataset, datasets linked to the project and owned by the publisher's team, a size under `REPORT_MAX_BYTES` (8 MB) and an HTML page. The content endpoint injects a CSP (`connect-src 'none'`, no frames, no forms, no base) right after the doctype. Unlinking a dataset, or a collaborating team leaving, deletes the reports built from it. Publish, view and delete are audited.
+- Reports: table `w4h.project_reports` and `GET`/`POST /projects/:id/reports`, `GET /projects/:id/reports/:id/content`, `DELETE /projects/:id/reports/:id` (`routes/projects.js`, `lib/reports.js`). Publishing is a project-Admin action and requires an acknowledgement, at least one declared dataset, datasets linked to the project and owned by the publisher's team, a size under `REPORT_MAX_BYTES` (8 MB) and an HTML page. The content endpoint injects a CSP (`connect-src 'none'`, no frames, no forms, no base) right after the doctype. Unlinking a dataset deletes the reports built from it. Publish, view and delete are audited.
 
 **App (`w4h-app`)**
 - `components/viz/`: `echarts.js` (tree-shaken registration), `vizOptions.js` (data → ECharts option, Okabe–Ito palette, readable time ticks, theme tokens), `ChartCard.vue` (frame with loading/empty/error, PNG and CSV export, "view as table", re-theme on dark mode), `SignalExplorer.vue` (the explorer on the Analytics tab).
@@ -87,7 +87,7 @@ Server-side notebook execution is a possible later step. It needs Python in the 
 
 **Verified:** 46 API checks on a scratch database (wearable and clinical shapes, injection attempts, caps, access, audit, cross-org rule, revocation), and a headless-browser pass: the five chart kinds render, the table view works, a report is published through the form and opened, and inside it a network request is **blocked by the CSP** and access to the parent page is **blocked by the sandbox**.
 
-**Not done (still open):** grouping by a subject attribute and a minimum group size; PDF export of a whole dashboard (per-chart PNG/CSV exist); maps; the app drawing a contribution's `display` automatically in the Run dialog (the API returns it); outlier markers (MVP A-05). A collaborating team's Admin cannot publish reports in someone else's project (publishing needs project-Admin rights).
+**Not done (still open):** grouping by a subject attribute and a minimum group size; PDF export of a whole dashboard (per-chart PNG/CSV exist); maps; the app drawing a contribution's `display` automatically in the Run dialog (the API returns it); outlier markers (MVP A-05). Publishing needs project-Admin rights.
 
 ## Open questions
 

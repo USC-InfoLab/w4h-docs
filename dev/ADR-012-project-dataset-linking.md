@@ -89,7 +89,7 @@ Not visible to: Team B  (share alone does not grant project membership)
 | Team B team admin | No | Yes (outbound share / “shared with Team A”) |
 | Team B users not on P | No | No dataset browse into A |
 
-**Superseded by [ADR-027](ADR-027-cross-org-project-collaboration.md):** a project has one owning team but may add **collaborating teams** (invited by the owner side, accepted by the invited team's Admin). Their people join as Users and see only that project; each team contributes and controls its own datasets. The same-team-only rule no longer applies.
+**[ADR-027](ADR-027-cross-org-project-collaboration.md):** dataset **data** follows project membership (team membership alone does not read tables). Collaborating teams / “another organization” are retracted — joint work is People + linked datasets, not a team-to-team invite. Share still does not share the project.
 
 ### 5. Team admin self-service checklist
 
@@ -133,7 +133,8 @@ Not visible to: Team B  (share alone does not grant project membership)
 
 | Date | Change |
 |---|---|
-| 2026-10-04 | §4 membership rule superseded by ADR-027 (cross-org project collaboration). |
+| 2026-10-30 | ADR-027 amended: collaborating teams retracted; share still ≠ project; data access stays project-scoped. |
+| 2026-10-04 | §4 membership note pointed at ADR-027 (later retracted the collaborating-teams half). |
 | 2026-10-04 | Project visibility: any member of the owning team sees the project overview (MVP P-06); pages and edit stay with project members and team admins. |
 | 2026-07-21 | Discoverable catalog listing (metadata only) vs share; Mine / Others / Shared filters. |
 | 2026-07-15 | Accepted — documents multi-dataset linking, push-share UX, and project visibility vs dataset share. |

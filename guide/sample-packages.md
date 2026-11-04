@@ -11,7 +11,7 @@ Curated tools live in **Contributions** (`{{APP_URL}}/contributions`) — a mark
 
 **Who does what**
 
-- **Admins** link or create datasets on a project, then load tables. If the contribution is marked **runnable** and is an **importer**, select the dataset and click **Run import…** in the **Dataset overview** pane ([ADR-022](../dev/ADR-022-in-app-contribution-run-trigger.md)). **Runnable SQL jobs** (e.g. **w4h-sql-compute-mets**) use **Run analysis…** on the project **Analytics** tab — same `POST /contributions/:slug/run` with `{ dataset_id }` ([ADR-023](../dev/ADR-023-sql-analytics-contributions.md)). Otherwise, load tables by adapting a notebook or deploying a CLI. Sample datasets on a demonstration project are read-only (Super admin seeds them). Loaded means tables and stats show on the overview.
+- **Admins** link or create datasets on a project, then load tables. On an empty dataset, **Select importer…** in the **Dataset overview** pane ([ADR-022](../dev/ADR-022-in-app-contribution-run-trigger.md)): **Your files** or **Sample package**. A dataset that already has tables uses **Run import…**. **Runnable SQL jobs** (e.g. **w4h-sql-compute-mets**) use **Run analysis…** on the project **Analytics** tab — same `POST /contributions/:slug/run` with `{ dataset_id }` ([ADR-023](../dev/ADR-023-sql-analytics-contributions.md)). Sample datasets on a demonstration project are read-only (Super admin seeds them). Loaded means tables and stats show on the overview.
 - **Users** see the same overview, docs, analytics, and Jupyter tools. They run analysis against loaded tables. They cannot invite people or create/load team datasets.
 
 Search for tasks such as “load CSV” or “approximate query”. Each listing points at **one git repo**. The README is rendered on the catalog detail page.
@@ -27,9 +27,9 @@ Paired vendor sample + importer repos ([ADR-016](../dev/ADR-016-paired-sample-im
 
 The ICDE demo pair is trimmed synthetic data from the ICDE 2024 prototype (`w4h-icde-demo`); it exercises the geo branch of GeoMTS mapping ([ADR-008](../dev/ADR-008-geomts-data-model.md)).
 
-**File importers** (your export files, not bundled sample repos) — one repo each; synthetic fixtures for tests and in-app Run ([ADR-016](../dev/ADR-016-paired-sample-importer-repos.md)):
+**File importers** (your export) are listed under **Your files** in **Select importer…**. The in-app button loads the small example bundled with the importer so the tables appear. Your own export is chosen in the notebook or with `--data-dir` ([ADR-016](../dev/ADR-016-paired-sample-importer-repos.md)):
 
-| Contribution | Devices | In-app **Run import…** (when `runnable`) |
+| Contribution | Devices | In-app **Select importer…** (when `runnable`) |
 |---|---|---|
 | **w4h-fitbit-csv-file-importer** | Fitbit CSV export | Yes |
 | **w4h-glucose-monitor-csv-file-importer** | Dexcom Clarity, FreeStyle LibreLink | Yes (after catalog + staging) |

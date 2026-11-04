@@ -59,7 +59,7 @@ ADRs in tree: **30**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/ADR-024-ingest-assistant.md` | ADR-024 — Ingest assistant: obscured file profiles, csv-batch, generated runnable package |
 | `dev/ADR-025-phi-safe-agent-tools.md` | ADR-025 — PHI-safe agent tools (post-MVP) |
 | `dev/ADR-026-multi-provider-llm.md` | ADR-026 — Multi-provider LLM (post-MVP) |
-| `dev/ADR-027-cross-org-project-collaboration.md` | ADR-027 — Cross-org project collaboration |
+| `dev/ADR-027-cross-org-project-collaboration.md` | ADR-027 — Project membership is the collaboration unit |
 | `dev/ADR-028-platform-access-requests.md` | ADR-028 — Platform access requests |
 | `dev/ADR-029-visualization-component-and-reports.md` | ADR-029 — Generic visualization component and published reports |
 | `dev/ADR-README.md` | ADR Readme |
