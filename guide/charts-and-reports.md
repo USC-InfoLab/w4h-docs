@@ -28,6 +28,15 @@ W4H chooses what can be charted from the dataset's **column mapping** (which col
 | **Scatter (two signals)** | One signal against another, matched by subject and time bucket (for example heart rate vs steps) |
 | **Events** | Irregular or categorical records — visits, medications, lab results — one row per subject |
 
+### Signals, values and types
+
+Open **About *signal*** under the chart pickers to see what the selected signal measures, its time column and date range, and each of its values with type, unit and meaning. The value you are charting is highlighted. For a scatter it shows both signals. When the importer knows the vendor's documentation, a **documentation** link opens it (for EmbracePlus, the page of Empatica's *Data Access* manual that describes that biomarker).
+
+- A **signal** is one kind of measurement, such as pulse rate or skin temperature. Each signal has a **subject** column (whose data it is), a **time** column, and one or more **values**.
+- A **Number** value (for example `pulse_rate_bpm`, in bpm) can be drawn as a time series, a distribution or a scatter.
+- A **Category** value is a text label or a code (for example `activity_intensity`: sedentary, LPA, MPA, VPA). It is drawn as **Events**.
+- The **unit** and description come from the importer that loaded the data. A dash means the importer did not provide one.
+
 **Controls:** signal and value, date range, **bucket** (how much time one point covers — *Auto* keeps the chart readable), **aggregate** (average, min, max, sum, count, median), **per subject / all subjects**, and a subject filter. With no subjects selected, charts use the first 12.
 
 On every chart:
@@ -37,7 +46,14 @@ On every chart:
 
 ### What the charts show
 
-Times appear exactly as stored in the dataset (for example, 09:00 stays 09:00), whatever your browser's timezone.
+Times are always shown as dates and times, never as raw Unix numbers. How they appear depends on the dataset's time column:
+
+- **UTC times** — Unix time columns, and times the importer marks as UTC (for example EmbracePlus `timestamp_iso`): shown in **UTC** by default. Use **Show times in** to switch the time series and events charts to your browser's time zone. The coverage heatmap and the **From / To** dates always use UTC days.
+- **All other times** (for example Fitbit exports): shown exactly as recorded (09:00 stays 09:00), whatever your browser's time zone.
+
+The **About *signal*** panel shows which kind the selected signal uses.
+
+The chart subtitle says which one you are looking at. **Table** shows readable times; the **CSV** export keeps ISO 8601 times (`2026-10-08T19:00:00Z`) so other tools can read them.
 
 Charts show **aggregated or downsampled** values, never every raw row, and large results are capped (a note says *truncated* when that happens). Each chart request is recorded in the audit log. You see only datasets linked to a project you belong to.
 

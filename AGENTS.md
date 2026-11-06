@@ -23,6 +23,7 @@ Agent instructions for the Wearables for Health (W4H) multi-repo workspace. The 
 
 - Projects: [ADR-027](dev/ADR-027-cross-org-project-collaboration.md) — collaboration is **people + linked datasets on a project**. No collaborating-team / “another organization” object. **Dataset data follows project membership** (team membership alone reads nothing). A team owns the catalog (who ingested / unlinks).
 - Onboarding: [ADR-028](dev/ADR-028-platform-access-requests.md) — USC researchers request access from the login screen (verified email); the **Super admin only approves** (sends an Admin invitation). The Super admin does not create or approve teams; the Admin creates their own.
+- Project report drafts: [ADR-030](dev/ADR-030-project-report-drafts-rich-text.md) — project pages use a rich-text editor, HTML is stored (sanitized by the API), Markdown is an export copy. Plots and slides come after the EmbracePlus analytics work. Platform Help is edited in this repo only; do not add or extend an in-app Help editor.
 - Charts and reports: [ADR-029](dev/ADR-029-visualization-component-and-reports.md) — one vendor-agnostic in-app chart layer driven by the dataset's GeoMTS mapping, plus sandboxed notebook **reports** (snapshots) for edge cases. Contributions ship no UI code.
 
 Prefer updating ADRs/MVP when changing roles, tenancy, datasets, or docs model — do not invent conflicting product rules in code comments alone.

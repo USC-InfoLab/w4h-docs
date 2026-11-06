@@ -13,6 +13,21 @@ W4H is open to **USC researchers** for now. The sign-in page explains the platfo
 
 Open your project → **Analytics** → *Explore signals*. It works for any loaded dataset — wearables or clinical tables, any vendor. For views it cannot show, an Admin can publish an interactive notebook as a **report**. See [Charts and Reports](../guide/charts-and-reports.md).
 
+## Does the EmbracePlus importer load the raw sensor data?
+
+No. The **EmbracePlus CSV file importer** loads only Empatica's **per-minute digital biomarkers**. It skips the raw Avro files. An Empatica Cloud export holds both, described in Empatica's [Data Access documentation](https://manuals.empatica.com/ehmp/careportal/data_access/v2.7/en.pdf){target="_blank"} (PRS-0000205 REV19.0, July 2024):
+
+| | Per-minute biomarkers (loaded) | Raw data (not loaded) |
+|---|---|---|
+| Folder | `digital_biomarkers/aggregated_per_minute/` | `digital_biomarkers/raw_data/` |
+| Format | One CSV per biomarker, one row per minute | Avro, a new file about every 30 minutes or after a gap such as charging |
+| Content | Values computed by Empatica's algorithms, e.g. pulse rate, pulse rate variability, respiratory rate, SpO2, EDA, temperature, steps, activity, METs, sleep, wearing detection, gait | Sensor streams: accelerometer, gyroscope, EDA, temperature, blood volume pulse, steps, systolic peaks, tags |
+| Rate | 1 minute | Each sensor's sampling rate is stored inside the Avro file |
+
+A minute with no valid value keeps its row, and `missing_value_reason` says why, for example `device_not_recording` or `device_not_worn_correctly`.
+
+Per-minute data covers wear, activity and heart-rate analysis across a cohort. Work that needs the raw streams, such as running your own peak detection on blood volume pulse or your own gait algorithm on the accelerometer, needs an Avro importer. None exists yet. Which biomarkers and raw sensors your export contains depends on your Empatica study configuration.
+
 ## What is W4H?
 
 W4H is a toolkit for managing wearable health data workflows for clinical research — projects, datasets, contributions, and documentation.

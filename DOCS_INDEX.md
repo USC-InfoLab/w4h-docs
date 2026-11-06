@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-10-29
+- Generated: 2026-11-05
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -18,7 +18,7 @@ Structural map of `w4h-docs` for agents and humans. **Index only** — not a sub
 | Docs screenshots / fake users | `dev/docs-fixtures.md` |
 | Guides | `guide/` |
 
-ADRs in tree: **30**. Prefer MVP + relevant ADR before inventing product rules.
+ADRs in tree: **31**. Prefer MVP + relevant ADR before inventing product rules.
 
 ## Root
 
@@ -62,6 +62,7 @@ ADRs in tree: **30**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/ADR-027-cross-org-project-collaboration.md` | ADR-027 — Project membership is the collaboration unit |
 | `dev/ADR-028-platform-access-requests.md` | ADR-028 — Platform access requests |
 | `dev/ADR-029-visualization-component-and-reports.md` | ADR-029 — Generic visualization component and published reports |
+| `dev/ADR-030-project-report-drafts-rich-text.md` | ADR-030 — Project report drafts in a rich-text editor; platform Help edited in git only |
 | `dev/ADR-README.md` | ADR Readme |
 | `dev/agentic-ai-roadmap.md` | Agentic AI roadmap (post-MVP) |
 | `dev/analytics-contributions.md` | Analytics contributions — RA handoff (METs & wear compliance) |

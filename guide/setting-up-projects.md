@@ -184,11 +184,15 @@ flowchart TD
 
 ---
 
+## Switching projects
+
+Pick a project from the project menu at the top of the page. W4H saves your choice to your account, so the next time you sign in, on any browser or computer, Home opens on that project. If you no longer have access to it, Home opens on your first project instead.
+
 ## Archive a project
 
 W4H does not delete a project. **Project → Settings → Archive project** keeps this page open, marks the project archived, and hides it from the project menu. People, datasets, and pages stay as they are. A dataset linked to the archived project stays on any other project that uses it.
 
-**Restore** on that same page puts the name back in the menu. **Archived projects** at the bottom of the project menu opens the list if you come back later.
+**Restore** on that same page puts the name back in the menu. **Archived projects** at the bottom of the project menu opens the list. From an archived project, the **Archived projects** breadcrumb goes back to that list.
 
 ---
 
@@ -201,7 +205,7 @@ W4H does not delete a project. **Project → Settings → Archive project** keep
 | **Projects → Add** | Name, description, **owning team**. |
 | **Project edit → Datasets** | Add/remove **declarations**; labels show This team / Shared by… / Your team · … Ingest is via Contributions. |
 | **Project edit → Members** | **Admin** ingests tables; **User** runs analytics. Only users on the owning team. |
-| **Project → Settings → Archive** | Stays on the page, marked archived, and drops out of the project menu. People, datasets, and pages stay. Restore on the same page. |
+| **Project → Settings → Archive** | Stays on the page, marked archived, and drops out of the project menu. Find it later under **Archived projects** in that menu. Restore on Settings. |
 | **Dataset edit → Shares** | Push share to another team; revoke. Overview: `/admin/datasets/shares`. |
 
 ---

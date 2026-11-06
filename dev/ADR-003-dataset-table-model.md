@@ -54,7 +54,7 @@ The registry maps **physical column names → GeoMTS roles**:
 | Role | Meaning | Required? |
 |------|---------|-----------|
 | `subject` | Participant key column | Yes for GeoMTS analysis |
-| `time` | Single timestamp column, or combine of date+time columns | Yes for time-series |
+| `time` | Single timestamp column (`"ts"` or `{ "column": "ts" }`), or combine of date+time columns. Add `"zone": "UTC"` when the stored times are UTC instants; otherwise charts show them as recorded. A numeric (Unix epoch, s or ms) column is always read as UTC | Yes for time-series |
 | `geo_lat` / `geo_lon` | Latitude / longitude columns | Optional |
 | `value` (one or more) | Signal / measure columns | Yes (≥1) |
 
@@ -71,6 +71,8 @@ Example registry mapping for a Fitbit-style heart-rate table that keeps native n
   ]
 }
 ```
+
+Each `values` entry may also carry a `unit`; the in-app chart help shows `description` and `unit` (falling back to the column's PostgreSQL comment).
 
 Ingest, query helpers, viz, and ML use this mapping to interpret tables. Researchers can still `SELECT *` and recognize familiar columns.
 

@@ -39,6 +39,7 @@ This directory contains ADRs for the W4H wearables toolkit. Each file captures t
 | [ADR-027](ADR-027-cross-org-project-collaboration.md) | Project membership is the collaboration unit (collaborating teams retracted) | Accepted |
 | [ADR-028](ADR-028-platform-access-requests.md) | Platform access requests (USC-verified) | Accepted |
 | [ADR-029](ADR-029-visualization-component-and-reports.md) | Generic visualization component and published reports | Accepted |
+| [ADR-030](ADR-030-project-report-drafts-rich-text.md) | Project report drafts in a rich-text editor; platform Help edited in git only | Accepted |
 
 ## What is an ADR?
 

@@ -2,12 +2,12 @@
 title: MVP
 description: ""
 updated_by: nocera@usc.edu
-updated_at: 2026-10-04T00:00:00.000Z
+updated_at: 2026-11-05T00:00:00.000Z
 sort_order: 3
 ---
 **Protocol Version:** 1
 
-**Date Updated:** October 4, 2026
+**Date Updated:** November 5, 2026
 
 **Title:** W4H Toolkit — Validating and Promoting the W4H Toolkit
 
@@ -17,8 +17,10 @@ sort_order: 3
 
 **Funding:** SC CTSI Pilot Funding Program
 
-**Document Status:** Draft v0.36
+**Document Status:** Draft v0.37
 
+> **Changelog (v0.36 → v0.37):** **[ADR-030](ADR-030-project-report-drafts-rich-text.md)** — project pages become **rich-text report drafts** stored as HTML, with Markdown export (Doc-19, Doc-20), embedded notebook plots (Doc-21), an optional slide workflow (Doc-22) and a later contributed-docs round trip (Doc-23). Platform Help is edited only in `w4h-docs`; the in-app Help editor is dropped (Doc-05 retired). Plots, slides, project-wide export and removing the Help editor are scheduled after the analytics are useful on basic EmbracePlus per-minute data. M2 now counts Doc-19 and Doc-20 (the proposal's WYSIWYG deliverable) and drops Doc-05, then **built** the editor, HTML storage and per-page Markdown export the same day (Doc-19, Doc-20 `✅ Done`), which takes M2 from 80% to **83%** (recomputed from the rows; the old 80% was itself stale at 82%). Added P-15 (last project remembered on the account).
+>
 > **Changelog (v0.35 → v0.36):** **[ADR-027](ADR-027-cross-org-project-collaboration.md)** — **dataset data follows project membership** (team membership alone no longer reads a dataset; owning-team Admin and Super admin keep access). Collaborating teams / “another organization” were added in v0.36 and **retracted 2026-10-30** (P-11): collaboration is People + linked datasets. Fixed a dual-hat read leak in `canReadProject` (global `users.role` was honoured across teams), blanked project pages and ACL rules for team members who are not on the project, and limited ingest-by-project-owner to the owner's own team's datasets. Added P-12–P-14. REDCap: multi-site studies map to one dataset per site team contributed into a shared project (data access groups inside one dataset stay out of scope). Docs screenshot scripts now capture the Super admin **Requests** page instead of the removed Add Team page (the docs fixture seeds one synthetic pending request); the Users edit screen lets a Super admin save an approved Admin who has no team yet; the Admin getting-started cards, guides and Help chat lead with *create a team → project → invite people*. **§17 Delivery Timeline re-baselined**: statuses and progress are now derived from the requirement rows (standalone Docker is built, the documentation system is complete, §7 sharing is verified), and stale rows were corrected (Dep-01/03/05, S-01–S-07, S-10, U-02–U-04, D-06, D-07, D-23, A-01a, A-04a, A-04c). Also audited §3.2 (T-07–T-14; T-11 stays in progress) and fixed team-member removal, which left project access behind and could strand a user with no team or a team with no Admin. Counted the **dataset overview stats** (new A-08) and the **approximate-queries** analysis (new A-09) toward M3, which moves M3 from 45% to 55%, then added the planned **generic visualization component, series API and published reports** (A-10–A-12, [ADR-029](ADR-029-visualization-component-and-reports.md) Draft), which brought M3 to 44% while unbuilt, then **built and verified** (series API, ECharts component, published reports; A-02 and A-06 updated), which took M3 to 64%. A follow-up **audit of A-03, A-04 and A-07** moved A-03 and A-07 to `✅ Done` but found the wear-compliance cache has no producer and the METs cache has no refresh trigger (A-01a, A-04, A-04a, A-04c back to `🚧 In progress`), leaving M3 at 63%. A **second pass** then built the missing pieces: a platform producer for the wear-compliance cache (`lib/dataset-wear-summary.js`), a **Refresh** button and automatic refresh after every run, a wear-protocol editor and per-subject filter, and catalog rows for the existing `w4h-fitbit-wear-compliance` and `w4h-demo-approximate-queries` repos — A-01a, A-04, A-04a–c and A-09 are `🔁 In review`, taking M3 to **81%** (built, not yet used on real data). The audit also fixed a timezone bug (cohort default end date a day late; dataset **Date range** tile always empty; chart time axes shifted by the browser's timezone) and a project-page bug (a team member who is not on the project saw "Unauthorized" errors). Also added the missing **project count** to the Teams list (T-02 → `✅ Done`). Also set R-01, R-03, R-04, R-05, R-06, D-12 and D-16 to `✅ Done` after auditing code, added R-10/R-11, and retired the global `users.role = team_admin` (R-08, R-09 → `✅ Done`: schema migration, membership-only checks, dual-hat project creation now needs Admin on the target team); D-09, D-10 and D-15 to `🚧 In progress`. Fixed the `dataset.import.csv` audit write, which never wrote a row. Onboarding (§3.0): stage 1 is an in-app **Request access** form writing to `w4h.access_requests`; the Super admin is notified (email + home/menu count) and **Approves** from a queue — their only act; they do not create or approve teams. The approved Admin creates their own teams on first sign-in (T-15; T-16–T-20, [ADR-028](ADR-028-platform-access-requests.md)), limited to verified USC email addresses for now — built and verified at the API level; the new pages are not yet exercised in a browser. **M4 re-scoped to one worked example** (§11): the milestone is now a single example model contribution — the per-subject resting heart-rate anomaly detector `w4h-hr-anomaly` (adapter + model, notebook + CLI) — applied to a project dataset and shown in the dashboard. M-03–M-06 are marked post-MVP and excluded from the count; added M-09 (catalog row and `display:` drawing); M-01, M-02 and M-08 are `🚧 In progress`. M4 moves from 10% to 76% after the example was run against a live API (M-02 Done, M-01 In review, M-09 In progress). Fixed `format()` bind-parameter casts in `w4h-api/lib/ingest-csv.js` (`COMMENT ON` failed with 42P18, so any csv-batch import carrying a description returned 500).
 > **Changelog (v0.34 → v0.35):** §17 Delivery Timeline now carries the **proposal milestone plan** (M1–M9: scope, deliverable, completion month) as a **Proposal target** column beside the current **Target**, so slippage is explicit (M1: May → July 2026; M3: August → September 2026). Added the proposal's deliverable wording (WYSIWYG documentation, reusable analytics/plotting library, standalone vs Spark Docker, public release). Status and progress unchanged.
 > **Changelog (v0.33 → v0.34):** **Contribution version pin** ([ADR-018](ADR-018-contributions-catalog.md)): catalog rows store `version` plus last-seen GitHub tag (`latest_version` / `latest_repo_ref`). Super admin **Check for updates** / **Update** on `/admin/contributions` (`POST /contributions/check-updates`, `POST /contributions/:slug/update-version`) — inspect the tag, then pin `repo_ref`. Never auto-follow `main`. In-app Run checks out the pin; dirty sibling checkouts stay as-is. `contribution_runs` records the pin used. Added **D-36**. Publishers cut `vMAJOR.MINOR.PATCH` tags (GitHub Release preferred). Not a versions table and not community self-publish (still M9).
@@ -234,7 +236,7 @@ sequenceDiagram
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
-| P-01 | Create, list, view, edit, archive projects. Archived projects are hidden from default lists (per [ADR-010](ADR-010-soft-delete-no-hard-deletion.md)) with an Active/Archived/All filter (Team admin, project `owner`, Super admin) to find and unarchive one. Archiving a project leaves its linked datasets and dataset shares untouched — no cascade. | `✅ Stable` | `✅ Done` |
+| P-01 | Create, list, view, edit, archive projects. Archived projects are hidden from default lists (per [ADR-010](ADR-010-soft-delete-no-hard-deletion.md)). **Archived projects** in the project menu opens that list so a Team admin, project `owner`, or Super admin can find and unarchive one. Archiving a project leaves its linked datasets and dataset shares untouched — no cascade. | `✅ Stable` | `✅ Done` |
 | P-02 | Project member roles: `owner`, `editor`, `viewer` (retire project `admin`). | `✅ Stable` | `✅ Done` |
 | P-03 | At least one `owner` enforced per project. | `✅ Stable` | `✅ Done` |
 | P-04 | Projects have a `team_id` (owning team). | `✅ Stable` | `✅ Done` |
@@ -248,6 +250,7 @@ sequenceDiagram
 | P-12 | Project members are the People roster. Add and remove them on the project. | `✅ Stable` | `✅ Done` |
 | P-13 | A project member sees that project (roster, linked datasets, pages). They do not see other projects unless they are members there. | `✅ Stable` | `✅ Done` |
 | P-14 | Only an Admin of a dataset's owning team can link it into a project that is not owned by their team, and can unlink it at any time. A project Admin ingests only into datasets their own team owns. Link and unlink are audited. | `✅ Stable` | `✅ Done` |
+| P-15 | The app remembers each person's last project on their account (`w4h.users.preferences.last_project_id`, `GET`/`PATCH /users/me/preferences`). Choosing or opening a project saves it. Signing in, on any browser or computer, opens Home on that project, or on their first project if they no longer have access to it. People sharing a browser do not inherit each other's project. | `✅ Stable` | `✅ Done` — verified on `w4h-sample`: API (save, read, clear, per-user, bad input rejected, not in the JWT) and browser sign-in restore and save. |
 
 ---
 
@@ -458,7 +461,7 @@ The W4H Toolkit supports applying, retraining, and extending pre-built ML models
 
 Platform Help docs are global (not project-owned). Managed by Super admin; synced with `w4h-docs`.
 
-**Editor (MVP):** Platform and project page editing use a **Markdown editor with preview** (source + rendered preview). True rich-text WYSIWYG is out of scope for MVP.
+**Editing:** Platform Help is edited only in the `w4h-docs` repo and imported into the app; there is no in-app Help editor ([ADR-030](ADR-030-project-report-drafts-rich-text.md)). Project pages get a rich-text editor (§12.2).
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
@@ -466,7 +469,7 @@ Platform Help docs are global (not project-owned). Managed by Super admin; synce
 | Doc-02 | Admin UI provides a path to **pull and update docs** from the external repository / source path. | `✅ Stable` | `✅ Done` |
 | Doc-03 | Admin UI provides a path to **export** docs (Markdown zip) for publish / round-trip with the repository. | `✅ Stable` | `✅ Done` |
 | Doc-04 | Docs rendered in the app are fetched from the database (previously synced from the repo). | `✅ Stable` | `✅ Done` |
-| Doc-05 | Markdown editor with preview for editing platform documentation pages within the admin UI. | `✅ Stable` | `✅ Done` |
+| Doc-05 | **Retired** ([ADR-030](ADR-030-project-report-drafts-rich-text.md)): no in-app editor for platform Help; edit in `w4h-docs`. | `❌ Retired` | `🚩 Todo` — remove the Markdown editor for Help from the `w4h-app` admin UI. |
 | Doc-06 | Documentation supports embedded code examples, GeoMTS schema snippets, and mermaid diagrams. | `✅ Stable` | `✅ Done` |
 | Doc-07 | Platform docs support import from path and export to zip for source-controlled management with an external repository. | `✅ Stable` | `✅ Done` |
 
@@ -474,21 +477,26 @@ Platform Help docs are global (not project-owned). Managed by Super admin; synce
 
 Project pages are **not** platform docs. They use a **separate database table** (not `w4h.docs`, and not a join that only links platform slugs). Each page belongs to exactly one project and never appears in the global Help / platform docs tree.
 
-Hierarchy and authoring match platform docs **within the project**: page types/groupings, sort order, sidebar navigation, Markdown body, TOC, and the same Markdown editor with preview — scoped so one project’s structure cannot leak into another.
+Hierarchy matches platform docs **within the project**: page types/groupings, sort order, sidebar navigation, TOC — scoped so one project’s structure cannot leak into another. Pages are also where a team **drafts research reports**: a rich-text editor, HTML as the stored format, Markdown export ([ADR-030](ADR-030-project-report-drafts-rich-text.md); built). Embedded notebook plots and slides follow the EmbracePlus analytics work.
 
 | # | Requirement | Req Status | Impl Status |
 |---|-------------|------------|-------------|
 | Doc-08 | Project documentation pages are stored in a dedicated table separate from platform `docs`; each row has a `project_id` and is owned by that project only. | `✅ Stable` | `✅ Done` |
-| Doc-09 | Within a project, pages support the same hierarchy functionality as platform docs: typed groupings (doc types), sort order, sidebar nav, slug/title, Markdown/HTML/TOC, and Markdown editor with preview for create/edit. | `✅ Stable` | `🚧 In progress` |
+| Doc-09 | Within a project, pages support the same hierarchy functionality as platform docs: **categories** (free-form per project — defaults Report, Guide, Workflow, Reference; create from the picker, rename or merge with `PATCH /projects/:id/page-categories`; filter chips with counts), sort order, sidebar nav, slug/title, TOC. Editing is full width without the page list. (The editor is Doc-19.) | `✅ Stable` | `🚧 In progress` |
 | Doc-10 | Project pages may include protocol descriptions, data dictionaries, analysis notes, and similar project materials. | `✅ Stable` | `🚩 Todo` |
 | Doc-11 | **Default access from project membership:** any project member can **read, create, edit, reorder, and delete** project documentation pages from the project workspace (no Admin UI required). Super admin can manage pages for any project. | `✅ Stable` | `✅ Done` |
 | Doc-12 | **ACL:** Project ACL rules must support `resource_type = doc` with `view` / `edit` (and optional `resource_key` for a specific page). Defaults from Doc-11 apply when no ACL rule matches; explicit allow/deny rules may further restrict or grant access on a locked page. | `✅ Stable` | `🚧 In progress` |
-| Doc-13 | Project `owner` (and Super admin) can **export** and **import** that project’s documentation as a Markdown archive so teams can version docs outside the platform (analogous to Doc-02/Doc-03, but project-scoped — not the global `w4h-docs` repo). | `✅ Stable` | `🚩 Todo` |
+| Doc-13 | Project `owner` (and Super admin) can **export** and **import** that project’s documentation as a Markdown archive (converted from the stored HTML, Doc-20) so teams can version docs outside the platform (analogous to Doc-02/Doc-03, but project-scoped — not the global `w4h-docs` repo). | `✅ Stable` | `🚩 Todo` |
 | Doc-14 | Project pages do not appear in platform Help documentation; navigation and APIs are always filtered by `project_id`. | `✅ Stable` | `✅ Done` |
 | Doc-15 | Project Docs may link to platform documentation pages. | `⚠️ Draft` | `🚩 Todo` |
 | Doc-16 | Retire the current `project_docs` “link platform `docs.slug` to project” model for storing project page content; replace with the dedicated project-pages table (Doc-08). | `✅ Stable` | `🚩 Todo` |
 | Doc-17 | **Study metric (platform):** documentation completeness / documentation-assisted task success for **platform Help** (surveys + timed tasks). Distinct from project pages. | `✅ Stable` | `🚩 Todo` |
 | Doc-18 | **Study metric (project):** share of pilot projects with ≥1 project doc page; task success locating trial materials (protocol notes, data dictionaries) via **project pages**. | `✅ Stable` | `🚩 Todo` |
+| Doc-19 | Project pages use a **rich-text (WYSIWYG) editor** for drafting research reports. **HTML** is the stored format, sanitized on save and render. Existing Markdown pages are converted once; mermaid stays a source-preserving block. ([ADR-030](ADR-030-project-report-drafts-rich-text.md)) | `✅ Stable` | `✅ Done` — `RichDocEditor.vue` (Tiptap, xnn-app toolbar); API sanitizes on save and read (`lib/utils/page-html.js`); `project_pages.body_format`. Verified on `w4h-sample` in a browser: toolbar edits, table, mermaid, unsafe HTML removed, an older Markdown page opens and renders. Images by URL only. |
+| Doc-20 | Any project page (and the whole project, Doc-13) **exports to Markdown**. Lossy: embedded figures become an image plus link; anything else Markdown cannot express stays inline HTML. ([ADR-030](ADR-030-project-report-drafts-rich-text.md)) | `✅ Stable` | `✅ Done` — per page: **Download .md** (Turndown copy saved with each page; GFM tables, fenced mermaid). Verified on `w4h-sample`. The whole-project archive is Doc-13. |
+| Doc-21 | A report page can embed **notebook plots** from published reports ([ADR-029](ADR-029-visualization-component-and-reports.md) tier 2) and PNG exports of in-app charts (tier 1). Aggregates only, never raw rows. | `✅ Stable` | `🚩 Todo` |
+| Doc-22 | **Idea:** generate a slide presentation from a report, one `##` section per slide, through the Markdown export (e.g. Marp, reveal.js) or an HTML deck. Decide when a pilot team asks. | `⚠️ Draft` | `🚩 Todo` |
+| Doc-23 | **Later:** round trip for **contributed docs** — export a page written outside the core team as Markdown and open a pull request on `w4h-docs` so it can become Help. Out of scope until there is demand. | `⚠️ Draft` | `🚩 Todo` |
 
 ### 12.3 Feedback and community channels
 
@@ -629,7 +637,7 @@ Explicitly **outside MVP §13.1** delivery. Do not block or redefine AI-01…AI-
 | # | Milestone | Deliverable | Proposal target | Target | Status | Progress |
 |---|-----------|-------------|-----------------|--------|--------|----------|
 | M1 | Core Platform Foundation | Requirements, system architecture, authentication, user management, team management (multi-tenancy), project management, dataset management, RBAC, and core database schema | May 2026 | July 2026 | `🚧 In progress` | 93% |
-| M2 | Documentation system and data acquisition modules | Markdown editor with preview (proposal: WYSIWYG); CSV/JSON/database ingestion | July 2026 | July 2026 | `🚧 In progress` | 80% |
+| M2 | Documentation system and data acquisition modules | Platform Help in git; project pages with a rich-text editor (WYSIWYG, as proposed) and Markdown export; CSV/JSON/database ingestion | July 2026 | July 2026 | `🚧 In progress` | 83% |
 | M3 | Analysis and visualization components | **Basic cohort dashboards** (A-01a, A-04a–c, A-07), **dataset overview stats** (A-08) and the **approximate-queries** analysis (A-09), a **generic visualization component** for any wearable or clinical data (A-10, A-11) with published notebook **reports** for edge cases (A-12), + wear/MET **Contributions** (A-04); extend Fitbit sample; full chart library (A-02–A-03, A-05–A-06) later in M3; proposal: reusable analytics and plotting library — [analytics-contributions.md](analytics-contributions.md) | August 2026 | September 2026 | `🚧 In progress` | 81% |
 | M4 | Modeling components and dashboard integration | **One example model contribution** — a per-subject resting heart-rate anomaly detector applied to a project dataset and shown in the dashboard (M-01, M-02, M-07–M-09); retrain/extend/share are post-MVP (proposal: plug-and-play dashboard with model interface) | September 2026 | September 2026 | `🚧 In progress` | 76% |
 | M5 | Docker deployment, standalone version | Containerized release without Spark support | October 2026 | October 2026 | `🚧 In progress` | 60% |
@@ -646,8 +654,8 @@ Explicitly **outside MVP §13.1** delivery. Do not block or redefine AI-01…AI-
 
 | # | Rows counted | What is done | What is left |
 |---|---|---|---|
-| M1 | §2, §3, §4, §5, §6.1, §7 (83 rows: 70 done, 6 in review, 3 in progress, 4 todo) | Roles and per-team RBAC, teams (self-service), users and invites, projects, dataset access via project membership (ADR-027), dataset catalog, sharing, access requests | Dataset provenance and versioning (D-04, D-05), richer metadata and GeoMTS mapping (D-02, D-03), profile page showing teams and projects (U-07), teammates view (T-11), optional share-request path (S-09) |
-| M2 | Doc-01–09, 11, 12, 14; D-09, D-10, D-12, D-13, D-15 | **Documentation system is complete**: Markdown docs in git, import/export, Markdown editor with preview, mermaid, project-private pages, ACL. CSV ingest works through `csv-batch`, importers and the in-app **Run import…** | In-app file chooser (ingest assistant, D-35); in-app JSON import (D-10); per-run ingestion log and failures (D-15); project-page hierarchy and ACL polish (Doc-09, Doc-12); non-Admin ingest delegation (D-13, D-22) |
+| M1 | §2, §3, §4, §5, §6.1, §7 (84 rows: 71 done, 6 in review, 3 in progress, 4 todo) | Roles and per-team RBAC, teams (self-service), users and invites, projects, dataset access via project membership (ADR-027), dataset catalog, sharing, access requests | Dataset provenance and versioning (D-04, D-05), richer metadata and GeoMTS mapping (D-02, D-03), profile page showing teams and projects (U-07), teammates view (T-11), optional share-request path (S-09) |
+| M2 | Doc-01–04, 06–09, 11, 12, 14, 19, 20; D-09, D-10, D-12, D-13, D-15 (18 rows: 12 done, 6 in progress) | **Platform Help system is complete**: Markdown docs in git, import into the app, export zip, mermaid, project-private pages, ACL. CSV ingest works through `csv-batch`, importers and the in-app **Run import…** | In-app file chooser (ingest assistant, D-35); in-app JSON import (D-10); per-run ingestion log and failures (D-15); project-page hierarchy and ACL polish (Doc-09, Doc-12); non-Admin ingest delegation (D-13, D-22) |
 | M3 | §10 (16 rows) | Cohort comparison (A-03), member access (A-07), the generic visualization component and series API (A-10, A-11), published reports (A-12), dataset overview stats (A-08), the **wear-compliance and METs cohort cards with refresh (A-01a, A-04a–c)**, the wear-compliance and approximate-queries repos catalogued (A-04, A-09), SQL analytics contributions (ADR-023) | Outlier detection (A-05); whole-dashboard PDF (A-06); the Analytics-tab stats card (A-01); the wear logic as a `kind: sql` manifest; the wear-compliance, approximate-queries and anomaly repos are **private and unreleased** (no tag, README not fetchable); most rows are built but still `🔁 In review` — not yet used on real study data |
 | M4 | M-01, M-02, M-07, M-08, M-09 (5 rows; M-03–M-06 are post-MVP) | The example detector `w4h-hr-anomaly` is built and **verified against a live API**: adapter on the mapping and series API, per-subject z-score + Isolation Forest, CLI and notebook, write-back of a new table, catalog row seeded; notebook execution (M-07) in review | Exercise it from the app UI (M-01); record the contribution version in the audit row (M-08); draw its `display:` block in the Analytics tab (M-09) |
 | M5 | Dep-01, Dep-03, Dep-04, Dep-05 | **Standalone Docker works**: `w4h-docker` Compose (app, api, convenience Jupyter) against an external PostgreSQL, `.env` configuration, first-run database wizard, deployment guide | Published images on a public registry (Dep-04); contributions cannot yet run inside the `api` container (D-31) |
@@ -681,7 +689,7 @@ xychart-beta
     title "Milestone Progress"
     x-axis [M1, M2, M3, M4, M5, M6, M7, M8, M9]
     y-axis "Completion (%)" 0 --> 100
-    bar [93, 80, 81, 76, 60, 50, 20, 10, 10]
+    bar [93, 83, 81, 76, 60, 50, 20, 10, 10]
 ```
 
 ### 17.1 Demo checkpoint — Friday, August 21, 2026

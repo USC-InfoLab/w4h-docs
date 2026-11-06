@@ -101,7 +101,7 @@ For multi-dataset setups (owned datasets, inbound shares, dual-hat Team admins),
 
 In the workspace you can manage:
 
-- **Project documentation** — private Markdown pages for this project (not platform Help). Use pages (and your own git repo) to point at analysis notebooks; W4H does not register them ([ADR-018](dev/ADR-018-contributions-catalog.md)).
+- **Project documentation** — private pages for this project (not platform Help), written in a rich-text editor, with **Download .md** for a Markdown copy. Use pages (and your own git repo) to point at analysis notebooks; W4H does not register them ([ADR-018](dev/ADR-018-contributions-catalog.md)).
 - **Members** — researchers and collaborators assigned to the project
 - **Database access tokens** — short-lived tokens for programmatic data access from scripts and notebooks
 - **Fine-grained ACL** — optional rules on top of member roles (dataset, doc permissions)
@@ -113,7 +113,7 @@ In the workspace you can manage:
 Declaring a dataset (a name on the team or project) is not the same as loading it.
 
 1. Create or add the dataset on the **project** (declaration) or under **Datasets**.
-2. Ingest tables: open the project workspace → **Datasets**, select the **target catalog row**. On an empty dataset click **Select importer…**. **Your files** (EmbracePlus, Fitbit export, glucose, data recorder) loads the small example bundled with that importer so the tables appear; your own export is chosen in the notebook or with `--data-dir`. **Sample package** (Fitbit or ICDE) copies that sample into **that row’s own schema**. If the sample is already loaded on the project, **Link … instead**. On a dataset that already has tables, **Run import…** offers **Update** or **Full** (**Full** replaces tables in this dataset only). It runs on your personal API key ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)).
+2. Ingest tables: open the project workspace → **Datasets**, select the **target catalog row**. On an empty dataset click **Select importer…**. **Your files** drops your export in the dialog (or loads the small bundled example). For an Empatica Cloud dump, choose **EmbracePlus CSV file importer**, then choose one zip for the whole site, one zip per participant (select them all at once), or the unzipped `participant_data` folder. All participants and days go into that one dataset. Avro and reports are ignored. The command line (`--data-dir`) is optional. **Sample package** (Fitbit or ICDE) copies that sample into **that row’s own schema**. If the sample is already loaded on the project, **Link … instead**. On a dataset that already has tables, **Run import…** offers **Update** or **Full** (**Full** empties and reloads only the tables that importer writes in this dataset). It preselects the importer that loaded the dataset; **Change importer** picks another. It runs on your personal API key ([ADR-022](dev/ADR-022-in-app-contribution-run-trigger.md)).
 3. Confirm **tables** on the dataset overview — that means it is loaded. Mapping details: [ADR-003](dev/ADR-003-dataset-table-model.md).
 
 Researchers only see datasets that are linked to projects they belong to. **Users** do not ingest.

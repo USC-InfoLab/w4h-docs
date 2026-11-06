@@ -55,6 +55,8 @@ Researchers export CSV from their own devices; W4H does not bundle those files i
 | `w4h-data-recorder-csv-file-importer` | Empatica E4: E4 Connect (headerless), per-signal and merged research CSVs (nurse-stress, GalaxyPPG, pain-prediction) | `recorder` |
 | `w4h-embraceplus-csv-file-importer` | Empatica EmbracePlus Cloud per-minute biomarker CSVs (`aggregated_per_minute`); not E4 Connect, not Avro raw | `embrace` |
 
+**Planned (not built): EmbracePlus Avro raw importer.** The same Empatica Cloud export also carries `digital_biomarkers/raw_data/*.avro`: sensor streams (accelerometer, gyroscope, EDA, temperature, BVP, steps, systolic peaks, tags). Each sensor's sampling rate is stored in the file, and a new file starts about every 30 minutes or after a gap ([Empatica Data Access, PRS-0000205 REV19.0](https://manuals.empatica.com/ehmp/careportal/data_access/v2.7/en.pdf)). It would be a **separate repo**, listed as its own entry in **Select importer…**, not an option inside `w4h-embraceplus-csv-file-importer`. The per-minute importer stays the default. Build it when a study needs raw signals. Before building, size row volume and ingest time against the 500-row `csv-batch` path, since raw streams are far larger than one row per minute.
+
 In-app **Run import…** (ADR-022) uses the repo’s declared live sample (`contribution.yaml` → fixtures or a sibling sample package). **Team Admin** runs these on writable team catalog datasets; Super admin only **lists** them in Platform Admin → Contributions ([ADR-018](ADR-018-contributions-catalog.md)).
 
 User-facing text for a listing comes from the **git repo README** (rendered on `/contributions/:slug`) plus the catalog **title** and **summary** Super admin saves after **Fetch repo info** — not from platform Help pages.
@@ -104,3 +106,4 @@ API keys are read from **environment or local `.env`** in the importer repo. Key
 | 2026-09-26 | Documented first-party **file importers** (Fitbit, glucose monitor, E4 data recorder) and README-as-user-docs surfacing via Contributions. API ingest ACL no longer grants Super admin a bypass. |
 | 2026-10-29 | Recorder importer reads official **E4 Connect** CSVs (unix t0 + Hz, no header) and the Kaggle pain-prediction merged `person_ID` CSV. E3 and Embrace/Avro stay out of scope. |
 | 2026-10-30 | Added **w4h-embraceplus-csv-file-importer** for Empatica Cloud `aggregated_per_minute` CSVs (`table_prefix: embrace`). Separate from the E4 recorder. |
+| 2026-11-05 | Recorded a planned, separate **EmbracePlus Avro raw importer** (not built), citing Empatica's Data Access documentation. Per-minute stays the default. |

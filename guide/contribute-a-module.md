@@ -30,7 +30,7 @@ Two test lanes:
 1. **Automated** — `pytest` against in-repo fixtures. No network.
 2. **Live** — `./run.sh import` / in-app Run. Prefers sibling sample files; falls back to the same fixtures if that repo is not checked out.
 
-`inputs` is the form contract. Today in-app Run injects `dataset_id` as `W4H_DATASET_ID`. Optional files: `--data-dir` or the notebook chooser. Other fields are defaults testers can override.
+`inputs` is the form contract. Today in-app Run injects `dataset_id` as `W4H_DATASET_ID`. A `files` input is what makes **Select importer** offer a drop zone. Optional fields on that input are the dialog copy (`summary`, `note` with `{dataset}`, `drop_label`, `files_button`, `folder_button`), `accept` (`csv`, `zip`), and, when a dump mixes other files in, `include` (path segment to keep), `detect` (path segment that selects this importer), `ignored`, and `empty`. A `zip` in `accept` is stored as-is; that importer opens it. The dialog reads the sibling `contribution.yaml`. It does not hard-code device instructions.
 
 See `contribution.yaml` in the sibling **w4h-fitbit-csv-file-importer** repo.
 
@@ -40,9 +40,9 @@ W4H does **not** duplicate importer docs in platform Help. After Super admin pub
 
 1. **Contributions list** (`/contributions`) — **title** and **summary** from the row (Super admin saves these after **Fetch repo info** on Platform Admin → Contributions, or edits them by hand).
 2. **Detail page** (`/contributions/<slug>`) — the API fetches **`README.md`** from the public GitHub repo (path `docs_path`, default `README.md`), renders it as HTML, and shows **Open README on GitHub**. Authors should put setup, device/export notes, CLI examples, and “who should run this” in that README.
-3. **Run import…** — no extra doc pane; the dialog links to the contribution and runs `run.sh` using the signed-in **Admin’s** API key.
+3. **Select importer…** — the drop-zone wording comes from the `files` input in `contribution.yaml` (see above). The dialog also links to the contribution and runs `run.sh` using the signed-in **Admin’s** API key.
 
-`contribution.yaml` is for **tests and staging** (`pytest`, `./run.sh import`, in-app Run sample wiring). It is not shown to end users unless you mirror key points in the README.
+`contribution.yaml` is for **tests and staging** (`pytest`, `./run.sh import`, in-app Run sample wiring) and for that dialog copy. Setup and device notes still belong in the README.
 
 ## Optional: how results are drawn (`display`)
 
