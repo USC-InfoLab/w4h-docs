@@ -25,6 +25,7 @@ Agent instructions for the Wearables for Health (W4H) multi-repo workspace. The 
 - Onboarding: [ADR-028](dev/ADR-028-platform-access-requests.md) — USC researchers request access from the login screen (verified email); the **Super admin only approves** (sends an Admin invitation). The Super admin does not create or approve teams; the Admin creates their own.
 - Project report drafts: [ADR-030](dev/ADR-030-project-report-drafts-rich-text.md) — project pages use a rich-text editor, HTML is stored (sanitized by the API), Markdown is an export copy. Plots and slides come after the EmbracePlus analytics work. Platform Help is edited in this repo only; do not add or extend an in-app Help editor.
 - Charts and reports: [ADR-029](dev/ADR-029-visualization-component-and-reports.md) — one vendor-agnostic in-app chart layer driven by the dataset's GeoMTS mapping, plus sandboxed notebook **reports** (snapshots) for edge cases. Contributions ship no UI code.
+- Install modes: [ADR-031](dev/ADR-031-builtin-database-install-mode.md) (Draft) — Docker installs use an **external** PostgreSQL or a **built-in** `db` container. Secrets are generated on each machine (never a default password), a built-in install bootstraps the person as Admin of their own team plus a random-password Super admin in a recovery record, and updates replace only `api`/`app`/`notebooks`. Build checklist: `dev/builtin-install-implementation-plan.md`.
 
 Prefer updating ADRs/MVP when changing roles, tenancy, datasets, or docs model — do not invent conflicting product rules in code comments alone.
 
@@ -60,7 +61,7 @@ If you change API contracts, ACL, or UI copy for roles/docs/datasets, update the
 | Repo | Role |
 |---|---|
 | `w4h-api` | Express API and Postgres DDL (`w4h` schema): auth, ACL, ingest, catalog, contribution runner, SQL engine. Port 2026 |
-| `w4h-app` | Vue 3 + Vite SPA; talks only to `w4h-api`. Port 5173 |
+| `w4h-app` | Vue 3 + Vite SPA; talks only to `w4h-api`. Dev port 2025 (strict; no automatic fallback) |
 | `w4h-docs` | Product rules, MVP, ADRs and guides; imported by the API as in-app Help. Owns product decisions |
 | `w4h-docker` | Compose stack (`api`, `app`, `notebooks`) built from sibling repos; Postgres is external |
 | `w4h-sample-fitbit-csv`, `w4h-sample-icde-demo-csv` | Synthetic sample CSVs plus `manifest.yaml` (ICDE includes a `gps_track` geo signal) |
@@ -78,6 +79,8 @@ If you change API contracts, ACL, or UI copy for roles/docs/datasets, update the
 4. **Extensions:** the operator installs `fft_approximate` on their Postgres; notebooks call it directly.
 
 **Layout:** clone every repo as a sibling in one folder. The API finds contributions at `../<slug>` (override `CONTRIBUTION_RUNNER_REPO_ROOT`) and docs at `DOCS_REPO_PATH=../w4h-docs`.
+
+**Before cross-repo work:** read the target repository's `AGENTS.md` and any applicable nested instructions before investigating or editing it. Consult the documented service ports before proposing port changes.
 
 **Cross-repo changes:** `w4h-api` first (regenerate `API_INDEX.md`), then `w4h-app`, then `w4h-docs`. Catalog rows are seeded in `w4h-api/data/schema.sql`. Start at `w4h-docs/dev/mvp.md` and `w4h-docs/dev/ADR-README.md` for decisions, and `w4h-docs/dev/developer-setup.md` for local setup, getting an API key, test personas, troubleshooting, per-repo test commands, default branches and a glossary. Do not commit or push unless asked; never commit `.env` files, API keys or participant data.
 

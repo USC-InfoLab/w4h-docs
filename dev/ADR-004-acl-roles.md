@@ -104,7 +104,7 @@ Session `search_path` / DB role must follow the **active team context** for the 
 - Read and export the full **audit log**; view platform **Usage**
 - Use **Platform Admin home** (`/admin/home`) for KPIs, health, and attention items (pending requests, backup reminder, etc.)
 - Always remain in the Platform Admin shell after login (no toggle into the team app shell)
-- Promote another user to Super admin (break-glass)
+- Invite **another Super admin** from **Access → Invite Super admin…** (any number; dedicated email, no team), or promote one from the server with `w4h promote-super-admin` (break-glass, audited as `user.break_glass.super_admin_granted`). At least two Super admins are recommended so the platform never depends on one person.
 
 **Super admin cannot** (Team Admin / project owner in the app shell):
 - Add or remove team members, change team membership roles, or edit trial teams

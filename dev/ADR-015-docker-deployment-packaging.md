@@ -6,6 +6,7 @@ updated_at: 2026-08-16T00:00:00.000Z
 ---
 **Status:** Draft  
 **Date:** 2026-08-11  
+**Amended by:** [ADR-031](ADR-031-builtin-database-install-mode.md) (Draft, 2026-11-13). PostgreSQL is external **or** built-in: an optional `db` container for single-computer installs, secrets generated on each machine, published images and updates that keep the database.  
 **Relates to:** ADR-006 (deployment modes), ADR-007 (authentication model), ADR-011 (HIPAA audit logging)  
 **References:**
 - W4H MVP Requirements §14 (Deployment, Dep-01–Dep-05)

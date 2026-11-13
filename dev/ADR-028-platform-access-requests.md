@@ -7,6 +7,7 @@ updated_at: 2026-10-04T00:00:00.000Z
 
 **Status:** Accepted  
 **Date:** 2026-10-04  
+**Amended by:** [ADR-031](ADR-031-builtin-database-install-mode.md) (Draft, 2026-11-13). On a **built-in database** install, setup creates the person's Admin account and team directly, plus a Super admin with a random password in a recovery record; Request access is hidden there. External installs keep this ADR's flow.  
 **Relates to:** ADR-004 (roles), ADR-007 (authentication), ADR-011 (audit), MVP §3.0 (onboarding), T-16–T-20
 
 ---

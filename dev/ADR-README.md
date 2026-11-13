@@ -40,6 +40,7 @@ This directory contains ADRs for the W4H wearables toolkit. Each file captures t
 | [ADR-028](ADR-028-platform-access-requests.md) | Platform access requests (USC-verified) | Accepted |
 | [ADR-029](ADR-029-visualization-component-and-reports.md) | Generic visualization component and published reports | Accepted |
 | [ADR-030](ADR-030-project-report-drafts-rich-text.md) | Project report drafts in a rich-text editor; platform Help edited in git only | Accepted |
+| [ADR-031](ADR-031-builtin-database-install-mode.md) | Built-in database install mode for single-computer pilots (amends ADR-015, ADR-028) | Draft |
 
 ## What is an ADR?
 

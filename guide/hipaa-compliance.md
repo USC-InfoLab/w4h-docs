@@ -112,11 +112,11 @@ Only when **all** of the following are true:
 
 ```bash
 cd w4h-api
-node cli/w4h.js reset-password
+node bin/w4h reset-password
 ```
 
 <div class="alert alert-danger">
-  <strong>Never</strong> reset a password by passing it directly on the command line (e.g. <code>node cli/w4h.js reset-password admin@example.com MyPassword123</code>). Command-line arguments are visible in the process list (<code>ps aux</code>), recorded in shell history (<code>~/.bash_history</code>), and may appear in system logs — all of which are potential sources of unauthorized disclosure under HIPAA. The break-glass command accepts the new password via a hidden interactive prompt only.
+  <strong>Never</strong> reset a password by passing it directly on the command line (e.g. <code>node bin/w4h reset-password admin@example.com MyPassword123</code>). Command-line arguments are visible in the process list (<code>ps aux</code>), recorded in shell history (<code>~/.bash_history</code>), and may appear in system logs — all of which are potential sources of unauthorized disclosure under HIPAA. The break-glass command accepts the new password via a hidden interactive prompt only.
 </div>
 
 ### Required documentation
@@ -135,6 +135,24 @@ After running, notify your Privacy Officer within 24 hours if the reset was trig
 1. Verify the audit log entry was written to `w4h.audit_log`
 2. The affected admin should change their password immediately after regaining access
 3. Investigate and document the root cause of the lockout
+
+---
+
+## Keep More Than One Super admin
+
+Name at least two Super admins, each with their own email, so the platform is never locked to one person. There is no limit on how many Super admins a platform can have.
+
+- **In the app:** a Super admin opens **Access → Invite Super admin…**, enters a dedicated email and sends the invitation. The invitee sets their own password from the link. The invitation is audited as `user.invite_sent`.
+- **Break-glass, from the server:** when no Super admin can sign in, an authorized system administrator runs:
+
+```bash
+cd w4h-api
+node bin/w4h promote-super-admin someone@example.org
+```
+
+The command asks for your name and a reason, then either promotes the existing account (it keeps its password) or creates a new one and prints an invitation link. It writes `user.break_glass.super_admin_granted` to `w4h.audit_log` (falling back to `break-glass-audit.log`). Record it in your HIPAA incident log as for a password reset.
+
+Super admins cannot be team members, so an account that already belongs to a team cannot be promoted. Use a separate email.
 
 ---
 

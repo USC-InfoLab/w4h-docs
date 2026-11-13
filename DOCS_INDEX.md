@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-11-05
+- Generated: 2026-11-13
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
@@ -18,7 +18,7 @@ Structural map of `w4h-docs` for agents and humans. **Index only** — not a sub
 | Docs screenshots / fake users | `dev/docs-fixtures.md` |
 | Guides | `guide/` |
 
-ADRs in tree: **31**. Prefer MVP + relevant ADR before inventing product rules.
+ADRs in tree: **32**. Prefer MVP + relevant ADR before inventing product rules.
 
 ## Root
 
@@ -63,14 +63,16 @@ ADRs in tree: **31**. Prefer MVP + relevant ADR before inventing product rules.
 | `dev/ADR-028-platform-access-requests.md` | ADR-028 — Platform access requests |
 | `dev/ADR-029-visualization-component-and-reports.md` | ADR-029 — Generic visualization component and published reports |
 | `dev/ADR-030-project-report-drafts-rich-text.md` | ADR-030 — Project report drafts in a rich-text editor; platform Help edited in git only |
+| `dev/ADR-031-builtin-database-install-mode.md` | ADR-031 — Built-in database install mode for single-computer pilots |
 | `dev/ADR-README.md` | ADR Readme |
 | `dev/agentic-ai-roadmap.md` | Agentic AI roadmap (post-MVP) |
 | `dev/analytics-contributions.md` | Analytics contributions — RA handoff (METs & wear compliance) |
 | `dev/analytics-sql-engine-options.md` | Analytics SQL engine — options memo |
 | `dev/architecture.md` | Architecture |
 | `dev/august-2026-release-plan.md` | August 2026 release plan — 0.3.0 Peña Roja |
+| `dev/builtin-install-implementation-plan.md` | Built-in install: implementation plan |
 | `dev/core-team-workflow.md` | Core team workflow |
-| `dev/developer-setup.md` | Developer Setup |
+| `dev/developer-setup.md` | Install browsers for the first run |
 | `dev/docs-fixtures.md` | Local docs fixtures |
 | `dev/mvp.md` | MVP |
 | `dev/notes.md` | notes |
