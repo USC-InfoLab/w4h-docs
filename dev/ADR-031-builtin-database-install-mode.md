@@ -1,113 +1,146 @@
 ---
 title: "ADR-031 — Built-in database install mode for single-computer pilots"
-description: The Docker install offers a built-in PostgreSQL container next to the existing external-database option. The launcher generates per-machine secrets, first login creates the person's own Admin account and team, the Super admin gets a random password in a one-time recovery record, and updates replace only the app and API containers. Usage telemetry can be exported or emailed for pilot evaluation.
+description: Pilot testers install a ready-to-use W4H with one Docker Compose command and update with the same command. PostgreSQL 18 and every runnable package ship in public images, each machine generates its own secrets, the first person signs up as Admin, and updates back up and preserve the local database.
 updated_by: nocera@usc.edu
-updated_at: 2026-11-13T00:00:00.000Z
+updated_at: 2026-11-22T00:00:00.000Z
 ---
 
 **Status:** Draft  
-**Date:** 2026-11-13  
-**Amends:** [ADR-015](ADR-015-docker-deployment-packaging.md) (PostgreSQL is external **or** built-in), [ADR-028](ADR-028-platform-access-requests.md) (single-user install bootstrap)  
-**Relates to:** ADR-004 (roles), ADR-007 (authentication), ADR-011 (audit), MVP §14 (Dep-04, Dep-06–Dep-08), §6.3 (D-18, D-19, D-19f), §4.2 (U-13–U-16, U-19), §17 M5 and M8  
+**Date:** 2026-11-13 (revised 2026-11-22)  
+**Amends:** [ADR-015](ADR-015-docker-deployment-packaging.md) (adds a packaged pilot install next to the external-database deployment), [ADR-028](ADR-028-platform-access-requests.md) (first-person bootstrap on pilot installs)  
+**Relates to:** ADR-004 (roles), ADR-007 (authentication), ADR-011 (audit), ADR-022 and ADR-023 (running contributions), MVP §14 (Dep-04, Dep-06–Dep-08), §6.3 (D-18, D-19, D-19f, D-31), §4.2 (U-13–U-16, U-19), §17 M5 and M8  
 **Implementation plan:** [Built-in install: implementation plan](builtin-install-implementation-plan.md)
 
 ---
 
 ## Context
 
-We want pilot testers to run W4H on their own computers. Most of them have never used Docker, and some will load sensitive data. Nothing is deployed yet.
+We want pilot testers to run W4H on their own computers, with their own data. Most have never used Docker.
 
-Today (ADR-015) `w4h-docker` runs `app`, `api` and `notebooks` against an **external** PostgreSQL that the operator provides. It builds images from about six sibling repos, and the first-run wizard only creates a **Super admin** (`w4h-api/lib/db-init.js`, `createInitialAdmin`). Under ADR-004 and ADR-028 a Super admin does no team work. An Admin normally arrives through an access request, which needs SMTP and a verified USC email. None of this suits one person on a laptop.
+Today (ADR-015) `w4h-docker` builds `app`, `api` and `notebooks` from sibling repos and expects an **external** PostgreSQL. The first-run wizard creates only a **Super admin**, and an Admin normally arrives through an access request. The `api` image has no Python and bundles no importers, so most runnable contributions can't run in it (D-31). None of this suits one person on a laptop.
 
 Constraints:
 
-- **No shared secrets.** Each install has its own database password and `TOKEN_SECRET`. The images carry no credentials.
-- **No Docker knowledge needed** after Docker Desktop is installed: double-click launchers and a browser.
-- **Updates keep the data.** Replacing the app and API must not touch the database or its connection.
-- **Pilot evaluation (M8)** needs usage data from each tester and from the people they invite.
+- **One command** to install and the same command to update, after Docker Desktop is installed.
+- **No shared secrets.** Each install has its own database password, `TOKEN_SECRET` and Super admin password. The images carry no credentials.
+- **Updates keep the data**, including across PostgreSQL major versions.
+- **Everything ships in the images.** Every package the app marks as runnable works without a GitHub checkout.
+- **Pilot evaluation (M8)** needs usage data and timed test sessions from each tester.
+
+**Responsibility for data.** Testers load their own data, run their own installation, and are responsible for PHI handling under their HIPAA training and protocol. The W4H team has no access to a tester's data unless the tester grants it under IRB approval. Nothing leaves an install unless a person there chooses to send it (§8).
 
 ## Decision
 
-### 1. Two install options in the normal product, not a separate "demo" build
+### 1. A separate pilot package, with no database choice
 
-The setup wizard's first step asks:
+The pilot package always includes its database. The setup wizard's **Built-in or external** choice is **removed**. External PostgreSQL remains the separate ADR-015 deployment, with its own Compose file and existing wizard, and is unchanged by this ADR.
 
-- **Built-in database (this computer)**: PostgreSQL runs in a `db` container in the same Compose stack.
-- **Connect to your own PostgreSQL**: today's flow, unchanged.
+The package is not called "demo mode", because it holds real data.
 
-A separate **Load sample data** checkbox seeds the synthetic samples with either option. It is not called "demo mode", because built-in installs may hold real data and nothing about them is disposable.
+### 2. Install and update with one Compose command
 
-### 2. The database stays a separate container
+The Compose file is published to Docker Hub as an OCI artifact, and all images are **public**, so testers need no zip, repository checkout, account or token:
 
-`db` is its own service, in a Compose profile (`builtin`). It has a pinned major version (`postgres:16`), a named volume, and **no published port**. Only `api` reaches it, over the Compose network. The Compose project name is fixed (`name: w4h`), so the volume name doesn't depend on which folder the files sit in.
+```bash
+docker compose -p w4h -f oci://docker.io/<docker-account>/w4h:test up -d --pull always
+```
 
-When someone picks their own PostgreSQL, the launchers stop starting the `builtin` profile and remove the idle `db` container and its empty volume.
+The same command installs and updates. An optional double-click file for macOS and Windows may wrap it. It holds no logic or secrets.
 
-### 3. Secrets are generated on the machine, before Postgres first starts
+Publishing a Compose app rules out bind mounts and build-only services, so the pilot file uses named volumes and published images. Each release pins its images by digest (`docker compose publish --resolve-image-digests`), so the `test` tag always names one exact, tested set of images.
 
-The **Install** launcher creates `secrets/pg_password` and `data/.env` (with `TOKEN_SECRET`), readable by the owner only, if they don't exist yet. Postgres is created with that password, so no default password ever exists. The `api` container reads the password from a read-only secret mount when built-in is chosen.
+### 3. PostgreSQL 18 in its own container
+
+`db` is a separate service based on **PostgreSQL 18**, with `fft_approximate` compiled in. It has **no published port**, and only `api` reaches it over the Compose network. Its volume mounts at `/var/lib/postgresql`, the layout PostgreSQL 18 images require, which also lets old and new major versions share one volume during an upgrade.
+
+### 4. Secrets are generated on the machine and live in volumes
+
+A one-shot `setup` service runs before `db`. If they don't already exist, it generates the database password and `TOKEN_SECRET` in the `w4h_config` volume, readable only by the service that needs them.
+
+Secrets **must not** live in the install folder. The database volume outlives any folder, so a new folder with new secrets would lock the API out of the existing database and make stored API keys undecryptable.
 
 `TOKEN_SECRET` is never offered for change in the UI, because it also wraps stored API keys.
 
-### 4. Single-user bootstrap (amends ADR-028)
+### 5. Ready on first start, first person becomes Admin (amends ADR-028)
 
-In built-in mode, one setup step:
+The stack initializes the schema and imports Help on its own. The first screen asks for **name, email and password**. That one step:
 
-- creates the person's account with **their own password**
+- creates the person's account, marked as the **install owner**
 - creates their team and makes them its **Admin** (`team_members.role = team_admin`)
-- creates a **Super admin** with a **random password**, stored only as a hash
+- creates a **Super admin** with a random password unique to this install
 - issues API keys as at any other account creation (D-16a)
 
-The Super admin password and the database credentials are returned **once**, and the wizard offers them as a **recovery record** download. The person must confirm they saved it. The same Super admin account still exists and can be used for Platform Admin; the person just doesn't need it day to day.
+The password is required because email sign-in can't work before SMTP is set up. The step is refused once any user exists, and the app is published on `127.0.0.1` only.
 
-Access requests (ADR-028) are unchanged for external installs. In built-in mode **Request access** is hidden.
+Access requests (ADR-028) are unchanged for external installs and hidden on pilot installs.
 
-### 5. Invites unchanged
+### 6. Credential recovery by the install owner
 
-The Admin invites people as on any install (U-13–U-16). The intended pilot test is someone using the Admin's machine, who opens the invite email there; the `127.0.0.1` link works on that machine. Built-in mode therefore expects SMTP to be set (wizard or Settings) for invites, email-code login, Report an issue, and sending usage data.
+The install owner can reveal the **database credentials and Super admin password** from Settings after re-entering their own password, like the existing API key reveal. The Super admin password is also stored encrypted under `TOKEN_SECRET`, and the stored copy is deleted if that password is later changed. Each reveal is audited (`install.credentials.reveal`, or `install.credentials.reveal_denied`).
 
-**Sign in with email code** is hidden while mail isn't configured (U-19). No network-access option is added in this ADR.
+This is limited to the install owner, **not every team admin**. Team admin is a per-team role (R-09), and these credentials control the whole install.
 
-### 6. Updates replace only `api`, `app` and `notebooks`
+### 7. Email through the tester's Gmail
 
-Images are published to a registry (Dep-04) and pinned by version. The **Update** launcher:
+Settings offers a **Gmail** preset (`smtp.gmail.com`, port 587, STARTTLS). The Admin enters **their own** address and a Google **app password**, which requires 2-Step Verification. No mail credential ships in the images. Mail enables invites, email-code sign-in, Report an issue and sending logs.
 
-1. runs `pg_dump` into `backups/` (built-in mode)
-2. pulls the new images
-3. restarts only the app containers (`--no-deps`)
-4. waits for `/config/status`
+**Sign in with email code** is hidden while mail isn't configured (U-19). Invites are unchanged (U-13–U-16). No network-access option is added in this ADR, so an invitee opens the link on the same computer.
 
-The new `api` reads the same `data/.env`, so the database connection, sessions and API keys carry over. On start the API re-applies `schema.sql` as today, which is safe to re-run. **Changes that `IF NOT EXISTS` can't express (renames, drops, data transforms) need explicit idempotent migration SQL and a release note.** A Postgres major-version upgrade is a separate, deliberate procedure (dump and restore).
+### 8. Team logs and timed test sessions
 
-There is **no in-app Update button**: it would need the Docker socket inside `api`, which amounts to control of the host.
+**Test sessions.** A tester can press **Start test**, choose a task from a fixed list, and press **End test**. Each session records user, task, start, end and how it ended (`completed`, `abandoned` or `timed_out`). Tasks are not free text, so PHI can't be typed into the log.
 
-### 7. Usage export for pilot evaluation
-
-Super admins (whole platform) and Admins (their teams, same scoping as `/admin/usage`) can **download** `usage_events` as CSV or JSON, or **send** the same file to the W4H team by SMTP (`TELEMETRY_TO`). The export is per user but pseudonymous:
+**Team logs.** Super admins (whole platform) and Admins (their teams) can **download** usage events and test sessions as CSV or JSON, **email** the file to any address they choose, or **send** it to the W4H team (`TELEMETRY_TO`). The export is per user but pseudonymous:
 
 - `user_id` is replaced by `HMAC(install_id, user_id)`.
 - `metadata` is reduced to an allow-list: status, method, a route template **without IDs**, row count.
-- The header carries the random `install_id`, the W4H version and the database mode.
-- No emails, names, dataset names or raw paths. The pseudonym-to-person mapping is shown only on the local Usage page.
+- The header carries the random `install_id`, the W4H version and the install type.
+- No emails, names, dataset names, raw paths or participant data. The pseudonym-to-person mapping is shown only on the local Usage page.
 
-The person previews exactly what will be sent. Both actions are audited (`usage.exported`, `usage.sent`). This is study-assessment data under D-18/D-19, not the HIPAA `audit_log`, which is never exported this way.
+The person previews exactly what will leave the install. Each action is audited (`usage.exported`, `usage.sent`). This is study-assessment data under D-18/D-19, not the HIPAA `audit_log`, which is never exported this way.
+
+### 9. Updates preserve the database
+
+Running the install command against a new release does the following, in order. **Any failure stops the update before the new API starts.**
+
+1. `setup` keeps the existing secrets. If the PostgreSQL major version changed, it runs `pg_upgrade` into a new versioned directory in the same volume and **keeps the old directory** until the new server is verified.
+2. `db` starts.
+3. A one-shot `backup` service writes a `pg_dump` to the `w4h_backups` volume when the release has changed, and keeps the last five.
+4. `api` applies pending migrations, each recorded in a `w4h.schema_migrations` table, then starts.
+5. `app` and `notebooks` start.
+
+`schema.sql` stays safe to re-run. Renames, drops and data transforms need an explicit, ordered migration and a release note. Moving to a newer PostgreSQL major is a deliberate release decision and must be tested against a copy of a previous release's data.
+
+There is **no in-app Update button**, because it would need the Docker socket inside `api`, which amounts to control of the host.
+
+### 10. All runnable packages ship in the images
+
+The build bundles every contribution with `runnable = true` in `w4h.contributions`, at a pinned commit, along with any paired sample data. The `api` image gains Python and each importer's dependencies. In the pilot image the runner uses the bundled copies and **never clones from GitHub**. The build fails if a runnable package can't be bundled.
 
 ## Alternatives considered
 
 | Alternative | Why not |
 |---|---|
-| PostgreSQL inside the `api` image | Every app update would also replace the database server, so the data would still need a volume. It ties the Postgres version to app releases, makes backups and password recovery harder, and a crash in one takes down both. |
-| Ship a default database password and have the Admin change it in a dialog | There is a window where every install shares the same password, and installs where nobody changes it. Generating it at install time is simpler and leaves no window. |
-| A "demo mode" | The name tells people the data is disposable and the protections relaxed. A storage choice plus a sample-data checkbox says what actually differs. |
-| Always run `db`, even with an external database | It's cheap (tens of MB of memory when idle) but pointless. The profile and a one-time clean-up remove it. |
-| In-app Update button | Needs the Docker socket inside `api`, which gives that container control of the host. |
+| Keep a two-way wizard (built-in or external) | No pilot tester needs the choice, and it adds branching to setup, launchers and support. External stays a separate deployment. |
+| Private images with a login token | Adds a token to distribute and revoke, and Docker Hub's free plan has one private repository. The code is already public or MIT-licensed. |
+| Zip of launchers and Compose files | Testers would have to keep and replace files by hand. Compose can fetch the file from the registry. |
+| Pre-seeded database in the image | Every install would share its credentials. |
+| PostgreSQL inside the `api` image | Every app update would also replace the database server, and a crash in one takes down both. |
+| PostgreSQL 19 now | Released 2026-11-19. PostgreSQL 18 is mature and supported to November 2030. |
+| Shared W4H Gmail account in the image | A shared credential in public images. |
+| Super admin password shown only once | A lost record would need command-line recovery, which these testers can't be expected to do. |
+| In-app Update button | Needs the Docker socket inside `api`. |
 | Raw `usage_events` with emails | More than pilot evaluation needs, and harder to defend under IRB and HIPAA review. |
 
 ## Consequences
 
-- ADR-015's "PostgreSQL is external" becomes "external or built-in". `w4h-docker` gains a `db` service, launchers and published images.
-- ADR-028 gains a bootstrap exception, **limited to built-in installs**. External installs keep the access-request path.
-- The app gains a database-choice step, a recovery-record step, mail gating, and export and send actions on the Usage page. Roles and ACL don't change.
-- Pilot testers need Docker Desktop (check its licence terms for the organization), about 1 GB of disk for images, and SMTP credentials to invite others.
-- Losing the recovery record isn't fatal: the database password is in `data/.env`, and a Super admin can be recovered from the server (`w4h promote-super-admin`, U-18).
-- Full-disk encryption on the tester's machine remains their responsibility. The HIPAA guide must say so.
+- ADR-015 gains a second packaging path. Its external-database deployment is unchanged.
+- ADR-028 gains a bootstrap exception, **limited to pilot installs**.
+- `w4h-docker` gains a pilot Compose file, `setup`, `backup` and `db` images, and a release step that publishes multi-architecture images (`arm64`, `amd64`).
+- The `api` image grows, because it now includes Python and all runnable importers.
+- The API gains migration tracking, first-person setup, credential reveal, mail attachments, and team-scoped log export. Roles and ACL don't change.
+- Compose must stop overriding saved SMTP settings. It currently sets empty `SMTP_*` variables, and `dotenv` won't replace them, so mail saved in Settings is lost on restart.
+- `w4h-data-recorder-csv-file-importer` and `w4h-embraceplus-csv-file-importer` are public as of 2026-11-22, after a history scan for secrets and participant data.
+- Testers need Docker Desktop (check its licence terms for their organization) and disk space for the images and their data.
+- Backups live on the tester's computer, so they don't protect against losing that computer. Full-disk encryption and off-machine copies are the tester's responsibility, and the install guide must say so.
+- `docker compose down -v` or deleting the Docker volumes **destroys the data**. The install guide must say so.

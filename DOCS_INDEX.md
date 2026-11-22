@@ -3,7 +3,7 @@
 Structural map of `w4h-docs` for agents and humans. **Index only** — not a substitute for reading ADRs/MVP.
 
 - Regenerate: `node scripts/generate-docs-index.mjs`
-- Generated: 2026-11-13
+- Generated: 2026-11-22
 - Do not hand-edit the lists below; change docs, then re-run the script.
 
 ## Orientation
